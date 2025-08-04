@@ -7,6 +7,8 @@ use App\Models\Customer;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Hash;
+use Illuminate\Validation\ValidationException;
 
 class AuthController extends Controller
 {
@@ -14,11 +16,14 @@ class AuthController extends Controller
     {
         $credentials = $request->validated();
 
-        if (!Auth::guard('customer')->attempt($credentials)){
-            return new JsonResponse(['message' => 'Las credenciales proporcionadas son incorrectas.']);
+        $customer = Customer::where('email', $credentials['email'])->firstOrFail();
+
+        if (!$customer || !Hash::check($credentials['password'], $customer->password)) {
+            throw ValidationException::withMessages([
+                'email' => ['Las credenciales proporcionadas son incorrectas.'],
+            ]);
         }
 
-        $customer = Customer::where('email', $credentials['email'])->firstOrFail();
         $token = $customer->createToken('customer_token')->plainTextToken;
 
         return new JsonResponse([
