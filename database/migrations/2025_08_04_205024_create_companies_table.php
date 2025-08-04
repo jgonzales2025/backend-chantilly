@@ -17,7 +17,7 @@ return new class extends Migration
             $table->string('ruc', 11);
             $table->string('number_whatsapp', 9)->nullable();
             $table->string('number_whatsapp1', 9)->nullable();
-            $table->string('about us', 100)->nullable();
+            $table->string('about_us', 100)->nullable();
             $table->string('facebook', 150)->nullable();
             $table->string('instagram', 150)->nullable();
             $table->string('twitter', 150)->nullable();
