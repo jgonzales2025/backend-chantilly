@@ -3,12 +3,11 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
-class Category extends Model
+class ProductType extends Model
 {
-    protected $fillable = ['name', 'company_id'];
+    protected $fillable = ['name', 'status'];
 
     public function products(): HasMany
     {
