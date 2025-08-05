@@ -1,0 +1,37 @@
+<?php
+
+namespace App\Models;
+
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
+
+class Order extends Model
+{
+    protected $fillable = [
+        'customer_id',
+        'order_number',
+        'subtotal',
+        'total',
+        'order_date',
+        'delivery_date',
+        'status'
+    ];
+
+    protected $casts = [
+        'status' => 'boolean'
+    ];
+
+    protected $hidden = ['created_at','updated_at'];
+
+    public function items(): HasMany
+    {
+        return $this->hasMany(OrderItem::class);
+    }
+
+    public function customer(): BelongsTo
+    {
+        return $this->belongsTo(Customer::class);
+    }
+
+}

@@ -23,7 +23,9 @@ class DatabaseSeeder extends Seeder
             CompanySeeder::class,
             DocumentTypeSeeder::class,
             CategorySeeder::class,
-            ProductTypeSeeder::class
+            ProductTypeSeeder::class,
+            ThemeSeeder::class,
+            FillingSeeder::class
         ]);
         
     }

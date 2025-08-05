@@ -9,6 +9,8 @@ class Theme extends Model
 {
     protected $fillable = ['name', 'image_url'];
 
+    public $timestamps = false;
+
     public function products(): HasMany
     {
         return $this->hasMany(Product::class);

@@ -21,6 +21,13 @@ class Product extends Model
         'best_status'
     ];
 
+    public $timestamps = false;
+
+    protected $casts = [
+        'status' => 'boolean',
+        'best_status' => 'boolean'
+    ];
+
     public function productType(): BelongsTo
     {
         return $this->belongsTo(ProductType::class);

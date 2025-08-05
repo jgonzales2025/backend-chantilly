@@ -8,7 +8,9 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Category extends Model
 {
-    protected $fillable = ['name', 'company_id'];
+    protected $fillable = ['name'];
+
+    public $timestamps = false;
 
     public function products(): HasMany
     {

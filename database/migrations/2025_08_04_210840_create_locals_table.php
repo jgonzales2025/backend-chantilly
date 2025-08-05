@@ -15,10 +15,10 @@ return new class extends Migration
             $table->id();
             $table->string('name', 100);
             $table->string('image', 100)->nullable();
-            $table->string('address', 200)->nullable();
-            $table->string('department')->nullable();
-            $table->string('province')->nullable();
-            $table->string('district')->nullable();
+            $table->string('address', 255)->nullable();
+            $table->string('department', 100)->nullable();
+            $table->string('province', 100)->nullable();
+            $table->string('district', 100)->nullable();
             $table->time('start_time')->nullable();
             $table->time('end_time')->nullable();
             $table->string('link_local')->nullable();
