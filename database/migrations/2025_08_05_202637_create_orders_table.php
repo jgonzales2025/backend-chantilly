@@ -14,10 +14,10 @@ return new class extends Migration
         Schema::create('orders', function (Blueprint $table) {
             $table->id();
             $table->foreignId('customer_id')->constrained('customers')->onDelete('cascade');
-            $table->string('order_number')->unique();
+            $table->string('order_number')->unique()->nullable();
             $table->decimal('subtotal', 10, 2);
             $table->decimal('total', 10, 2);
-            $table->date('order_date');
+            $table->dateTime('order_date')->nullable();
             $table->date('delivery_date');
             $table->boolean('status')->default(1);
             $table->timestamps();

@@ -24,6 +24,15 @@ class Order extends Model
 
     protected $hidden = ['created_at','updated_at'];
 
+    protected static function boot()
+    {
+        parent::boot();
+
+        static::creating(function ($order) {
+            $order->order_date = now();
+        });
+    }
+
     public function items(): HasMany
     {
         return $this->hasMany(OrderItem::class);
