@@ -22,7 +22,15 @@ class UpdateProductVariantRequest extends FormRequest
     public function rules(): array
     {
         return [
-            //
+            'cod_fab' => 'required|string',
+            'product_id' => 'required|integer|exists:products,id',
+            'description' => 'required|string',
+            'portions' => 'required|string',
+            'size_portion' => 'required|string',
+            'price' => 'required|numeric',
+            'hours' => 'nullable|integer',
+            'sort' => 'nullable|integer',
+            'image' => 'nullable|image|mimes:jpg,jpeg,png,webp'
         ];
     }
 }

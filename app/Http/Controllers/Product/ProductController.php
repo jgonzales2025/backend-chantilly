@@ -20,12 +20,16 @@ class ProductController extends Controller
     {
         $themeId = $request->query('theme_id');
         $name = $request->query('name');
+        $prodType = $request->query('product_type_id');
 
         $products = Product::when($themeId, function ($query) use ($themeId){
             $query->where('theme_id', $themeId);
         })
         ->when($name, function ($query) use ($name){
             $query->where('short_description', 'LIKE', "%$name%");
+        })
+        ->when($prodType, function ($query) use ($prodType){
+            $query->where('product_type_id', $prodType);
         })
         ->paginate(8);
         

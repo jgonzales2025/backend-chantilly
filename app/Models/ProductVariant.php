@@ -17,7 +17,7 @@ class ProductVariant extends Model
         'price',
         'hours',
         'sort',
-        'image_url'
+        'image'
     ];
 
     public $timestamps = false;

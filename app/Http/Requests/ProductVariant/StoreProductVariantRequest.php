@@ -30,7 +30,7 @@ class StoreProductVariantRequest extends FormRequest
             'price' => 'required|numeric',
             'hours' => 'nullable|integer',
             'sort' => 'nullable|integer',
-            'image_url' => 'nullable|string'
+            'image' => 'nullable|image|mimes:jpg,jpeg,png,webp'
         ];
     }
 }

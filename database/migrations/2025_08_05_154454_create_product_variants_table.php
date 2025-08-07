@@ -21,7 +21,7 @@ return new class extends Migration
             $table->decimal('price', 10, 2);
             $table->integer('hours')->nullable();
             $table->integer('sort')->nullable();
-            $table->string('image_url')->nullable();
+            $table->string('image')->nullable();
             $table->timestamps();
         });
     }
