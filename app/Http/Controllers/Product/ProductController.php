@@ -9,7 +9,6 @@ use App\Http\Resources\ProductResource;
 use App\Models\Product;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
-use Illuminate\Http\Resources\Json\JsonResource;
 
 class ProductController extends Controller
 {
@@ -19,9 +18,15 @@ class ProductController extends Controller
     public function index(Request $request): JsonResponse
     {
         $themeId = $request->query('theme_id');
+        $name = $request->query('name');
+
         $products = Product::when($themeId, function ($query) use ($themeId){
             $query->where('theme_id', $themeId);
-        })->paginate(8);
+        })
+        ->when($name, function ($query) use ($name){
+            $query->where('short_description', 'LIKE', "%$name%");
+        })
+        ->paginate(8);
         
         if($products->isEmpty()){
             return new JsonResponse(['message' => 'No hay productos registrados']);
