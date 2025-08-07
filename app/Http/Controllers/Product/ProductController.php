@@ -9,6 +9,7 @@ use App\Http\Resources\ProductResource;
 use App\Models\Product;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Storage;
 
 class ProductController extends Controller
 {
@@ -93,6 +94,16 @@ class ProductController extends Controller
         }
 
         $validatedData = $request->validated();
+
+        if ($request->hasFile('image')) {
+            if ($product->image && Storage::disk('public')->exists($product->image)) {
+                Storage::disk('public')->delete($product->image);
+            }
+
+            // Guardar nueva imagen
+            $path = $request->file('image')->store('product', 'public');
+            $validatedData['image'] = $path;
+        }
 
         $product->update($validatedData);
 
