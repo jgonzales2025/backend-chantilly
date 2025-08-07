@@ -6,6 +6,7 @@ use App\Http\Controllers\CakeFlavor\CakeFlavorController;
 use App\Http\Controllers\Category\CategoryController;
 use App\Http\Controllers\Customer\CustomerController;
 use App\Http\Controllers\Order\OrderController;
+use App\Http\Controllers\Page\PageController;
 use App\Http\Controllers\Product\ProductController;
 use App\Http\Controllers\ProductVariant\ProductVariantController;
 use App\Http\Controllers\Tematica\ThemeController;
@@ -54,6 +55,9 @@ Route::post('/cake-flavors', [CakeFlavorController::class, 'store']);
 //Autenticación con google
 Route::get('/auth/google/redirect', [CustomerGoogleAuthController::class, 'redirect']);
 Route::get('/auth/google/callback', [CustomerGoogleAuthController::class, 'callback']);
+
+// Ruta para las paginas
+Route::get('/pages', [PageController::class, 'index']);
 
 Route::middleware('auth:sanctum')->group(function() {
     
