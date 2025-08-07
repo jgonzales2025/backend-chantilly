@@ -12,7 +12,7 @@ use Illuminate\Support\Facades\Hash;
 class CustomerController extends Controller
 {
     /**
-     * Display a listing of the resource.
+     * Listar clientes.
      */
     public function index() : JsonResponse
     {
@@ -50,7 +50,7 @@ class CustomerController extends Controller
         return new JsonResponse([
             'message' => 'Cliente registrado con éxito',
             "customer" => $customer
-        ]);
+        ], 201);
     }
 
     /**

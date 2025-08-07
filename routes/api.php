@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\Auth\CustomerGoogleAuthController;
 use App\Http\Controllers\Auth\CustomerAuthController;
+use App\Http\Controllers\Auth\CustomerForgotPasswordController;
 use App\Http\Controllers\CakeFlavor\CakeFlavorController;
 use App\Http\Controllers\Category\CategoryController;
 use App\Http\Controllers\Customer\CustomerController;
@@ -18,21 +19,21 @@ use Illuminate\Support\Facades\Route;
 Route::get('/customers', [CustomerController::class, 'index']);
 Route::post('/customers', [CustomerController::class, 'store']);
 
-//Rutas para  productos
+// Rutas para  productos
 Route::get('/products', [ProductController::class, 'index']);
 Route::post('/products', [ProductController::class, 'store']);
 Route::get('/products/{id}', [ProductController::class, 'show']);
 Route::put('/products/{id}', [ProductController::class, 'update']);
 Route::delete('/products/{id}', [ProductController::class, 'destroy']);
 
-//Rutas para variantes de producto
+// Rutas para variantes de producto
 Route::get('/products-variant', [ProductVariantController::class, 'index']);
 Route::post('/products-variant', [ProductVariantController::class, 'store']);
 
 // Rutas para temática
 Route::get('/theme', [ThemeController::class, 'index']);
 
-//Rutas para tipo de producto
+// Rutas para tipo de producto
 Route::get('/product-types', [ProductType::class, 'index']);
 
 // Rutas para categorías
@@ -41,7 +42,7 @@ Route::get('/categories', [CategoryController::class, 'index']);
 // Ruta para el login
 Route::post('/login', [CustomerAuthController::class, 'login']);
 
-//Ruta para la compañia
+// Ruta para la compañia
 Route::get('/companies', [Company::class, 'index']);
 
 // Ruta para pedidos
@@ -52,9 +53,13 @@ Route::post('/orders', [OrderController::class, 'store']);
 Route::get('/cake-flavors', [CakeFlavorController::class, 'index']);
 Route::post('/cake-flavors', [CakeFlavorController::class, 'store']);
 
-//Autenticación con google
+// Autenticación con google
 Route::get('/auth/google/redirect', [CustomerGoogleAuthController::class, 'redirect']);
 Route::get('/auth/google/callback', [CustomerGoogleAuthController::class, 'callback']);
+
+// Rutas para recuperación de contraseña
+Route::post('/forgot-password', [CustomerForgotPasswordController::class, 'sendResetLinkEmail']);
+Route::post('/reset-password', [CustomerForgotPasswordController::class, 'reset']);
 
 // Ruta para las paginas
 Route::get('/pages', [PageController::class, 'index']);
