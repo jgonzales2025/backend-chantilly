@@ -10,7 +10,7 @@ use Illuminate\Http\Request;
 class PageController extends Controller
 {
     /**
-     * Mostrar Pagonas.
+     * Mostrar Páginas.
      */
     public function index(): JsonResponse
     {
