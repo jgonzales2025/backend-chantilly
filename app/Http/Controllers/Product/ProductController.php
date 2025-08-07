@@ -4,9 +4,11 @@ namespace App\Http\Controllers\Product;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Product\StoreProductRequest;
+use App\Http\Requests\Product\UpdateProductRequest;
 use App\Models\Product;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Http\Resources\Json\JsonResource;
 
 class ProductController extends Controller
 {
@@ -50,26 +52,50 @@ class ProductController extends Controller
     }
 
     /**
-     * Display the specified resource.
+     * Mostrar producto por id
      */
-    public function show(string $id)
+    public function show($id): JsonResponse
     {
-        //
+        $product = Product::find($id);
+
+        if(!$product){
+            return new JsonResponse(['message' => 'Producto no encontrado'], 404);
+        }
+
+        return new JsonResponse($product, 200);
     }
 
     /**
-     * Update the specified resource in storage.
+     * Actualizar producto por id.
      */
-    public function update(Request $request, string $id)
+    public function update(UpdateProductRequest $request, $id): JsonResponse
     {
-        //
+        $product = Product::find($id);
+
+        if(!$product){
+            return new JsonResponse(['message' => 'Producto no encontrado'], 404);
+        }
+
+        $validatedData = $request->validated();
+
+        $product->update($validatedData);
+
+        return new JsonResponse(['message' => 'Producto actualizado con éxito','product' => $product], 200);
     }
 
     /**
-     * Remove the specified resource from storage.
+     * Eliminar producto
      */
-    public function destroy(string $id)
+    public function destroy($id)
     {
-        //
+        $product = Product::find($id);
+
+        if(!$product){
+            return new JsonResponse(['message' => 'Producto no encontrado'], 404);
+        }
+
+        $product->delete();
+
+        return new JsonResponse(['message' => 'Producto eliminado con éxito'], 200);
     }
 }
