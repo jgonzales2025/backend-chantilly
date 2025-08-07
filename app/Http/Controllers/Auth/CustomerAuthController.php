@@ -1,7 +1,8 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\Auth;
 
+use App\Http\Controllers\Controller;
 use App\Http\Requests\Login\LoginRequest;
 use App\Models\Customer;
 use Illuminate\Http\JsonResponse;
@@ -10,7 +11,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\ValidationException;
 
-class AuthController extends Controller
+class CustomerAuthController extends Controller
 {
     public function login(LoginRequest $request) : JsonResponse
     {

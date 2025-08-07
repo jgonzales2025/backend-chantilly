@@ -24,7 +24,8 @@ class Customer extends Authenticatable
         'phone',
         'deparment',
         'province',
-        'district'
+        'district',
+        'google_id'
     ];
 
     protected $hidden = ['created_at', 'updated_at', 'password'];
