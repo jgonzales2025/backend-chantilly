@@ -16,7 +16,8 @@ class ProductVariant extends Model
         'size_portion',
         'price',
         'hours',
-        'sort'
+        'sort',
+        'image_url'
     ];
 
     public $timestamps = false;
