@@ -2,8 +2,10 @@
 
 use App\Http\Controllers\Auth\CustomerGoogleAuthController;
 use App\Http\Controllers\Auth\CustomerAuthController;
+use App\Http\Controllers\CakeFlavor\CakeFlavorController;
 use App\Http\Controllers\Category\CategoryController;
 use App\Http\Controllers\Customer\CustomerController;
+use App\Http\Controllers\Order\OrderController;
 use App\Http\Controllers\Product\ProductController;
 use App\Http\Controllers\ProductVariant\ProductVariantController;
 use App\Http\Controllers\Tematica\ThemeController;
@@ -40,6 +42,14 @@ Route::post('/login', [CustomerAuthController::class, 'login']);
 
 //Ruta para la compañia
 Route::get('/companies', [Company::class, 'index']);
+
+// Ruta para pedidos
+Route::get('/orders', [OrderController::class, 'index']);
+Route::post('/orders', [OrderController::class, 'store']);
+
+// Ruta para sabores de keke
+Route::get('/cake-flavors', [CakeFlavorController::class, 'index']);
+Route::post('/cake-flavors', [CakeFlavorController::class, 'store']);
 
 //Autenticación con google
 Route::get('/auth/google/redirect', [CustomerGoogleAuthController::class, 'redirect']);

@@ -20,7 +20,7 @@ return new class extends Migration
             $table->decimal('min_price', 10, 2);
             $table->decimal('max_price', 10, 2);
             $table->foreignId('theme_id')->constrained('themes')->onDelete('cascade');
-            $table->string('image_url')->nullable();
+            $table->string('image')->nullable();
             $table->boolean('status')->default(0);
             $table->boolean('best_status')->default(0);
         });

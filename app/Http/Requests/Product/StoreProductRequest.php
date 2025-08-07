@@ -29,7 +29,7 @@ class StoreProductRequest extends FormRequest
             'min_price' => 'required|numeric',
             'max_price' => 'required|numeric',
             'theme_id' => 'required|integer|exists:themes,id',
-            'image_url' => 'nullable|string',
+            'image' => 'nullable|image|mimes:jpg,jpeg,png,webp',
             'status' => 'required|boolean',
             'best_status' => 'required|boolean'
         ];

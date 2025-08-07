@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Product;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Product\StoreProductRequest;
 use App\Http\Requests\Product\UpdateProductRequest;
+use App\Http\Resources\ProductResource;
 use App\Models\Product;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -25,6 +26,7 @@ class ProductController extends Controller
         if($products->isEmpty()){
             return new JsonResponse(['message' => 'No hay productos registrados']);
         }
+        $products->load('theme', 'category', 'productType');
 
         return new JsonResponse([
             'data' => $products->items(),
@@ -43,11 +45,20 @@ class ProductController extends Controller
     public function store(StoreProductRequest $request)
     {
         $validatedData = $request->validated();
+
+        if ($request->hasFile('image')) {
+            $path = $request->file('image')->store('product', 'public');
+
+            $validatedData['image'] = $path;
+        }
+
         $product = Product::create($validatedData);
+
+        $product->load('theme', 'category', 'productType');
         
         return new JsonResponse([
             'message' => 'Producto registrado con éxito',
-            'product' => $product
+            'product' => new ProductResource($product)
         ], 201);
     }
 
@@ -61,8 +72,8 @@ class ProductController extends Controller
         if(!$product){
             return new JsonResponse(['message' => 'Producto no encontrado'], 404);
         }
-
-        return new JsonResponse($product, 200);
+        $product->load('theme', 'category', 'productType');
+        return new JsonResponse(new ProductResource($product), 200);
     }
 
     /**
@@ -80,7 +91,7 @@ class ProductController extends Controller
 
         $product->update($validatedData);
 
-        return new JsonResponse(['message' => 'Producto actualizado con éxito','product' => $product], 200);
+        return new JsonResponse(['message' => 'Producto actualizado con éxito','product' => new ProductResource($product)], 200);
     }
 
     /**

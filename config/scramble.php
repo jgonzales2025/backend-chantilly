@@ -39,7 +39,7 @@ return [
         /*
          * Define the title of the documentation's website. App name is used when this config is `null`.
          */
-        'title' => null,
+        'title' => 'Documentación de las apis de La Casa del Chantilly',
 
         /*
          * Define the theme of the documentation. Available options are `light` and `dark`.
@@ -89,7 +89,10 @@ return [
      * ],
      * ```
      */
-    'servers' => null,
+    'servers' => [
+        'Local' => 'http://127.0.0.1:8000/api',
+        //'Producción' => 'https://9qqm5nqv-8000.brs.devtunnels.ms/api'
+    ],
 
     /**
      * Determines how Scramble stores the descriptions of enum cases.
@@ -104,7 +107,7 @@ return [
 
     'middleware' => [
         'web',
-        RestrictedDocsAccess::class,
+        //RestrictedDocsAccess::class,
     ],
 
     'extensions' => [],

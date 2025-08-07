@@ -37,7 +37,7 @@ class OrderController extends Controller
             $order = Order::create([
                 'customer_id' => $validatedData['customer_id'],
                 'subtotal' => $validatedData['subtotal'],
-                'total_amount' => $validatedData['total_amount'],
+                'total' => $validatedData['total_amount'],
                 'delivery_date' => $validatedData['delivery_date'],
                 'status' => $validatedData['status']
             ]);
