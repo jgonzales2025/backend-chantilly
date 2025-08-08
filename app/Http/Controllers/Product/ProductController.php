@@ -16,7 +16,7 @@ class ProductController extends Controller
     /**
      * Mostrar productos.
      */
-    public function index(Request $request): JsonResponse
+    public function index(Request $request)
     {
         $themeId = $request->query('theme_id');
         $name = $request->query('name');
@@ -39,7 +39,7 @@ class ProductController extends Controller
         $products->load('theme', 'category', 'productType');
 
         return new JsonResponse([
-            'data' => $products->items(),
+            'data' => ProductResource::collection($products->items()),
             'current_page' => $products->currentPage(),
             'per_page' => $products->perPage(),
             'total' => $products->total(),
@@ -47,6 +47,7 @@ class ProductController extends Controller
             'next_page_url' => $products->nextPageUrl(),
             'prev_page_url' => $products->previousPageUrl()
         ]);
+
     }
 
     /**

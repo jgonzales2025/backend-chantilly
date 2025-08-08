@@ -32,7 +32,7 @@ class ProductVariantController extends Controller
         }
 
         return new JsonResponse([
-            'data' => $productVariants->items(),
+            'data' => ProductVariantResource::collection($productVariants->items()),
             'current_page' => $productVariants->currentPage(),
             'per_page' => $productVariants->perPage(),
             'total' => $productVariants->total(),
