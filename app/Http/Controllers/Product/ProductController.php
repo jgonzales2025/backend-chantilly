@@ -21,6 +21,7 @@ class ProductController extends Controller
         $themeId = $request->query('theme_id');
         $name = $request->query('name');
         $prodType = $request->query('product_type_id');
+        $bestStatus = $request->query('best_status');
 
         $products = Product::when($themeId, function ($query) use ($themeId){
             $query->where('theme_id', $themeId);
@@ -30,6 +31,9 @@ class ProductController extends Controller
         })
         ->when($prodType, function ($query) use ($prodType){
             $query->where('product_type_id', $prodType);
+        })
+        ->when($bestStatus, function ($query) use ($bestStatus){
+            $query->where('best_status', $bestStatus);
         })
         ->paginate(8);
         
