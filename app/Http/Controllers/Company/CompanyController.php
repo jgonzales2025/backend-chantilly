@@ -9,6 +9,10 @@ use Illuminate\Http\Request;
 
 class CompanyController extends Controller
 {
+
+    /**
+     * Listar compañias.
+     */
     public function index(): JsonResponse
     {
         $companies = Company::all();

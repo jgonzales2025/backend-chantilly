@@ -11,7 +11,7 @@ use Illuminate\Http\Request;
 class CakeFlavorController extends Controller
 {
     /**
-     * Display a listing of the resource.
+     * Listar sabores de cake.
      */
     public function index(): JsonResponse
     {
@@ -25,7 +25,7 @@ class CakeFlavorController extends Controller
     }
 
     /**
-     * Store a newly created resource in storage.
+     * Crear sabor de cake.
      */
     public function store(StoreCakeFlavorRequest $request): JsonResponse
     {

@@ -25,10 +25,10 @@ class StoreProductRequest extends FormRequest
             'short_description' => 'nullable|string',
             'large_description' => 'nullable|string',
             'product_type_id' => 'required|integer|exists:product_types,id',
-            'category_id' => 'required|integer|exists:categories,id',
+            'category_id' => 'nullable|integer|exists:categories,id',
             'min_price' => 'required|numeric',
             'max_price' => 'required|numeric',
-            'theme_id' => 'required|integer|exists:themes,id',
+            'theme_id' => 'nullable|integer|exists:themes,id',
             'image' => 'nullable|image|mimes:jpg,jpeg,png,webp',
             'status' => 'required|boolean',
             'best_status' => 'required|boolean'

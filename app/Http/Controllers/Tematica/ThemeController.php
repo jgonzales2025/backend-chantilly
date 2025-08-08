@@ -9,6 +9,10 @@ use Illuminate\Http\Request;
 
 class ThemeController extends Controller
 {
+
+    /**
+     * Listar temáticas.
+     */
     public function index(): JsonResponse
     {
         $themes = Theme::all();

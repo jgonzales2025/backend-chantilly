@@ -16,10 +16,10 @@ return new class extends Migration
             $table->string('short_description')->nullable();
             $table->string('large_description')->nullable();
             $table->foreignId('product_type_id')->constrained('product_types')->onDelete('cascade');
-            $table->foreignId('category_id')->constrained('categories')->onDelete('cascade');
-            $table->decimal('min_price', 10, 2);
-            $table->decimal('max_price', 10, 2);
-            $table->foreignId('theme_id')->constrained('themes')->onDelete('cascade');
+            $table->foreignId('category_id')->nullable()->constrained('categories')->onDelete('cascade');
+            $table->decimal('min_price', 10, 2)->nullable();
+            $table->decimal('max_price', 10, 2)->nullable();
+            $table->foreignId('theme_id')->nullable()->constrained('themes')->onDelete('cascade');
             $table->string('image')->nullable();
             $table->boolean('status')->default(0);
             $table->boolean('best_status')->default(0);

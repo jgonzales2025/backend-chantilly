@@ -9,6 +9,9 @@ use Illuminate\Http\Request;
 
 class ProductTypeController extends Controller
 {
+    /**
+     * Listar tipos de productos.
+     */
     public function index(): JsonResponse
     {
         $productTypes = ProductType::all();

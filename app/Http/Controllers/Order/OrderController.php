@@ -13,7 +13,7 @@ use Illuminate\Support\Facades\DB;
 class OrderController extends Controller
 {
     /**
-     * Display a listing of the resource.
+     * Listar pedidos.
      */
     public function index(): JsonResponse
     {
@@ -27,7 +27,7 @@ class OrderController extends Controller
     }
 
     /**
-     * Store a newly created resource in storage.
+     * Crear pedidos.
      */
     public function store(StoreOrderRequest $request)
     {
@@ -63,11 +63,17 @@ class OrderController extends Controller
     }
 
     /**
-     * Display the specified resource.
+     * Mostrar pedido por id.
      */
-    public function show(string $id)
+    public function show($id)
     {
-        //
+        $order = Order::with('items')->find($id);
+
+        if (!$order) {
+            return new JsonResponse(['message' => 'Pedido no encontrado'], 404);
+        }
+
+        return new JsonResponse($order, 200);
     }
 
     /**

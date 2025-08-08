@@ -15,7 +15,7 @@ use Illuminate\Support\Facades\Storage;
 class ProductVariantController extends Controller
 {
     /**
-     * Display a listing of the resource.
+     * Listar variantes de productos.
      */
     public function index(Request $request): JsonResponse
     {
@@ -43,7 +43,7 @@ class ProductVariantController extends Controller
     }
 
     /**
-     * Store a newly created resource in storage.
+     * Crear variante de producto.
      */
     public function store(StoreProductVariantRequest $request)
     {
@@ -66,7 +66,7 @@ class ProductVariantController extends Controller
     }
 
     /**
-     * Display the specified resource.
+     * Mostrar variante de producto por id.
      */
     public function show($id): JsonResponse
     {
@@ -80,7 +80,7 @@ class ProductVariantController extends Controller
     }
 
     /**
-     * Update the specified resource in storage.
+     * Actualizar variante de producto por id.
      */
     public function update(UpdateProductRequest $request, $id): JsonResponse
     {
@@ -112,7 +112,7 @@ class ProductVariantController extends Controller
     }
 
     /**
-     * Remove the specified resource from storage.
+     * Eliminar variante de producto por id.
      */
     public function destroy($id)
     {
