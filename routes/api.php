@@ -6,6 +6,7 @@ use App\Http\Controllers\Auth\CustomerForgotPasswordController;
 use App\Http\Controllers\CakeFlavor\CakeFlavorController;
 use App\Http\Controllers\Category\CategoryController;
 use App\Http\Controllers\Customer\CustomerController;
+use App\Http\Controllers\DocumentType\DocumentTypeController;
 use App\Http\Controllers\Order\OrderController;
 use App\Http\Controllers\Page\PageController;
 use App\Http\Controllers\Product\ProductController;
@@ -52,6 +53,9 @@ Route::post('/orders', [OrderController::class, 'store']);
 // Ruta para sabores de keke
 Route::get('/cake-flavors', [CakeFlavorController::class, 'index']);
 Route::post('/cake-flavors', [CakeFlavorController::class, 'store']);
+
+// Ruta para los tipos de documentos
+Route::get('/document-types', [DocumentTypeController::class, 'index']);
 
 // Autenticación con google
 Route::get('/auth/google/redirect', [CustomerGoogleAuthController::class, 'redirect']);
