@@ -4,6 +4,7 @@ namespace App\Http\Controllers\CakeFlavor;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\CakeFlavor\StoreCakeFlavorRequest;
+use App\Http\Requests\CakeFlavor\UpdateCakeFlavorRequest;
 use App\Models\CakeFlavor;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -40,26 +41,53 @@ class CakeFlavorController extends Controller
     }
 
     /**
-     * Display the specified resource.
+     * Buscar sabor por id.
      */
-    public function show(string $id)
+    public function show($id): JsonResponse
     {
-        //
+        $cakeFlavor = CakeFlavor::find($id);
+
+        if (!$cakeFlavor) {
+            return new JsonResponse(['message' => 'Cake no encontrado'], 404);
+        }
+
+        return new JsonResponse($cakeFlavor, 200);
     }
 
     /**
-     * Update the specified resource in storage.
+     * Actualizar sabor por id.
      */
-    public function update(Request $request, string $id)
+    public function update(UpdateCakeFlavorRequest $request, $id)
     {
-        //
+        $cakeFlavor = CakeFlavor::find($id);
+
+        if (!$cakeFlavor) {
+            return new JsonResponse(['message' => 'Cake no encontrado'], 404);
+        }
+
+        $validatedData = $request->validated();
+
+        $cakeFlavor->update($validatedData);
+
+        return new JsonResponse([
+            'message' => 'Cake actualizado con éxito',
+            'cake' => $cakeFlavor
+        ], 200);
     }
 
     /**
-     * Remove the specified resource from storage.
+     * Eliminar sabor por id.
      */
-    public function destroy(string $id)
+    public function destroy($id): JsonResponse
     {
-        //
+        $cakeFlavor = CakeFlavor::find($id);
+
+        if (!$cakeFlavor) {
+            return new JsonResponse(['message' => 'Cake no encontrado'], 404);
+        }
+
+        $cakeFlavor->delete();
+
+        return new JsonResponse(['message' => 'Cake eliminado con éxito'], 200);
     }
 }

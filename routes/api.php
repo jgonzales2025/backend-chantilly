@@ -30,15 +30,26 @@ Route::delete('/products/{id}', [ProductController::class, 'destroy']);
 // Rutas para variantes de producto
 Route::get('/products-variant', [ProductVariantController::class, 'index']);
 Route::post('/products-variant', [ProductVariantController::class, 'store']);
+Route::get('/products-variant/{id}', [ProductVariantController::class, 'show']);
+Route::put('/products-variant/{id}', [ProductVariantController::class, 'update']);
+Route::delete('/products-variant/{id}', [ProductVariantController::class, 'destroy']);
 
 // Rutas para temática
 Route::get('/theme', [ThemeController::class, 'index']);
+Route::post('/theme', [ThemeController::class, 'store']);
+Route::get('/theme/{id}', [ThemeController::class, 'show']);
+Route::put('/theme/{id}', [ThemeController::class, 'update']);
+Route::delete('/theme/{id}', [ThemeController::class, 'destroy']);
 
 // Rutas para tipo de producto
 Route::get('/product-types', [ProductType::class, 'index']);
 
 // Rutas para categorías
 Route::get('/categories', [CategoryController::class, 'index']);
+Route::post('/categories', [CategoryController::class, 'store']);
+Route::get('/categories/{id}', [CategoryController::class, 'show']);
+Route::put('/categories/{id}', [CategoryController::class, 'update']);
+Route::delete('/categories/{id}', [CategoryController::class, 'destroy']);
 
 // Ruta para el login
 Route::post('/login', [CustomerAuthController::class, 'login']);
@@ -53,6 +64,9 @@ Route::post('/orders', [OrderController::class, 'store']);
 // Ruta para sabores de keke
 Route::get('/cake-flavors', [CakeFlavorController::class, 'index']);
 Route::post('/cake-flavors', [CakeFlavorController::class, 'store']);
+Route::get('/cake-flavors/{id}', [CakeFlavorController::class, 'show']);
+Route::put('/cake-flavors/{id}', [CakeFlavorController::class, 'update']);
+Route::delete('/cake-flavors/{id}', [CakeFlavorController::class, 'destroy']);
 
 // Ruta para los tipos de documentos
 Route::get('/document-types', [DocumentTypeController::class, 'index']);

@@ -32,14 +32,11 @@ class CustomerGoogleAuthController extends Controller
                     'password' => bcrypt(Str::random(16)), // Clave aleatoria
                 ]);
             }
-            
             // Crear token con Sanctum
             $token = $customer->createToken('auth_token')->plainTextToken;
-            
-            return response()->json([
-                'user' => $customer,
-                'token' => $token,
-            ]);
+
+            dd(config('app.frontend_url'));
+            return redirect()->away(config('app.frontend_url') . '/auth/callback?token=' . $token);
         } catch (\Exception $e) {
             return response()->json(['error' => 'Error de autenticación con Google'], 500);
         }

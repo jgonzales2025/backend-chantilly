@@ -17,7 +17,7 @@ class CustomerAuthController extends Controller
     {
         $credentials = $request->validated();
 
-        $customer = Customer::where('email', $credentials['email'])->firstOrFail();
+        $customer = Customer::where('email', $credentials['email'])->first();
 
         if (!$customer || !Hash::check($credentials['password'], $customer->password)) {
             throw ValidationException::withMessages([

@@ -5,7 +5,6 @@ namespace App\Http\Controllers\ProductVariant;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Product\UpdateProductRequest;
 use App\Http\Requests\ProductVariant\StoreProductVariantRequest;
-use App\Http\Resources\ProductResource;
 use App\Http\Resources\ProductVariantResource;
 use App\Models\ProductVariant;
 use Illuminate\Http\JsonResponse;
@@ -21,7 +20,7 @@ class ProductVariantController extends Controller
     {
         $name = $request->query('name');
 
-        $productVariants = ProductVariant::with('product')
+        $productVariants = ProductVariant::with('product', 'product.category', 'product.productType')
         ->when($name, function($query) use ($name){
             $query->where('description', 'LIKE', "%$name%");
         })
@@ -76,7 +75,9 @@ class ProductVariantController extends Controller
             return new JsonResponse(['message' => 'Variante de producto no encontrado'], 404);
         }
 
-        return new JsonResponse(['productVariant' => new ProductResource($productVariant)], 200);
+        $productVariant->load('product');
+
+        return new JsonResponse(['productVariant' => new ProductVariantResource($productVariant)], 200);
     }
 
     /**
