@@ -91,7 +91,8 @@ return [
      */
     'servers' => [
         'Local' => 'http://127.0.0.1:8000/api',
-        'Producción' => 'http://192.168.18.28:8000/api'
+        'IP Local' => 'http://192.168.18.28:8000/api',
+        'Producción' => 'https://chantilly-app-px74f.ondigitalocean.app/api'
     ],
 
     /**
