@@ -28,6 +28,7 @@ return new class extends Migration
             $table->boolean('status')->default(1);
             $table->string('google_id')->nullable()->unique();
             $table->timestamps();
+            $table->rememberToken();
         });
     }
 

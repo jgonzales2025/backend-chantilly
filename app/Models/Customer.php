@@ -29,7 +29,7 @@ class Customer extends Authenticatable
         'google_id'
     ];
 
-    protected $hidden = ['created_at', 'updated_at', 'password'];
+    protected $hidden = ['created_at', 'updated_at', 'password', 'remember_token'];
 
     protected function casts(): array
     {
