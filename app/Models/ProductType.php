@@ -9,6 +9,8 @@ class ProductType extends Model
 {
     protected $fillable = ['name', 'status'];
 
+    public $timestamps = false;
+
     public function products(): HasMany
     {
         return $this->hasMany(Product::class);

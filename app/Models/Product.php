@@ -16,9 +16,16 @@ class Product extends Model
         'min_price',
         'max_price',
         'theme_id',
-        'image_url',
+        'image',
         'status',
         'best_status'
+    ];
+
+    public $timestamps = false;
+
+    protected $casts = [
+        'status' => 'boolean',
+        'best_status' => 'boolean'
     ];
 
     public function productType(): BelongsTo

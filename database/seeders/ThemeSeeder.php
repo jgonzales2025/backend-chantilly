@@ -16,7 +16,8 @@ class ThemeSeeder extends Seeder
     {
         foreach(ThemeEnum::cases() as $theme){
             Theme::create([
-                'name' => $theme->value
+                'name' => $theme->value,
+                'image_url' => $theme->image_url()
             ]);
         }
     }

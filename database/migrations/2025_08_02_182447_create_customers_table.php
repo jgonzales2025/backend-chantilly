@@ -13,18 +13,20 @@ return new class extends Migration
     {
         Schema::create('customers', function (Blueprint $table) {
             $table->id();
-            $table->string('name', 100);
-            $table->string('lastname', 100);
-            $table->foreignId('id_document_type')->constrained('document_types')->onDelete('cascade');
-            $table->string('document_number', 50)->unique();
-            $table->string('email', 255)->unique();
+            $table->string('name', 100)->nullable();
+            $table->string('lastname', 100)->nullable();
+            $table->foreignId('id_document_type')->nullable()->constrained('document_types')->onDelete('cascade');
+            $table->string('document_number', 50)->nullable()->unique();
+            $table->string('email', 150)->unique();
             $table->timestamp('email_verified_at')->nullable();
-            $table->string('password');
-            $table->string('address');
-            $table->string('phone', 9);
-            $table->string('deparment');
-            $table->string('province');
-            $table->string('district');
+            $table->string('password', 100)->nullable();
+            $table->string('address', 255)->nullable();
+            $table->string('phone', 9)->nullable();
+            $table->string('deparment', 100)->nullable();
+            $table->string('province', 100)->nullable();
+            $table->string('district', 100)->nullable();
+            $table->boolean('status')->default(1);
+            $table->string('google_id')->nullable()->unique();
             $table->timestamps();
         });
     }

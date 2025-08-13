@@ -19,8 +19,9 @@ return new class extends Migration
             $table->string('portions');
             $table->string('size_portion');
             $table->decimal('price', 10, 2);
-            $table->integer('hours');
-            $table->integer('sort');
+            $table->integer('hours')->nullable();
+            $table->integer('sort')->nullable();
+            $table->string('image')->nullable();
             $table->timestamps();
         });
     }

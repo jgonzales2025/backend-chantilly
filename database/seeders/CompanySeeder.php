@@ -18,7 +18,7 @@ class CompanySeeder extends Seeder
             'ruc'                => '20123456789',
             'number_whatsapp'    => '987654321',
             'number_whatsapp1'   => '912345678',
-            'about us'           => 'Somos una empresa dedicada al desarrollo de software.',
+            'about_us'           => 'Somos una empresa dedicada al desarrollo de software.',
             'facebook'           => 'https://facebook.com/miempresa',
             'instagram'          => 'https://instagram.com/miempresa',
             'twitter'            => 'https://twitter.com/miempresa',

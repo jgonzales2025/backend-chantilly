@@ -12,7 +12,7 @@ use Illuminate\Support\Facades\Hash;
 class CustomerController extends Controller
 {
     /**
-     * Display a listing of the resource.
+     * Listar clientes.
      */
     public function index() : JsonResponse
     {
@@ -27,7 +27,7 @@ class CustomerController extends Controller
     }
 
     /**
-     * Store a newly created resource in storage.
+     * Registrar cliente.
      */
     public function store(StoreCustomerRequest $request)
     {
@@ -47,7 +47,10 @@ class CustomerController extends Controller
             'district' => $validatedData['district']
         ]);
 
-        return new JsonResponse($customer, 201);
+        return new JsonResponse([
+            'message' => 'Cliente registrado con éxito',
+            "customer" => $customer
+        ], 201);
     }
 
     /**

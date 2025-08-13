@@ -5,8 +5,10 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Sanctum\HasApiTokens;
+use App\Notifications\CustomResetPassword;
 
 class Customer extends Authenticatable
 {
@@ -23,7 +25,8 @@ class Customer extends Authenticatable
         'phone',
         'deparment',
         'province',
-        'district'
+        'district',
+        'google_id'
     ];
 
     protected $hidden = ['created_at', 'updated_at', 'password'];
@@ -36,8 +39,19 @@ class Customer extends Authenticatable
         ];
     }
 
+    public function sendPasswordResetNotification($token)
+    {
+        $this->notify(new CustomResetPassword($token));
+    }
+
+
     public function document() : BelongsTo
     {
         return $this->belongsTo(DocumentType::class);
+    }
+
+    public function orders(): HasMany
+    {
+        return $this->hasMany(Order::class);
     }
 }
