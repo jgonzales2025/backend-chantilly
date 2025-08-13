@@ -16,7 +16,7 @@ class CakeFlavorController extends Controller
      */
     public function index(): JsonResponse
     {
-        $cakeFlavors = CakeFlavor::all();
+        $cakeFlavors = CakeFlavor::with('filling')->get();
 
         if($cakeFlavors->isEmpty()){
             return new JsonResponse(['message' => 'No hay cakes registrados']);
@@ -36,7 +36,7 @@ class CakeFlavorController extends Controller
 
         return new JsonResponse([
             'message' => 'Cake creado exitosamente',
-            'cake' => $cakeFlavor
+            'cake' => $cakeFlavor->load('filling')
         ], 201);
     }
 
@@ -45,7 +45,7 @@ class CakeFlavorController extends Controller
      */
     public function show($id): JsonResponse
     {
-        $cakeFlavor = CakeFlavor::find($id);
+        $cakeFlavor = CakeFlavor::with('filling')->find($id);
 
         if (!$cakeFlavor) {
             return new JsonResponse(['message' => 'Cake no encontrado'], 404);

@@ -91,7 +91,7 @@ return [
      */
     'servers' => [
         'Local' => 'http://127.0.0.1:8000/api',
-        //'Producción' => 'https://9qqm5nqv-8000.brs.devtunnels.ms/api'
+        'Producción' => 'http://192.168.18.28:8000/api'
     ],
 
     /**

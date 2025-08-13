@@ -31,6 +31,7 @@ Route::delete('/products/{id}', [ProductController::class, 'destroy']);
 Route::get('/products-variant', [ProductVariantController::class, 'index']);
 Route::post('/products-variant', [ProductVariantController::class, 'store']);
 Route::get('/products-variant/{id}', [ProductVariantController::class, 'show']);
+Route::get('/products-variant/{id}', [ProductVariantController::class, 'showByPortion']);
 Route::put('/products-variant/{id}', [ProductVariantController::class, 'update']);
 Route::delete('/products-variant/{id}', [ProductVariantController::class, 'destroy']);
 

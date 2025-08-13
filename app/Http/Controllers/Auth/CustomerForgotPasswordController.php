@@ -10,6 +10,10 @@ use Illuminate\Support\Facades\Password;
 
 class CustomerForgotPasswordController extends Controller
 {
+
+    /**
+     * Enviar enlace de restablecimiento de contraseña.
+     */
     public function sendResetLinkEmail(Request $request)
     {
         $request->validate(['email' => 'required|email']);

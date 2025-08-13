@@ -27,7 +27,7 @@ class StoreProductRequest extends FormRequest
             'product_type_id' => 'required|integer|exists:product_types,id',
             'category_id' => 'nullable|integer|exists:categories,id',
             'min_price' => 'required|numeric',
-            'max_price' => 'required|numeric',
+            'max_price' => 'nullable|numeric',
             'theme_id' => 'nullable|integer|exists:themes,id',
             'image' => 'nullable|image|mimes:jpg,jpeg,png,webp',
             'status' => 'required|boolean',

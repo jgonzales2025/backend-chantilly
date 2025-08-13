@@ -5,7 +5,9 @@ namespace App\Http\Controllers\ProductVariant;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Product\UpdateProductRequest;
 use App\Http\Requests\ProductVariant\StoreProductVariantRequest;
+use App\Http\Resources\ProductResource;
 use App\Http\Resources\ProductVariantResource;
+use App\Models\Product;
 use App\Models\ProductVariant;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -69,6 +71,8 @@ class ProductVariantController extends Controller
      */
     public function show($id): JsonResponse
     {
+        //$portionName = $request->query('portion_name');
+
         $productVariant = ProductVariant::find($id);
 
         if(!$productVariant){
@@ -78,6 +82,29 @@ class ProductVariantController extends Controller
         $productVariant->load('product');
 
         return new JsonResponse(['productVariant' => new ProductVariantResource($productVariant)], 200);
+    }
+
+
+    /**
+     * Mostrar variante de producto por porción.
+     */
+    public function showByPortion($id, Request $request): JsonResponse
+    {
+        $portionName = $request->query('portion_name');
+
+        $productVariant = ProductVariant::where('product_id', $id)
+            ->when($portionName, function($query) use ($portionName) {
+                $query->where('portions', 'LIKE', "%$portionName%");
+            })
+            ->get();
+
+        if ($productVariant->isEmpty()) {
+            return new JsonResponse(['message' => 'No hay variantes de producto para esta porción'], 404);
+        }
+
+        return new JsonResponse([
+            'data' => ProductVariantResource::collection($productVariant)
+        ]);
     }
 
     /**
