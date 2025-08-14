@@ -23,6 +23,8 @@ class Local extends Model
         'company_id'
     ];
 
+    public $timestamps = false;
+
     public function company(): BelongsTo
     {
         return $this->belongsTo(Company::class);
@@ -33,18 +35,18 @@ class Local extends Model
         return $this->hasMany(Order::class);
     }
 
-    public function scopeNearestTo($query, $latitude, $longitude)
+    public function scopeNearestTo($query, $latitud, $longitud)
     {
         return $query->select('*')
-            ->selectRaw("(
+            ->selectRaw("ROUND((
                 6371 * acos(
                     cos(radians(?)) *
-                    cos(radians(latitude)) *
-                    cos(radians(longitude) - radians(?)) +
+                    cos(radians(latitud)) *
+                    cos(radians(longitud) - radians(?)) +
                     sin(radians(?)) *
-                    sin(radians(latitude))
+                    sin(radians(latitud))
                 )
-            ) AS distance", [$latitude, $longitude, $latitude])
+            ), 2) AS distance", [$latitud, $longitud, $latitud])
             ->orderBy('distance');
     }
 

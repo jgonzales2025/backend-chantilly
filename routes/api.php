@@ -87,6 +87,7 @@ Route::post('/reset-password', [CustomerForgotPasswordController::class, 'reset'
 // Rutas para los locales
 Route::get('/locals/location', [LocalController::class, 'indexByLocation']);
 Route::get('/locals', [LocalController::class, 'index']);
+Route::post('/locals', [LocalController::class, 'store']);
 
 // Ruta para las paginas
 Route::get('/pages', [PageController::class, 'index']);
