@@ -12,15 +12,20 @@ class Order extends Model
     protected $fillable = [
         'customer_id',
         'order_number',
+        'voucher_type',
+        'billing_data',
+        'local_id',
         'subtotal',
         'total',
         'order_date',
-        'delivery_date',
-        'status'
+        'status',
+        'cod_response_niubis',
+        'response_niubis'
     ];
 
     protected $casts = [
-        'status' => 'boolean'
+        'status' => 'boolean',
+        'billing_data' => 'array'
     ];
 
     protected $hidden = ['created_at','updated_at'];
@@ -47,6 +52,11 @@ class Order extends Model
     public function customer(): BelongsTo
     {
         return $this->belongsTo(Customer::class);
+    }
+
+    public function local(): BelongsTo
+    {
+        return $this->belongsTo(Local::class);
     }
 
 }

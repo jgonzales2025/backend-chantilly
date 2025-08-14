@@ -14,7 +14,8 @@ class OrderItem extends Model
         'quantity',
         'unit_price',
         'subtotal',
-        'dedication_text'
+        'dedication_text',
+        'delivery_date'
     ];
 
     protected $hidden = ['created_at', 'updated_at'];

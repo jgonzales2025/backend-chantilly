@@ -7,6 +7,7 @@ use App\Http\Controllers\CakeFlavor\CakeFlavorController;
 use App\Http\Controllers\Category\CategoryController;
 use App\Http\Controllers\Customer\CustomerController;
 use App\Http\Controllers\DocumentType\DocumentTypeController;
+use App\Http\Controllers\Local\LocalController;
 use App\Http\Controllers\Order\OrderController;
 use App\Http\Controllers\Page\PageController;
 use App\Http\Controllers\Product\ProductController;
@@ -82,6 +83,10 @@ Route::get('/auth/google/callback', [CustomerGoogleAuthController::class, 'callb
 // Rutas para recuperación de contraseña
 Route::post('/forgot-password', [CustomerForgotPasswordController::class, 'sendResetLinkEmail']);
 Route::post('/reset-password', [CustomerForgotPasswordController::class, 'reset']);
+
+// Rutas para los locales
+Route::get('/locals/location', [LocalController::class, 'indexByLocation']);
+Route::get('/locals', [LocalController::class, 'index']);
 
 // Ruta para las paginas
 Route::get('/pages', [PageController::class, 'index']);

@@ -15,11 +15,15 @@ return new class extends Migration
             $table->id();
             $table->foreignId('customer_id')->constrained('customers')->onDelete('cascade');
             $table->string('order_number')->unique()->nullable();
+            $table->enum('voucher_type', ['BOLETA', 'FACTURA']);
+            $table->json('billing_data')->nullable();
+            $table->foreignId('local_id')->constrained('locals')->onDelete('cascade');
             $table->decimal('subtotal', 10, 2);
             $table->decimal('total', 10, 2);
             $table->dateTime('order_date')->nullable();
-            $table->date('delivery_date');
             $table->boolean('status')->default(1);
+            $table->integer('cod_response_niubis')->nullable();
+            $table->string('response_niubis')->nullable();
             $table->timestamps();
         });
     }

@@ -24,10 +24,16 @@ class StoreOrderRequest extends FormRequest
         return [
             // Para orders
             'customer_id' => 'required|integer|exists:customers,id',
+            'voucher_type' => 'required|string|in:BOLETA,FACTURA',
+            'billing_data.ruc' => 'required_if:voucher_type,FACTURA|digits:11',
+            'billing_data.razon_social' => 'required_if:voucher_type,FACTURA|string|max:255',
+            'billing_data.tax_address' => 'required_if:voucher_type,FACTURA|string|max:255',
+            'local_id' => 'required|integer|exists:locals,id',
             'subtotal' => 'required|numeric',
             'total_amount' => 'required|numeric',
-            'delivery_date' => 'required|date',
             'status' => 'required|boolean',
+            'cod_response_niubis' => 'nullable|string',
+            'response_niubis' => 'nullable|string',
 
             // Para order items
             'items' => 'required|array|min:1',
@@ -36,7 +42,8 @@ class StoreOrderRequest extends FormRequest
             'items.*.quantity' => 'required|integer',
             'items.*.unit_price' => 'required|numeric',
             'items.*.subtotal' => 'required|numeric',
-            'items.*.dedication_text' => 'nullable|string'
+            'items.*.dedication_text' => 'nullable|string',
+            'items.*.delivery_date' => 'required|date',
         ];
     }
 }
