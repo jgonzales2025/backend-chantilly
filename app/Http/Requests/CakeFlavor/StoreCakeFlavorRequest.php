@@ -24,7 +24,7 @@ class StoreCakeFlavorRequest extends FormRequest
         return [
             'name' => 'required|string',
             'status' => 'required|boolean',
-            'filling_id' => 'required|integer|exists:fillings,id'
+            'filling_id' => 'required|array|exists:fillings,id',
         ];
     }
 }

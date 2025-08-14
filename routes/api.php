@@ -19,6 +19,9 @@ use Illuminate\Support\Facades\Route;
 // Rutas para clientes
 Route::get('/customers', [CustomerController::class, 'index']);
 Route::post('/customers', [CustomerController::class, 'store']);
+Route::get('/customers/{id}', [CustomerController::class, 'show']);
+Route::put('/customers/{id}', [CustomerController::class, 'update']);
+Route::delete('/customers/{id}', [CustomerController::class, 'destroy']);
 
 // Rutas para  productos
 Route::get('/products', [ProductController::class, 'index']);

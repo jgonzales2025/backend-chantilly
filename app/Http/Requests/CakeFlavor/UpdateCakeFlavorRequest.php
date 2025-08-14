@@ -24,7 +24,7 @@ class UpdateCakeFlavorRequest extends FormRequest
         return [
             'name' => 'sometimes|string',
             'status' => 'sometimes|boolean',
-            'filling_id' => 'sometimes|integer|exists:fillings,id'
+            'filling_id' => 'sometimes|array|exists:fillings,id'
         ];
     }
 }
