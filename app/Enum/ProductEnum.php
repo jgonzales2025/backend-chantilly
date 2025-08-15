@@ -1,0 +1,490 @@
+<?php
+
+namespace App\Enum;
+
+enum ProductEnum: string
+{
+    case PRODUCT_01 = 'ALITAS DE POLLO';
+    case PRODUCT_02 = 'TEQUEÑOS';
+    case PRODUCT_03 = 'NUGGETS DE POLLO';
+    case PRODUCT_04 = 'BOULEVANT DE POLLO';
+    case PRODUCT_05 = 'MINI PASTEL DE ACELGA';
+    case PRODUCT_06 = 'BUTIFARRAS DE JAMÓN';
+    case PRODUCT_07 = 'PETIPAN DE POLLO';
+    case PRODUCT_08 = 'CANAPES DE JAMÓN Y QUESO';
+    case PRODUCT_09 = 'BROCHETAS DE POLLO';
+    case PRODUCT_10 = 'PETIPAN DE TOCINO Y HUEVO';
+    case PRODUCT_11 = 'MINI TRIPLE JAMÓN Y QUESO';
+    case PRODUCT_12 = 'HOJARASCA DE AJI DE GALLINA';
+    case PRODUCT_13 = 'QUICHE DE POLLO Y QUESO';
+    case PRODUCT_14 = 'QUICHE DE JAMON Y QUESO';
+    case PRODUCT_15 = 'BOULEVANT DE ATÚN';
+    case PRODUCT_16 = 'PETIPAN DE JAMONADA';
+    case PRODUCT_17 = 'CHEESCAKE DE SAUCO';
+    case PRODUCT_18 = 'CHEESCAKE DE FRESA';
+    case PRODUCT_19 = 'CHEESCAKE DE MARACUYA';
+    case PRODUCT_20 = 'TORTA SELVA NEGRA ENTERA';
+    case PRODUCT_21 = 'TORTA SELVA NEGRA MIXTA';
+    case PRODUCT_22 = 'TORTA SUBLIME';
+    case PRODUCT_23 = 'TRES LECHES DOBLE CHOCOLATE';
+    case PRODUCT_24 = 'TORTA TRES LECHES DE COCO';
+    case PRODUCT_25 = 'TRES LECHES DE OREO';
+    case PRODUCT_26 = 'TORTA CHOCOLATE';
+    case PRODUCT_27 = 'TORTA TRES LECHES DE MARACUYA';
+    case PRODUCT_28 = 'TORTA TRES LECHES DE FRESA';
+    case PRODUCT_29 = 'TORTA SACHERT';
+    case PRODUCT_30 = 'TORTA BAUTIZO NIÑO 01';
+    case PRODUCT_31 = 'VELA NUMERADA COLOR AZUL NÚMERO 0';
+    case PRODUCT_32 = 'VELA NUMERADA COLOR AZUL NÚMERO 1';
+    case PRODUCT_33 = 'VELA NUMERADA COLOR AZUL NÚMERO 2';
+    case PRODUCT_34 = 'VELA NUMERADA COLOR AZUL NÚMERO 3';
+    case PRODUCT_35 = 'VELA NUMERADA COLOR AZUL NÚMERO 4';
+    case PRODUCT_36 = 'VELA NUMERADA COLOR AZUL NÚMERO 5';
+    case PRODUCT_37 = 'VELA NUMERADA COLOR AZUL NÚMERO 6';
+    case PRODUCT_38 = 'VELA NUMERADA COLOR AZUL NÚMERO 7';
+    case PRODUCT_39 = 'VELA NUMERADA COLOR AZUL NÚMERO 8';
+    case PRODUCT_40 = 'VELA NUMERADA COLOR AZUL NÚMERO 9';
+
+    public function large_description()
+    {
+        return match($this) {
+            self::PRODUCT_01 => 'Alitas de pollo empanizadas y fritas, acompañadas de salsa de tu elección (BBQ, Buffalo, Miel y Mostaza, Ajo Parmesano).',
+            self::PRODUCT_02 => 'Tequeños rellenos de queso, acompañados de salsa de tu elección.',
+            self::PRODUCT_03 => 'Nuggets de pollo empanizados y fritos, ideales para compartir.',
+            self::PRODUCT_04 => 'Boulevant relleno de pollo y salsa especial, en masa hojaldrada.',
+            self::PRODUCT_05 => 'Mini pastel de acelga con masa suave y relleno de acelga fresca.',
+            self::PRODUCT_06 => 'Butifarras de jamón con pan artesanal y salsa especial.',
+            self::PRODUCT_07 => 'Petipán de pollo con mayonesa y vegetales frescos.',
+            self::PRODUCT_08 => 'Canapés de jamón y queso en pan suave, perfectos para eventos.',
+            self::PRODUCT_09 => 'Brochetas de pollo marinadas y asadas, acompañadas de vegetales.',
+            self::PRODUCT_10 => 'Petipán de tocino y huevo, ideal para desayunos y brunch.',
+            self::PRODUCT_11 => 'Mini triple de jamón y queso, en pan de molde suave.',
+            self::PRODUCT_12 => 'Hojarasca rellena de ají de gallina, con masa crocante.',
+            self::PRODUCT_13 => 'Quiche de pollo y queso, con masa fina y relleno cremoso.',
+            self::PRODUCT_14 => 'Quiche de jamón y queso, horneado y servido en porciones individuales.',
+            self::PRODUCT_15 => 'Boulevant de atún, en masa hojaldrada y relleno especial.',
+            self::PRODUCT_16 => 'Petipán de jamonada, con mayonesa y vegetales frescos.',
+            self::PRODUCT_17 => 'Cheesecake de sauco, con base de galleta y salsa de sauco natural.',
+            self::PRODUCT_18 => 'Cheesecake de fresa, con fresas frescas y base crocante.',
+            self::PRODUCT_19 => 'Cheesecake de maracuyá, con salsa de maracuyá y base de galleta.',
+            self::PRODUCT_20 => 'Torta Selva Negra entera, con capas de chocolate y crema chantilly.',
+            self::PRODUCT_21 => 'Torta Selva Negra mixta, combinación de chocolate y frutas.',
+            self::PRODUCT_22 => 'Torta Sublime, con chocolate intenso y relleno cremoso.',
+            self::PRODUCT_23 => 'Tres leches doble chocolate, con bizcocho húmedo y cobertura de chocolate.',
+            self::PRODUCT_24 => 'Torta tres leches de coco, con sabor suave y cobertura de coco rallado.',
+            self::PRODUCT_25 => 'Tres leches de Oreo, con trozos de galleta Oreo y crema especial.',
+            self::PRODUCT_26 => 'Torta de chocolate, con bizcocho húmedo y cobertura de chocolate.',
+            self::PRODUCT_27 => 'Torta tres leches de maracuyá, con salsa de maracuyá y crema chantilly.',
+            self::PRODUCT_28 => 'Torta tres leches de fresa, con fresas frescas y crema suave.',
+            self::PRODUCT_29 => 'Torta Sachert, con bizcocho de chocolate y relleno de mermelada de damasco.',
+            self::PRODUCT_30 => 'Torta bautizo niño 01, decorada especialmente para celebraciones infantiles.',
+            self::PRODUCT_31 => 'Vela numerada color azul número 0, ideal para cumpleaños y celebraciones.',
+            self::PRODUCT_32 => 'Vela numerada color azul número 1, ideal para cumpleaños y celebraciones.',
+            self::PRODUCT_33 => 'Vela numerada color azul número 2, ideal para cumpleaños y celebraciones.',
+            self::PRODUCT_34 => 'Vela numerada color azul número 3, ideal para cumpleaños y celebraciones.',
+            self::PRODUCT_35 => 'Vela numerada color azul número 4, ideal para cumpleaños y celebraciones.',
+            self::PRODUCT_36 => 'Vela numerada color azul número 5, ideal para cumpleaños y celebraciones.',
+            self::PRODUCT_37 => 'Vela numerada color azul número 6, ideal para cumpleaños y celebraciones.',
+            self::PRODUCT_38 => 'Vela numerada color azul número 7, ideal para cumpleaños y celebraciones.',
+            self::PRODUCT_39 => 'Vela numerada color azul número 8, ideal para cumpleaños y celebraciones.',
+            self::PRODUCT_40 => 'Vela numerada color azul número 9, ideal para cumpleaños y celebraciones.',
+        };
+    }
+
+    public function type_id()
+    {
+        return match($this) {
+            self::PRODUCT_01 => 4,
+            self::PRODUCT_02 => 4,
+            self::PRODUCT_03 => 4,
+            self::PRODUCT_04 => 4,
+            self::PRODUCT_05 => 4,
+            self::PRODUCT_06 => 4,
+            self::PRODUCT_07 => 4,
+            self::PRODUCT_08 => 4,
+            self::PRODUCT_09 => 4,
+            self::PRODUCT_10 => 4,
+            self::PRODUCT_11 => 4,
+            self::PRODUCT_12 => 4,
+            self::PRODUCT_13 => 4,
+            self::PRODUCT_14 => 4,
+            self::PRODUCT_15 => 4,
+            self::PRODUCT_16 => 4,
+            self::PRODUCT_17 => 2,
+            self::PRODUCT_18 => 2,
+            self::PRODUCT_19 => 2,
+            self::PRODUCT_20 => 3,
+            self::PRODUCT_21 => 3,
+            self::PRODUCT_22 => 3,
+            self::PRODUCT_23 => 1,
+            self::PRODUCT_24 => 1,
+            self::PRODUCT_25 => 1,
+            self::PRODUCT_26 => 1,
+            self::PRODUCT_27 => 1,
+            self::PRODUCT_28 => 1,
+            self::PRODUCT_29 => 1,
+            self::PRODUCT_30 => 2,
+            self::PRODUCT_31 => 5,
+            self::PRODUCT_32 => 5,
+            self::PRODUCT_33 => 5,
+            self::PRODUCT_34 => 5,
+            self::PRODUCT_35 => 5,
+            self::PRODUCT_36 => 5,
+            self::PRODUCT_37 => 5,
+            self::PRODUCT_38 => 5,
+            self::PRODUCT_39 => 5,
+            self::PRODUCT_40 => 5,
+        };
+    }
+
+    public function category_id()
+    {
+        return match($this) {
+            self::PRODUCT_01 => null,
+            self::PRODUCT_02 => null,
+            self::PRODUCT_03 => null,
+            self::PRODUCT_04 => null,
+            self::PRODUCT_05 => null,
+            self::PRODUCT_06 => null,
+            self::PRODUCT_07 => null,
+            self::PRODUCT_08 => null,
+            self::PRODUCT_09 => null,
+            self::PRODUCT_10 => null,
+            self::PRODUCT_11 => null,
+            self::PRODUCT_12 => null,
+            self::PRODUCT_13 => null,
+            self::PRODUCT_14 => null,
+            self::PRODUCT_15 => null,
+            self::PRODUCT_16 => null,
+            self::PRODUCT_17 => null,
+            self::PRODUCT_18 => null,
+            self::PRODUCT_19 => null,
+            self::PRODUCT_20 => null,
+            self::PRODUCT_21 => null,
+            self::PRODUCT_22 => null,
+            self::PRODUCT_23 => null,
+            self::PRODUCT_24 => null,
+            self::PRODUCT_25 => null,
+            self::PRODUCT_26 => null,
+            self::PRODUCT_27 => null,
+            self::PRODUCT_28 => null,
+            self::PRODUCT_29 => null,
+            self::PRODUCT_30 => 3,
+            self::PRODUCT_31 => null,
+            self::PRODUCT_32 => null,
+            self::PRODUCT_33 => null,
+            self::PRODUCT_34 => null,
+            self::PRODUCT_35 => null,
+            self::PRODUCT_36 => null,
+            self::PRODUCT_37 => null,
+            self::PRODUCT_38 => null,
+            self::PRODUCT_39 => null,
+            self::PRODUCT_40 => null,
+        };
+    }
+
+    public function min_price()
+    {
+        return match($this) {
+            self::PRODUCT_01 => 20,
+            self::PRODUCT_02 => 20,
+            self::PRODUCT_03 => 30,
+            self::PRODUCT_04 => 20,
+            self::PRODUCT_05 => 20,
+            self::PRODUCT_06 => 20,
+            self::PRODUCT_07 => 20,
+            self::PRODUCT_08 => 20,
+            self::PRODUCT_09 => 20,
+            self::PRODUCT_10 => 20,
+            self::PRODUCT_11 => 20,
+            self::PRODUCT_12 => 20,
+            self::PRODUCT_13 => 20,
+            self::PRODUCT_14 => 20,
+            self::PRODUCT_15 => 20,
+            self::PRODUCT_16 => 20,
+            self::PRODUCT_17 => 20,
+            self::PRODUCT_18 => 20,
+            self::PRODUCT_19 => 20,
+            self::PRODUCT_20 => 20,
+            self::PRODUCT_21 => 20,
+            self::PRODUCT_22 => 20,
+            self::PRODUCT_23 => 20,
+            self::PRODUCT_24 => 20,
+            self::PRODUCT_25 => 20,
+            self::PRODUCT_26 => 20,
+            self::PRODUCT_27 => 20,
+            self::PRODUCT_28 => 20,
+            self::PRODUCT_29 => 20,
+            self::PRODUCT_30 => 20,
+            self::PRODUCT_31 => 20,
+            self::PRODUCT_32 => 20,
+            self::PRODUCT_33 => 20,
+            self::PRODUCT_34 => 20,
+            self::PRODUCT_35 => 20,
+            self::PRODUCT_36 => 20,
+            self::PRODUCT_37 => 20,
+            self::PRODUCT_38 => 20,
+            self::PRODUCT_39 => 20,
+            self::PRODUCT_40 => 20,
+        };
+    }
+
+    public function max_price()
+    {
+        return match($this) {
+            self::PRODUCT_01 => 40,
+            self::PRODUCT_02 => 40,
+            self::PRODUCT_03 => 60,
+            self::PRODUCT_04 => 40,
+            self::PRODUCT_05 => 40,
+            self::PRODUCT_06 => 40,
+            self::PRODUCT_07 => 40,
+            self::PRODUCT_08 => 40,
+            self::PRODUCT_09 => 40,
+            self::PRODUCT_10 => 40,
+            self::PRODUCT_11 => 40,
+            self::PRODUCT_12 => 40,
+            self::PRODUCT_13 => 40,
+            self::PRODUCT_14 => 40,
+            self::PRODUCT_15 => 40,
+            self::PRODUCT_16 => 40,
+            self::PRODUCT_17 => 40,
+            self::PRODUCT_18 => 40,
+            self::PRODUCT_19 => 40,
+            self::PRODUCT_20 => 40,
+            self::PRODUCT_21 => 40,
+            self::PRODUCT_22 => 40,
+            self::PRODUCT_23 => 40,
+            self::PRODUCT_24 => 40,
+            self::PRODUCT_25 => 40,
+            self::PRODUCT_26 => 40,
+            self::PRODUCT_27 => 40,
+            self::PRODUCT_28 => 40,
+            self::PRODUCT_29 => 40,
+            self::PRODUCT_30 => 40,
+            self::PRODUCT_31 => 40,
+            self::PRODUCT_32 => 40,
+            self::PRODUCT_33 => 40,
+            self::PRODUCT_34 => 40,
+            self::PRODUCT_35 => 40,
+            self::PRODUCT_36 => 40,
+            self::PRODUCT_37 => 40,
+            self::PRODUCT_38 => 40,
+            self::PRODUCT_39 => 40,
+            self::PRODUCT_40 => 40,
+        };
+    }
+
+    public function theme_id()
+    {
+        return match($this) {
+            self::PRODUCT_01 => null,
+            self::PRODUCT_02 => null,
+            self::PRODUCT_03 => null,
+            self::PRODUCT_04 => null,
+            self::PRODUCT_05 => null,
+            self::PRODUCT_06 => null,
+            self::PRODUCT_07 => null,
+            self::PRODUCT_08 => null,
+            self::PRODUCT_09 => null,
+            self::PRODUCT_10 => null,
+            self::PRODUCT_11 => null,
+            self::PRODUCT_12 => null,
+            self::PRODUCT_13 => null,
+            self::PRODUCT_14 => null,
+            self::PRODUCT_15 => null,
+            self::PRODUCT_16 => null,
+            self::PRODUCT_17 => null,
+            self::PRODUCT_18 => null,
+            self::PRODUCT_19 => null,
+            self::PRODUCT_20 => null,
+            self::PRODUCT_21 => null,
+            self::PRODUCT_22 => null,
+            self::PRODUCT_23 => null,
+            self::PRODUCT_24 => null,
+            self::PRODUCT_25 => null,
+            self::PRODUCT_26 => null,
+            self::PRODUCT_27 => null,
+            self::PRODUCT_28 => null,
+            self::PRODUCT_29 => null,
+            self::PRODUCT_30 => null,
+            self::PRODUCT_02 => null,
+            self::PRODUCT_03 => null,
+            self::PRODUCT_04 => null,
+            self::PRODUCT_05 => null,
+            self::PRODUCT_06 => null,
+            self::PRODUCT_07 => null,
+            self::PRODUCT_08 => null,
+            self::PRODUCT_09 => null,
+            self::PRODUCT_10 => null,
+            self::PRODUCT_11 => null,
+            self::PRODUCT_12 => null,
+            self::PRODUCT_13 => null,
+            self::PRODUCT_14 => null,
+            self::PRODUCT_15 => null,
+            self::PRODUCT_16 => null,
+            self::PRODUCT_17 => null,
+            self::PRODUCT_18 => null,
+            self::PRODUCT_19 => null,
+            self::PRODUCT_20 => null,
+            self::PRODUCT_21 => null,
+            self::PRODUCT_22 => null,
+            self::PRODUCT_23 => null,
+            self::PRODUCT_24 => null,
+            self::PRODUCT_25 => null,
+            self::PRODUCT_26 => null,
+            self::PRODUCT_27 => null,
+            self::PRODUCT_28 => null,
+            self::PRODUCT_29 => null,
+            self::PRODUCT_30 => 1,
+            self::PRODUCT_31 => null,
+            self::PRODUCT_32 => null,
+            self::PRODUCT_33 => null,
+            self::PRODUCT_34 => null,
+            self::PRODUCT_35 => null,
+            self::PRODUCT_36 => null,
+            self::PRODUCT_37 => null,
+            self::PRODUCT_38 => null,
+            self::PRODUCT_39 => null,
+            self::PRODUCT_40 => null,
+        };
+    }
+
+    public function image()
+    {
+        return match($this) {
+            self::PRODUCT_01 => 'product/bocadito/BOC01.jpg',
+            self::PRODUCT_02 => 'product/bocadito/BOC02.jpg',
+            self::PRODUCT_03 => 'product/bocadito/BOC03.jpg',
+            self::PRODUCT_04 => 'product/bocadito/BOC05.jpg',
+            self::PRODUCT_05 => 'product/bocadito/BOC06.jpg',
+            self::PRODUCT_06 => 'product/bocadito/BOC07.jpg',
+            self::PRODUCT_07 => 'product/bocadito/BOC08.jpg',
+            self::PRODUCT_08 => 'product/bocadito/BOC09.jpg',
+            self::PRODUCT_09 => 'product/bocadito/BOC11.jpg',
+            self::PRODUCT_10 => 'product/bocadito/BOC12.jpg',
+            self::PRODUCT_11 => 'product/bocadito/BOC13.jpg',
+            self::PRODUCT_12 => 'product/bocadito/BOC14.jpg',
+            self::PRODUCT_13 => 'product/bocadito/BOC15.jpg',
+            self::PRODUCT_14 => 'product/bocadito/BOC16.jpg',
+            self::PRODUCT_15 => 'product/bocadito/BOC17.jpg',
+            self::PRODUCT_16 => 'product/bocadito/BOC18.jpg',
+            self::PRODUCT_17 => 'product/postre/PT24.jpg',
+            self::PRODUCT_18 => 'product/postre/PT26.jpg',
+            self::PRODUCT_19 => 'product/postre/PT52.jpg',
+            self::PRODUCT_20 => 'product/torta_vitrina/TEW1.jpg',
+            self::PRODUCT_21 => 'product/torta_vitrina/TEW2.jpg',
+            self::PRODUCT_22 => 'product/torta_vitrina/TEW3.jpg',
+            self::PRODUCT_23 => 'product/torta_vitrina/TEW4.jpg',
+            self::PRODUCT_24 => 'product/torta_vitrina/TEW5.jpg',
+            self::PRODUCT_25 => 'product/torta_vitrina/TEW6.jpg',
+            self::PRODUCT_26 => 'product/torta_vitrina/TEW7.jpg',
+            self::PRODUCT_27 => 'product/torta_vitrina/TEW8.jpg',
+            self::PRODUCT_28 => 'product/torta_vitrina/TEW9.jpg',
+            self::PRODUCT_29 => 'product/torta_vitrina/TEW10.jpg',
+            self::PRODUCT_30 => 'product/torta_tematica/TMB1.jpg',
+            self::PRODUCT_31 => 'product/accesorio/V1A0.jpg',
+            self::PRODUCT_32 => 'product/accesorio/V1A1.jpg',
+            self::PRODUCT_33 => 'product/accesorio/V1A2.jpg',
+            self::PRODUCT_34 => 'product/accesorio/V1A3.jpg',
+            self::PRODUCT_35 => 'product/accesorio/V1A4.jpg',
+            self::PRODUCT_36 => 'product/accesorio/V1A5.jpg',
+            self::PRODUCT_37 => 'product/accesorio/V1A6.jpg',
+            self::PRODUCT_38 => 'product/accesorio/V1A7.jpg',
+            self::PRODUCT_39 => 'product/accesorio/V1A8.jpg',
+            self::PRODUCT_40 => 'product/accesorio/V1A9.jpg',
+        };
+    }
+
+    public function status()
+    {
+        return match($this) {
+            self::PRODUCT_01 => 1,
+            self::PRODUCT_02 => 1,
+            self::PRODUCT_03 => 1,
+            self::PRODUCT_04 => 1,
+            self::PRODUCT_05 => 1,
+            self::PRODUCT_06 => 1,
+            self::PRODUCT_07 => 1,
+            self::PRODUCT_08 => 1,
+            self::PRODUCT_09 => 1,
+            self::PRODUCT_10 => 1,
+            self::PRODUCT_11 => 1,
+            self::PRODUCT_12 => 1,
+            self::PRODUCT_13 => 1,
+            self::PRODUCT_14 => 1,
+            self::PRODUCT_15 => 1,
+            self::PRODUCT_16 => 1,
+            self::PRODUCT_17 => 1,
+            self::PRODUCT_18 => 1,
+            self::PRODUCT_19 => 1,
+            self::PRODUCT_20 => 1,
+            self::PRODUCT_21 => 1,
+            self::PRODUCT_22 => 1,
+            self::PRODUCT_23 => 1,
+            self::PRODUCT_24 => 1,
+            self::PRODUCT_25 => 1,
+            self::PRODUCT_26 => 1,
+            self::PRODUCT_27 => 1,
+            self::PRODUCT_28 => 1,
+            self::PRODUCT_29 => 1,
+            self::PRODUCT_30 => 1,
+            self::PRODUCT_31 => 1,
+            self::PRODUCT_32 => 1,
+            self::PRODUCT_33 => 1,
+            self::PRODUCT_34 => 1,
+            self::PRODUCT_35 => 1,
+            self::PRODUCT_36 => 1,
+            self::PRODUCT_37 => 1,
+            self::PRODUCT_38 => 1,
+            self::PRODUCT_39 => 1,
+            self::PRODUCT_40 => 1,
+        };
+    }
+
+    public function best_status()
+    {
+        return match($this) {
+            self::PRODUCT_01 => 0,
+            self::PRODUCT_02 => 0,
+            self::PRODUCT_03 => 0,
+            self::PRODUCT_04 => 0,
+            self::PRODUCT_05 => 0,
+            self::PRODUCT_06 => 0,
+            self::PRODUCT_07 => 0,
+            self::PRODUCT_08 => 0,
+            self::PRODUCT_09 => 0,
+            self::PRODUCT_10 => 0,
+            self::PRODUCT_11 => 0,
+            self::PRODUCT_12 => 0,
+            self::PRODUCT_13 => 0,
+            self::PRODUCT_14 => 0,
+            self::PRODUCT_15 => 0,
+            self::PRODUCT_16 => 0,
+            self::PRODUCT_17 => 1,
+            self::PRODUCT_18 => 1,
+            self::PRODUCT_19 => 1,
+            self::PRODUCT_20 => 1,
+            self::PRODUCT_21 => 1,
+            self::PRODUCT_22 => 1,
+            self::PRODUCT_23 => 1,
+            self::PRODUCT_24 => 1,
+            self::PRODUCT_25 => 0,
+            self::PRODUCT_26 => 0,
+            self::PRODUCT_27 => 0,
+            self::PRODUCT_28 => 0,
+            self::PRODUCT_29 => 0,
+            self::PRODUCT_30 => 1,
+            self::PRODUCT_31 => 0,
+            self::PRODUCT_32 => 0,
+            self::PRODUCT_33 => 0,
+            self::PRODUCT_34 => 0,
+            self::PRODUCT_35 => 0,
+            self::PRODUCT_36 => 0,
+            self::PRODUCT_37 => 0,
+            self::PRODUCT_38 => 0,
+            self::PRODUCT_39 => 0,
+            self::PRODUCT_40 => 0
+        };
+    }
+}

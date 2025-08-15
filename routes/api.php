@@ -31,6 +31,9 @@ Route::get('/products/{id}', [ProductController::class, 'show']);
 Route::put('/products/{id}', [ProductController::class, 'update']);
 Route::delete('/products/{id}', [ProductController::class, 'destroy']);
 
+// Ruta para traer accesorios
+Route::get('/products-accessories', [ProductController::class, 'indexAccesories']);
+
 // Rutas para variantes de producto
 Route::get('/products-variant', [ProductVariantController::class, 'index']);
 Route::post('/products-variant', [ProductVariantController::class, 'store']);
@@ -88,6 +91,7 @@ Route::post('/reset-password', [CustomerForgotPasswordController::class, 'reset'
 Route::get('/locals/location', [LocalController::class, 'indexByLocation']);
 Route::get('/locals', [LocalController::class, 'index']);
 Route::post('/locals', [LocalController::class, 'store']);
+Route::delete('/locals/{id}', [LocalController::class, 'destroy']);
 
 // Ruta para las paginas
 Route::get('/pages', [PageController::class, 'index']);
