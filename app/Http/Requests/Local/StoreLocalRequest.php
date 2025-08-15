@@ -33,6 +33,7 @@ class StoreLocalRequest extends FormRequest
             'link_local' => 'nullable|url',
             'latitud' => 'required|numeric',
             'longitud' => 'required|numeric',
+            'frame_google' => 'nullable|string',
             'company_id' => 'nullable|exists:companies,id',
         ];
     }

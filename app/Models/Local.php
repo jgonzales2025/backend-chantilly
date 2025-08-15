@@ -20,6 +20,7 @@ class Local extends Model
         'link_local',
         'latitud',
         'longitud',
+        'frame_google',
         'company_id'
     ];
 
