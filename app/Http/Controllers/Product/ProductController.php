@@ -134,4 +134,17 @@ class ProductController extends Controller
 
         return new JsonResponse(['message' => 'Producto eliminado con éxito'], 200);
     }
+
+    public function indexAccesories(): JsonResponse
+    {
+        $accesorios = Product::where('product_type_id', 5)->get();
+
+        if ($accesorios->isEmpty()) {
+            return new JsonResponse(['message' => 'No hay accesorios registrados'], 404);
+        }
+
+        return new JsonResponse([
+            'accesorios' => ProductResource::collection($accesorios)
+        ]);
+    }
 }

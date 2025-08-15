@@ -31,6 +31,9 @@ Route::get('/products/{id}', [ProductController::class, 'show']);
 Route::put('/products/{id}', [ProductController::class, 'update']);
 Route::delete('/products/{id}', [ProductController::class, 'destroy']);
 
+// Ruta para traer accesorios
+Route::get('/products-accessories', [ProductController::class, 'indexAccesories']);
+
 // Rutas para variantes de producto
 Route::get('/products-variant', [ProductVariantController::class, 'index']);
 Route::post('/products-variant', [ProductVariantController::class, 'store']);
