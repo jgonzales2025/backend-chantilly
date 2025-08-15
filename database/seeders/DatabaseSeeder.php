@@ -26,7 +26,9 @@ class DatabaseSeeder extends Seeder
             ProductTypeSeeder::class,
             ThemeSeeder::class,
             FillingSeeder::class,
-            PageSeeder::class
+            PageSeeder::class,
+            LocalSeeder::class,
+            ProductSeeder::class,
         ]);
         
     }

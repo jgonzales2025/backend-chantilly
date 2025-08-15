@@ -20,7 +20,6 @@ class Local extends Model
         'link_local',
         'latitud',
         'longitud',
-        'frame_google',
         'company_id'
     ];
 
@@ -47,7 +46,7 @@ class Local extends Model
                     sin(radians(?)) *
                     sin(radians(latitud))
                 )
-            ), 2) AS distance", [$latitud, $longitud, $latitud])
+            ), 1) AS distance", [$latitud, $longitud, $latitud])
             ->orderBy('distance');
     }
 

@@ -23,7 +23,7 @@ class StoreLocalRequest extends FormRequest
     {
         return [
             'name' => 'required|string|max:255',
-            'image' => 'nullable|image|max:2048',
+            'image' => 'nullable|image|mimes:jpg,jpeg,png,webp|max:2048',
             'address' => 'required|string|max:255',
             'department' => 'required|string|max:255',
             'province' => 'required|string|max:255',
@@ -33,7 +33,6 @@ class StoreLocalRequest extends FormRequest
             'link_local' => 'nullable|url',
             'latitud' => 'required|numeric',
             'longitud' => 'required|numeric',
-            'frame_google' => 'nullable|string',
             'company_id' => 'nullable|exists:companies,id',
         ];
     }
