@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Filling extends Model
@@ -15,8 +16,10 @@ class Filling extends Model
         'status' => 'boolean'
     ];
 
-    public function cakeflavors(): HasMany
+    protected $hidden = ['pivot'];
+
+    public function cakeflavors(): BelongsToMany
     {
-        return $this->hasMany(CakeFlavor::class);
+        return $this->belongsToMany(CakeFlavor::class);
     }
 }

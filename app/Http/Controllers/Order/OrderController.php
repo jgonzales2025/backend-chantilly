@@ -36,10 +36,14 @@ class OrderController extends Controller
         return DB::transaction(function () use ($validatedData){
             $order = Order::create([
                 'customer_id' => $validatedData['customer_id'],
+                'voucher_type' => $validatedData['voucher_type'],
+                'billing_data' => $validatedData['billing_data'],
+                'local_id' => $validatedData['local_id'],
                 'subtotal' => $validatedData['subtotal'],
                 'total' => $validatedData['total_amount'],
-                'delivery_date' => $validatedData['delivery_date'],
-                'status' => $validatedData['status']
+                'status' => $validatedData['status'],
+                'cod_response_niubis' => $validatedData['cod_response_niubis'] ?? null,
+                'response_niubis' => $validatedData['response_niubis'] ?? null,
             ]);
 
             foreach ($validatedData['items'] as $item){
@@ -50,7 +54,8 @@ class OrderController extends Controller
                     'quantity' => $item['quantity'],
                     'unit_price' => $item['unit_price'],
                     'subtotal' => $item['subtotal'],
-                    'dedication_text' => $item['dedication_text'] ?? null
+                    'dedication_text' => $item['dedication_text'] ?? null,
+                    'delivery_date' => $item['delivery_date']
                 ]);
             }
 

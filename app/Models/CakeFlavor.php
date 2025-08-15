@@ -3,12 +3,14 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class CakeFlavor extends Model
 {
-    protected $fillable = ['name', 'status', 'filling_id'];
+    protected $fillable = ['name', 'status'];
+
+    protected $hidden = ['pivot'];
 
     public $timestamps = false;
 
@@ -16,9 +18,9 @@ class CakeFlavor extends Model
         'status' => 'boolean'
     ];
 
-    public function filling(): BelongsTo
+    public function fillings(): BelongsToMany
     {
-        return $this->belongsTo(Filling::class);
+        return $this->belongsToMany(Filling::class);
     }
 
     public function items(): HasMany

@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Customer;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Customer\StoreCustomerRequest;
+use App\Http\Requests\Customer\UpdateCustomerRequest;
 use App\Models\Customer;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -54,26 +55,49 @@ class CustomerController extends Controller
     }
 
     /**
-     * Display the specified resource.
+     * Mostrar cliente por id.
      */
-    public function show(string $id)
+    public function show($id)
     {
-        //
+        $customer = Customer::find($id);
+
+        if (!$customer) {
+            return new JsonResponse(['message' => 'Cliente no encontrado'], 404);
+        }
+
+        return new JsonResponse($customer, 200);
     }
 
     /**
-     * Update the specified resource in storage.
+     * Actualizar cliente.
      */
-    public function update(Request $request, string $id)
+    public function update(UpdateCustomerRequest $request, $id)
     {
-        //
+        $customer = Customer::find($id);
+
+        if (!$customer) {
+            return new JsonResponse(['message' => 'Cliente no encontrado'], 404);
+        }
+
+        $validatedData = $request->validated();
+        $customer->update($validatedData);
+
+        return new JsonResponse(['message' => 'Cliente actualizado con éxito', 'customer' => $customer], 200);
     }
 
     /**
-     * Remove the specified resource from storage.
+     * Eliminar cliente.
      */
-    public function destroy(string $id)
+    public function destroy($id)
     {
-        //
+        $customer = Customer::find($id);
+
+        if (!$customer) {
+            return new JsonResponse(['message' => 'Cliente no encontrado'], 404);
+        }
+
+        $customer->delete();
+
+        return new JsonResponse(['message' => 'Cliente eliminado con éxito'], 200);
     }
 }

@@ -1,10 +1,10 @@
 <?php
 
-namespace App\Http\Requests\CakeFlavor;
+namespace App\Http\Requests\Local;
 
 use Illuminate\Foundation\Http\FormRequest;
 
-class UpdateCakeFlavorRequest extends FormRequest
+class IndexLocationRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -22,9 +22,8 @@ class UpdateCakeFlavorRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'name' => 'sometimes|string',
-            'status' => 'sometimes|boolean',
-            'filling_id' => 'sometimes|array|exists:fillings,id'
+            'latitud' => 'required|numeric',
+            'longitud' => 'required|numeric',
         ];
     }
 }

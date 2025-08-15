@@ -7,6 +7,7 @@ use App\Http\Controllers\CakeFlavor\CakeFlavorController;
 use App\Http\Controllers\Category\CategoryController;
 use App\Http\Controllers\Customer\CustomerController;
 use App\Http\Controllers\DocumentType\DocumentTypeController;
+use App\Http\Controllers\Local\LocalController;
 use App\Http\Controllers\Order\OrderController;
 use App\Http\Controllers\Page\PageController;
 use App\Http\Controllers\Product\ProductController;
@@ -19,6 +20,9 @@ use Illuminate\Support\Facades\Route;
 // Rutas para clientes
 Route::get('/customers', [CustomerController::class, 'index']);
 Route::post('/customers', [CustomerController::class, 'store']);
+Route::get('/customers/{id}', [CustomerController::class, 'show']);
+Route::put('/customers/{id}', [CustomerController::class, 'update']);
+Route::delete('/customers/{id}', [CustomerController::class, 'destroy']);
 
 // Rutas para  productos
 Route::get('/products', [ProductController::class, 'index']);
@@ -79,6 +83,11 @@ Route::get('/auth/google/callback', [CustomerGoogleAuthController::class, 'callb
 // Rutas para recuperación de contraseña
 Route::post('/forgot-password', [CustomerForgotPasswordController::class, 'sendResetLinkEmail']);
 Route::post('/reset-password', [CustomerForgotPasswordController::class, 'reset']);
+
+// Rutas para los locales
+Route::get('/locals/location', [LocalController::class, 'indexByLocation']);
+Route::get('/locals', [LocalController::class, 'index']);
+Route::post('/locals', [LocalController::class, 'store']);
 
 // Ruta para las paginas
 Route::get('/pages', [PageController::class, 'index']);

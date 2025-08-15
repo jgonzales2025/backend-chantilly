@@ -7,7 +7,6 @@ use App\Http\Requests\CakeFlavor\StoreCakeFlavorRequest;
 use App\Http\Requests\CakeFlavor\UpdateCakeFlavorRequest;
 use App\Models\CakeFlavor;
 use Illuminate\Http\JsonResponse;
-use Illuminate\Http\Request;
 
 class CakeFlavorController extends Controller
 {
@@ -16,7 +15,7 @@ class CakeFlavorController extends Controller
      */
     public function index(): JsonResponse
     {
-        $cakeFlavors = CakeFlavor::with('filling')->get();
+        $cakeFlavors = CakeFlavor::with('fillings')->get();
 
         if($cakeFlavors->isEmpty()){
             return new JsonResponse(['message' => 'No hay cakes registrados']);
@@ -32,11 +31,16 @@ class CakeFlavorController extends Controller
     {
         $validatedData = $request->validated();
 
-        $cakeFlavor = CakeFlavor::create($validatedData);
+        $cakeFlavor = CakeFlavor::create([
+            'name' => $validatedData['name'],
+            'status' => $validatedData['status']
+        ]);
+
+        $cakeFlavor->fillings()->attach($validatedData['filling_id']);
 
         return new JsonResponse([
             'message' => 'Cake creado exitosamente',
-            'cake' => $cakeFlavor->load('filling')
+            'cake' => $cakeFlavor->load('fillings')
         ], 201);
     }
 
@@ -45,7 +49,7 @@ class CakeFlavorController extends Controller
      */
     public function show($id): JsonResponse
     {
-        $cakeFlavor = CakeFlavor::with('filling')->find($id);
+        $cakeFlavor = CakeFlavor::with('fillings')->find($id);
 
         if (!$cakeFlavor) {
             return new JsonResponse(['message' => 'Cake no encontrado'], 404);
@@ -67,11 +71,18 @@ class CakeFlavorController extends Controller
 
         $validatedData = $request->validated();
 
-        $cakeFlavor->update($validatedData);
+        $cakeFlavor->update([
+            'name' => $validatedData['name'],
+            'status' => $validatedData['status']
+        ]);
+
+        if (isset($validatedData['filling_id'])) {
+            $cakeFlavor->fillings()->sync($validatedData['filling_id']);
+        }
 
         return new JsonResponse([
             'message' => 'Cake actualizado con éxito',
-            'cake' => $cakeFlavor
+            'cake' => $cakeFlavor->load('fillings')
         ], 200);
     }
 
