@@ -31,13 +31,14 @@ class UpdateCustomerRequest extends FormRequest
             'lastname' => 'required|string|max:100',
             'address' => 'required|string',
             'phone' => 'required|string|max:9',
-            'deparment' => 'required|string',
-            'province' => 'required|string',
-            'district' => 'required|string'
+            
         ];
 
         if ($this->filled('password')) {
             $rules['password'] = ['string', 'confirmed'];
+            $rules['department'] = ['nullable', 'string'];
+            $rules['province'] = ['nullable', 'string'];
+            $rules['district'] = ['nullable', 'string'];
         }
 
         return $rules;
