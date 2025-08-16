@@ -8,6 +8,7 @@ use App\Http\Controllers\Category\CategoryController;
 use App\Http\Controllers\Customer\CustomerController;
 use App\Http\Controllers\DocumentType\DocumentTypeController;
 use App\Http\Controllers\Local\LocalController;
+use App\Http\Controllers\MessageCustomerBot\MessageCustomerBotController;
 use App\Http\Controllers\Order\OrderController;
 use App\Http\Controllers\Page\PageController;
 use App\Http\Controllers\Product\ProductController;
@@ -92,6 +93,10 @@ Route::get('/locals/location', [LocalController::class, 'indexByLocation']);
 Route::get('/locals', [LocalController::class, 'index']);
 Route::post('/locals', [LocalController::class, 'store']);
 Route::delete('/locals/{id}', [LocalController::class, 'destroy']);
+
+// Rutas para los mensajes del cliente con el chatbot
+Route::get('/messages-customer-bot', [MessageCustomerBotController::class, 'index']);
+Route::post('/messages-customer-bot', [MessageCustomerBotController::class, 'store']);
 
 // Ruta para las paginas
 Route::get('/pages', [PageController::class, 'index']);
