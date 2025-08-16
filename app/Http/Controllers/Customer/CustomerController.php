@@ -86,15 +86,19 @@ class CustomerController extends Controller
             'name' => $validatedData['name'],
             'lastname' => $validatedData['lastname'],
             'address' => $validatedData['address'],
-            'phone' => $validatedData['phone'],
-            'deparment' => $validatedData['deparment'],
-            'province' => $validatedData['province'],
-            'district' => $validatedData['district']
+            'phone' => $validatedData['phone']
         ];
 
-        if (array_key_exists('password', $validatedData)) 
+        if (array_key_exists('password', $validatedData))
         {
             $updateData['password'] = Hash::make($validatedData['password']);
+        }
+
+        if (array_key_exists('deparment', $validatedData))
+        {
+            $updateData['deparment'] = $validatedData['deparment'];
+            $updateData['province'] = $validatedData['province'];
+            $updateData['district'] = $validatedData['district'];
         }
 
         $customer->update($updateData);
