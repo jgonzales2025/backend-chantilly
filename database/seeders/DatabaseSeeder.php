@@ -26,6 +26,8 @@ class DatabaseSeeder extends Seeder
             ProductTypeSeeder::class,
             ThemeSeeder::class,
             FillingSeeder::class,
+            CakeFlavorSeeder::class,
+            CakeFillingSeeder::class,
             PageSeeder::class,
             LocalSeeder::class,
             ProductSeeder::class,

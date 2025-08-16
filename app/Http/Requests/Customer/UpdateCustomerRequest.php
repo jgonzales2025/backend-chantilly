@@ -23,9 +23,8 @@ class UpdateCustomerRequest extends FormRequest
     public function rules(): array
     {
         $customerId = $this->route('id');
-        return [
+        $rules = [
             'email' => ['required', 'string', 'email', Rule::unique('customers')->ignore($customerId)],
-            'password' => 'required|string|confirmed',
             'id_document_type' => 'required|integer|exists:document_types,id',
             'document_number' => 'required|string',
             'name' => 'required|string|max:100',
@@ -36,5 +35,12 @@ class UpdateCustomerRequest extends FormRequest
             'province' => 'required|string',
             'district' => 'required|string'
         ];
+
+        if ($this->filled('password')) {
+            $rules['password'] = ['string', 'confirmed'];
+        }
+
+        return $rules;
     }
+    
 }
