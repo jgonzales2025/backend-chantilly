@@ -9,6 +9,10 @@ use Illuminate\Http\Request;
 
 class MessageCustomerBotController extends Controller
 {
+
+    /**
+     * Listar mensajes.
+     */
     public function index(): JsonResponse
     {
         $messages = MessageCustomerBot::all();
@@ -20,6 +24,9 @@ class MessageCustomerBotController extends Controller
         return new JsonResponse($messages, 200);
     }
 
+    /**
+     * Guardar mensaje.
+     */
     public function store(Request $request): JsonResponse
     {
         $validatedData = $request->validate([
