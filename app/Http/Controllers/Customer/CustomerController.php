@@ -80,7 +80,23 @@ class CustomerController extends Controller
         }
 
         $validatedData = $request->validated();
-        $customer->update($validatedData);
+        $customer->update([
+            'email' => $validatedData['email'],
+            'document_number' => $validatedData['document_number'],
+            'name' => $validatedData['name'],
+            'lastname' => $validatedData['lastname'],
+            'address' => $validatedData['address'],
+            'phone' => $validatedData['phone'],
+            'deparment' => $validatedData['deparment'],
+            'province' => $validatedData['province'],
+            'district' => $validatedData['district']
+        ]);
+
+        if (array_key_exists('password', $validatedData)) 
+        {
+            $updateData['password'] = Hash::make($validatedData['password']);
+        }
+
 
         return new JsonResponse(['message' => 'Cliente actualizado con éxito', 'customer' => $customer], 200);
     }
