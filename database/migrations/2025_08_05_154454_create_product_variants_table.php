@@ -16,8 +16,8 @@ return new class extends Migration
             $table->string('cod_fab');
             $table->foreignId('product_id')->constrained('products')->onDelete('cascade');
             $table->string('description');
-            $table->string('portions');
-            $table->string('size_portion');
+            $table->string('portions')->nullable();
+            $table->string('size_portion')->nullable();
             $table->decimal('price', 10, 2);
             $table->integer('hours')->nullable();
             $table->integer('sort')->nullable();
