@@ -45,7 +45,10 @@ class CustomerController extends Controller
             'phone' => $validatedData['phone'],
             'deparment' => $validatedData['deparment'],
             'province' => $validatedData['province'],
-            'district' => $validatedData['district']
+            'district' => $validatedData['district'],
+            'deparment_code' => $validatedData['deparment_code'],
+            'province_code' => $validatedData['province_code'],
+            'district_code' => $validatedData['district_code']
         ]);
 
         return new JsonResponse([
