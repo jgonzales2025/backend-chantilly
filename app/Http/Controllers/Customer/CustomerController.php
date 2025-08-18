@@ -84,12 +84,12 @@ class CustomerController extends Controller
 
         $validatedData = $request->validated();
         $updateData = [
-            'email' => $validatedData['email'],
-            'document_number' => $validatedData['document_number'],
-            'name' => $validatedData['name'],
-            'lastname' => $validatedData['lastname'],
-            'address' => $validatedData['address'],
-            'phone' => $validatedData['phone']
+            'email' => $validatedData['email'] ?? $customer->email,
+            'document_number' => $validatedData['document_number'] ?? $customer->document_number,
+            'name' => $validatedData['name'] ?? $customer->name,
+            'lastname' => $validatedData['lastname'] ?? $customer->lastname,
+            'address' => $validatedData['address'] ?? $customer->address,
+            'phone' => $validatedData['phone'] ?? $customer->phone
         ];
 
         if (array_key_exists('password', $validatedData))
