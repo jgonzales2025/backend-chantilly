@@ -38,9 +38,13 @@ class CustomResetPassword extends Notification
 
         return (new MailMessage)
             ->subject('Restablecer contraseña')
+            ->greeting('Hola! ' . $notifiable->name)
             ->line('Haz clic en el siguiente enlace para restablecer tu contraseña:')
             ->action('Restablecer contraseña', $url)
-            ->line('Si no solicitaste este cambio, puedes ignorar este mensaje.');
+            ->line('Si no solicitaste este cambio, puedes ignorar este mensaje.')
+            ->salutation('Saludos, La Casa del Chantilly')
+            ->line('Si tienes problemas al hacer clic en el botón "Restablecer contraseña", copia y pega la siguiente URL en tu navegador:')
+            ->line($url);
     }
 
     /**
