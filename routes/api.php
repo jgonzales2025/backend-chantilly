@@ -16,6 +16,7 @@ use App\Http\Controllers\ProductVariant\ProductVariantController;
 use App\Http\Controllers\Tematica\ThemeController;
 use App\Models\Company;
 use App\Models\ProductType;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
 // Rutas para clientes
@@ -105,5 +106,10 @@ Route::middleware('auth:sanctum')->group(function() {
     
     Route::post('/logout', [CustomerAuthController::class, 'logout']);
 });
+
+Route::middleware('auth:sanctum')->get('/me', function (Request $request) {
+    return response()->json($request->user());
+});
+
 
 
