@@ -6,7 +6,7 @@
 
 {{-- Body --}}
 <div style="text-align: center;">
-    <img src="{{ asset('storage/logo/logocheckout.png') }}" alt="Logo de La Casa del Chantilly" style="width: 220px; max-width: 100%; margin-bottom: 20px;">
+    <img src="{{ asset('storage/logo/logocheckout.png') }}" alt="Logo de La Casa del Chantilly" style="width: 320px; height: auto; max-width: 100%; margin-bottom: 20px;">
 </div>
 
 # Hola {{ $name }}
