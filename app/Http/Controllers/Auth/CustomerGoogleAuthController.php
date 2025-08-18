@@ -35,15 +35,9 @@ class CustomerGoogleAuthController extends Controller
             // Crear token con Sanctum
             $token = $customer->createToken('auth_token')->plainTextToken;
 
-            return response()->json([
-                'token' => $token,
-                'customer' => [
-                    'id' => $customer->id,
-                    'name' => $customer->name,
-                    'email' => $customer->email,
-                    'avatar' => $googleUser->getAvatar(),
-                ],
-            ]);
+            $frontendUrl = rtrim(config('app.frontend_url'), '/') . '/auth/callback';
+
+            return redirect()->to($frontendUrl . '?token=' . $token . '&customer=' . urlencode(json_encode($customer)));
 
         } catch (\Exception $e) {
             return response()->json(['error' => 'Error de autenticación con Google'], 500);
