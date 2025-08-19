@@ -31,7 +31,8 @@ class UpdateProductRequest extends FormRequest
             'theme_id' => 'nullable|integer|exists:themes,id',
             'image_url' => 'nullable|string',
             'status' => 'required|boolean',
-            'best_status' => 'required|boolean'
+            'best_status' => 'required|boolean',
+            'product_link' => 'nullable|string'
         ];
     }
 }
