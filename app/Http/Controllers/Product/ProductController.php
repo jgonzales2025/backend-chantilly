@@ -67,6 +67,17 @@ class ProductController extends Controller
             $validatedData['image'] = $path;
         }
 
+        if (isset($validatedData['short_description'])) {
+            $productName = $validatedData['short_description'];
+            // Convertir a minúsculas, reemplazar espacios por guiones bajos y limpiar caracteres especiales
+            $slugName = strtolower(trim($productName));
+            $slugName = preg_replace('/[^a-z0-9\s_-]/', '', $slugName); // Remover caracteres especiales
+            $slugName = preg_replace('/\s+/', '-', $slugName); // Reemplazar espacios por guiones
+            $slugName = preg_replace('/-{2,}/', '-', $slugName); // Reemplazar múltiples guiones por uno solo
+
+            $validatedData['product_link'] = config('app.frontend_url') . "/detalle/{$slugName}";
+        }
+
         $product = Product::create($validatedData);
 
         $product->load('theme', 'category', 'productType');

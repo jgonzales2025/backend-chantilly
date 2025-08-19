@@ -18,7 +18,8 @@ class Product extends Model
         'theme_id',
         'image',
         'status',
-        'best_status'
+        'best_status',
+        'product_link'
     ];
 
     public $timestamps = false;
