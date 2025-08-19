@@ -11,6 +11,7 @@ use App\Http\Controllers\Local\LocalController;
 use App\Http\Controllers\MessageCustomerBot\MessageCustomerBotController;
 use App\Http\Controllers\Order\OrderController;
 use App\Http\Controllers\Page\PageController;
+use App\Http\Controllers\Payment\PaymentController;
 use App\Http\Controllers\Product\ProductController;
 use App\Http\Controllers\ProductVariant\ProductVariantController;
 use App\Http\Controllers\Tematica\ThemeController;
@@ -111,5 +112,7 @@ Route::middleware('auth:sanctum')->get('/me', function (Request $request) {
     return response()->json($request->user());
 });
 
-
+// Proceso de pago
+Route::post('/session', [PaymentController::class, 'getSession']);
+Route::post('/pay', [PaymentController::class, 'pay']);
 
