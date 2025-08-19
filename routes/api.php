@@ -14,6 +14,7 @@ use App\Http\Controllers\Page\PageController;
 use App\Http\Controllers\Payment\PaymentController;
 use App\Http\Controllers\Product\ProductController;
 use App\Http\Controllers\ProductVariant\ProductVariantController;
+use App\Http\Controllers\SaleAdvisor\SaleAdvisorController;
 use App\Http\Controllers\Tematica\ThemeController;
 use App\Models\Company;
 use App\Models\ProductType;
@@ -116,3 +117,6 @@ Route::middleware('auth:sanctum')->get('/me', function (Request $request) {
 Route::post('/session', [PaymentController::class, 'getSession']);
 Route::post('/pay', [PaymentController::class, 'pay']);
 
+// Rutas para los asesores de ventas
+Route::get('/sale-advisors', [SaleAdvisorController::class, 'index']);
+Route::post('/sale-advisors', [SaleAdvisorController::class, 'store']);
