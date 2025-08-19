@@ -487,4 +487,50 @@ enum ProductEnum: string
             self::PRODUCT_40 => 0
         };
     }
+
+    public function product_link()
+    {
+        return match($this) {
+            self::PRODUCT_01 => config('app.frontend_url').'/detalle/alitas-de-pollo',
+            self::PRODUCT_02 => config('app.frontend_url').'/detalle/tequeños',
+            self::PRODUCT_03 => config('app.frontend_url').'/detalle/nuggets-de-pollo',
+            self::PRODUCT_04 => config('app.frontend_url').'/detalle/boulevant-de-pollo',
+            self::PRODUCT_05 => config('app.frontend_url').'/detalle/mini-pastel-de-acelga',
+            self::PRODUCT_06 => config('app.frontend_url').'/detalle/butifarras-de-jamón',
+            self::PRODUCT_07 => config('app.frontend_url').'/detalle/petipan-de-pollo',
+            self::PRODUCT_08 => config('app.frontend_url').'/detalle/canapes-de-jamón-y-queso',
+            self::PRODUCT_09 => config('app.frontend_url').'/detalle/brochetas-de-pollo',
+            self::PRODUCT_10 => config('app.frontend_url').'/detalle/petipan-de-tocino-y-huevo',
+            self::PRODUCT_11 => config('app.frontend_url').'/detalle/mini-triple-jamón-y-queso',
+            self::PRODUCT_12 => config('app.frontend_url').'/detalle/hojarasca-de-aji-de-gallina',
+            self::PRODUCT_13 => config('app.frontend_url').'/detalle/quiche-de-pollo-y-queso',
+            self::PRODUCT_14 => config('app.frontend_url').'/detalle/quiche-de-jamon-y-queso',
+            self::PRODUCT_15 => config('app.frontend_url').'/detalle/boulevant-de-atún',
+            self::PRODUCT_16 => config('app.frontend_url').'/detalle/petipan-de-jamonada',
+            self::PRODUCT_17 => config('app.frontend_url').'/detalle/cheescake-de-sauco',
+            self::PRODUCT_18 => config('app.frontend_url').'/detalle/cheescake-de-fresa',
+            self::PRODUCT_19 => config('app.frontend_url').'/detalle/cheescake-de-maracuya',
+            self::PRODUCT_20 => config('app.frontend_url').'/detalle/torta-selva-negra-entera',
+            self::PRODUCT_21 => config('app.frontend_url').'/detalle/torta-selva-negra-mixta',
+            self::PRODUCT_22 => config('app.frontend_url').'/detalle/torta-sublime',
+            self::PRODUCT_23 => config('app.frontend_url').'/detalle/tres-leches-doble-chocolate',
+            self::PRODUCT_24 => config('app.frontend_url').'/detalle/torta-tres-leches-de-coco',
+            self::PRODUCT_25 => config('app.frontend_url').'/detalle/tres-leches-de-oreo',
+            self::PRODUCT_26 => config('app.frontend_url').'/detalle/torta-chocolate',
+            self::PRODUCT_27 => config('app.frontend_url').'/detalle/torta-tres-leches-de-maracuya',
+            self::PRODUCT_28 => config('app.frontend_url').'/detalle/torta-tres-leches-de-fresa',
+            self::PRODUCT_29 => config('app.frontend_url').'/detalle/torta-sachert',
+            self::PRODUCT_30 => config('app.frontend_url').'/detalle/torta-bautizo-niño-01',
+            self::PRODUCT_31 => config('app.frontend_url').'/detalle/vela-numerada-color-azul-número-0',
+            self::PRODUCT_32 => config('app.frontend_url').'/detalle/vela-numerada-color-azul-número-1',
+            self::PRODUCT_33 => config('app.frontend_url').'/detalle/vela-numerada-color-azul-número-2',
+            self::PRODUCT_34 => config('app.frontend_url').'/detalle/vela-numerada-color-azul-número-3',
+            self::PRODUCT_35 => config('app.frontend_url').'/detalle/vela-numerada-color-azul-número-4',
+            self::PRODUCT_36 => config('app.frontend_url').'/detalle/vela-numerada-color-azul-número-5',
+            self::PRODUCT_37 => config('app.frontend_url').'/detalle/vela-numerada-color-azul-número-6',
+            self::PRODUCT_38 => config('app.frontend_url').'/detalle/vela-numerada-color-azul-número-7',
+            self::PRODUCT_39 => config('app.frontend_url').'/detalle/vela-numerada-color-azul-número-8',
+            self::PRODUCT_40 => config('app.frontend_url').'/detalle/vela-numerada-color-azul-número-9',
+        };
+    }
 }
