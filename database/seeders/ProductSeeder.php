@@ -25,7 +25,8 @@ class ProductSeeder extends Seeder
                 'theme_id' => $product->theme_id(),
                 'image' => $product->image(),
                 'status' => $product->status(),
-                'best_status' => $product->best_status()
+                'best_status' => $product->best_status(),
+                'product_link' => $product->product_link()
             ]);
         }
     }
