@@ -74,4 +74,55 @@ class StoreCustomerRequest extends FormRequest
             'district_code' => 'nullable|string',
         ];
     }
+
+    public function messages(): array
+    {
+        return [
+            'email.required' => 'El correo electrónico es obligatorio.',
+            'email.string' => 'El correo electrónico debe ser una cadena de texto.',
+            'email.max' => 'El correo electrónico no debe exceder 255 caracteres.',
+            'email.email' => 'El correo electrónico debe ser válido.',
+            'email.unique' => 'El correo electrónico ya está registrado.',
+
+            'password.required' => 'La contraseña es obligatoria.',
+            'password.string' => 'La contraseña debe ser una cadena de texto.',
+            'password.confirmed' => 'Las contraseñas no coinciden.',
+
+            'id_document_type.required' => 'El tipo de documento es obligatorio.',
+            'id_document_type.integer' => 'El tipo de documento debe ser un número entero.',
+            'id_document_type.exists' => 'El tipo de documento seleccionado no es válido.',
+
+            'document_number.required' => 'El número de documento es obligatorio.',
+            'document_number.string' => 'El número de documento debe ser una cadena de texto.',
+            'document_number.unique' => 'El número de documento ya está registrado.',
+
+            'name.required' => 'El nombre es obligatorio.',
+            'name.string' => 'El nombre debe ser una cadena de texto.',
+            'name.max' => 'El nombre no debe exceder 100 caracteres.',
+
+            'lastname.required' => 'El apellido es obligatorio.',
+            'lastname.string' => 'El apellido debe ser una cadena de texto.',
+            'lastname.max' => 'El apellido no debe exceder 100 caracteres.',
+
+            'address.required' => 'La dirección es obligatoria.',
+            'address.string' => 'La dirección debe ser una cadena de texto.',
+
+            'phone.required' => 'El teléfono es obligatorio.',
+            'phone.string' => 'El teléfono debe ser una cadena de texto.',
+            'phone.max' => 'El teléfono no debe exceder 9 caracteres.',
+
+            'department.required' => 'El departamento es obligatorio.',
+            'department.string' => 'El departamento debe ser una cadena de texto.',
+
+            'province.required' => 'La provincia es obligatoria.',
+            'province.string' => 'La provincia debe ser una cadena de texto.',
+
+            'district.required' => 'El distrito es obligatorio.',
+            'district.string' => 'El distrito debe ser una cadena de texto.',
+
+            'department_code.string' => 'El código de departamento debe ser una cadena de texto.',
+            'province_code.string' => 'El código de provincia debe ser una cadena de texto.',
+            'district_code.string' => 'El código de distrito debe ser una cadena de texto.',
+        ];
+    }
 }
