@@ -10,7 +10,7 @@ class SmsService
     {
         $twilio = new Client(config('app.twilio_sid'), config('app.twilio_auth_token'));
 
-        $message = "Hola $name, gracias por registrarte en nuestro ecommerce 🎉";
+        $message = "Hola $name, gracias por registrarte en nuestra pastelería La Casa del Chantilly 🎉";
 
         $twilio->messages->create(
             $phone,

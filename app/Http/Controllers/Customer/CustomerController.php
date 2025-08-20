@@ -105,6 +105,9 @@ class CustomerController extends Controller
             $updateData['deparment'] = $validatedData['deparment'];
             $updateData['province'] = $validatedData['province'];
             $updateData['district'] = $validatedData['district'];
+            $updateData['deparment_code'] = $validatedData['deparment_code'];
+            $updateData['province_code'] = $validatedData['province_code'];
+            $updateData['district_code'] = $validatedData['district_code'];
         }
 
         $customer->update($updateData);

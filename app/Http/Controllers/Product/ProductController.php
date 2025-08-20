@@ -82,7 +82,7 @@ class ProductController extends Controller
             $slugName = preg_replace('/\s+/', '-', $slugName); // Reemplazar espacios por guiones
             $slugName = preg_replace('/-{2,}/', '-', $slugName); // Reemplazar múltiples guiones por uno solo
             
-            $validatedData['product_link'] = config('app.frontend_url') . "/detalle/{$slugName}";
+            $validatedData['product_link'] = config('app.frontend_url') . "detalle/{$slugName}";
         }
 
         $product = Product::create($validatedData);
