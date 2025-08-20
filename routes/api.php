@@ -16,6 +16,7 @@ use App\Http\Controllers\Product\ProductController;
 use App\Http\Controllers\ProductVariant\ProductVariantController;
 use App\Http\Controllers\SaleAdvisor\SaleAdvisorController;
 use App\Http\Controllers\Tematica\ThemeController;
+use App\Http\Controllers\Ubigeo\UbigeoController;
 use App\Models\Company;
 use App\Models\ProductType;
 use Illuminate\Http\Request;
@@ -120,3 +121,9 @@ Route::post('/pay', [PaymentController::class, 'pay']);
 // Rutas para los asesores de ventas
 Route::get('/sale-advisors', [SaleAdvisorController::class, 'index']);
 Route::post('/sale-advisors', [SaleAdvisorController::class, 'store']);
+
+// Rutas para el ubigeo
+Route::get('/departamentos', [UbigeoController::class, 'departamentos']);
+Route::get('/provincias/{coddep}', [UbigeoController::class, 'provincias']);
+Route::get('/distritos/{coddep}/{codpro}', [UbigeoController::class, 'distritos']);
+
