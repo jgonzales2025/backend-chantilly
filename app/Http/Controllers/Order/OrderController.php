@@ -41,9 +41,7 @@ class OrderController extends Controller
                 'local_id' => $validatedData['local_id'],
                 'subtotal' => $validatedData['subtotal'],
                 'total' => $validatedData['total_amount'],
-                'status' => $validatedData['status'],
-                'cod_response_niubis' => $validatedData['cod_response_niubis'] ?? null,
-                'response_niubis' => $validatedData['response_niubis'] ?? null,
+                'order_date' => now()
             ]);
 
             foreach ($validatedData['items'] as $item){

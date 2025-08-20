@@ -31,9 +31,6 @@ class StoreOrderRequest extends FormRequest
             'local_id' => 'required|integer|exists:locals,id',
             'subtotal' => 'required|numeric',
             'total_amount' => 'required|numeric',
-            'status' => 'required|boolean',
-            'cod_response_niubis' => 'nullable|string',
-            'response_niubis' => 'nullable|string',
 
             // Para order items
             'items' => 'required|array|min:1',

@@ -22,7 +22,7 @@ return new class extends Migration
             $table->decimal('total', 10, 2);
             $table->dateTime('order_date')->nullable();
             $table->boolean('status')->default(1);
-            $table->string('payment_method')->nullable(); // niubiz, yape, etc.
+            $table->string('payment_method')->nullable()->default('niubiz'); // niubiz, yape, etc.
             $table->enum('payment_status', ['pending', 'paid', 'failed'])->nullable(); // pending, paid, failed
             $table->timestamp('paid_at')->nullable();
             $table->timestamps();
