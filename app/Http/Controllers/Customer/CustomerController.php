@@ -34,7 +34,6 @@ class CustomerController extends Controller
     public function store(StoreCustomerRequest $request, SmsService $smsService)
     {
         $validatedData = $request->validated();
-
         $customer = Customer::create([
             'email' => $validatedData['email'],
             'password' => Hash::make($validatedData['password']),

@@ -382,29 +382,4 @@ class PaymentController extends Controller
         }
     }
 
-    /**
-     * Webhook para notificaciones de Niubiz (si lo implementas)
-     */
-    public function webhook(Request $request)
-    {
-        try {
-            Log::info('Webhook Niubiz recibido', [
-                'headers' => $request->headers->all(),
-                'body' => $request->all()
-            ]);
-
-            // Aquí implementarías la lógica para procesar notificaciones
-            // de Niubiz si las hubiera
-            
-            return response()->json(['status' => 'received'], 200);
-
-        } catch (\Exception $e) {
-            Log::error('Error en webhook Niubiz', [
-                'error' => $e->getMessage(),
-                'request' => $request->all()
-            ]);
-
-            return response()->json(['status' => 'error'], 500);
-        }
-    }
 }
