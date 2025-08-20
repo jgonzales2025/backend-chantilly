@@ -22,12 +22,9 @@ return new class extends Migration
             $table->string('password', 100)->nullable();
             $table->string('address', 255)->nullable();
             $table->string('phone', 9)->nullable();
-            $table->string('deparment', 100)->nullable();
+            $table->string('department', 100)->nullable();
             $table->string('province', 100)->nullable();
             $table->string('district', 100)->nullable();
-            $table->string('deparment_code')->nullable();
-            $table->string('province_code')->nullable();
-            $table->string('district_code')->nullable();
             $table->boolean('status')->default(1);
             $table->string('google_id')->nullable()->unique();
             $table->timestamps();

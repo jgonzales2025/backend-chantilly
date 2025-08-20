@@ -38,13 +38,10 @@ class UpdateCustomerRequest extends FormRequest
             $rules['password'] = ['string', 'confirmed'];
         }
 
-        if ($this->filled('deparment')) {
-            $rules['deparment'] = ['nullable', 'string'];
+        if ($this->filled('department')) {
+            $rules['department'] = ['nullable', 'string'];
             $rules['province'] = ['nullable', 'string'];
             $rules['district'] = ['nullable', 'string'];
-            $rules['deparment_code'] = ['nullable', 'string'];
-            $rules['province_code'] = ['nullable', 'string'];
-            $rules['district_code'] = ['nullable', 'string'];
         }
 
 
