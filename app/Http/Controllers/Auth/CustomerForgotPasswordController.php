@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
 use App\Models\Customer;
+use App\Services\SmsService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Str;
@@ -12,6 +13,12 @@ use Twilio\Rest\Client;
 
 class CustomerForgotPasswordController extends Controller
 {
+    protected $smsService;
+
+    public function __construct(SmsService $smsService)
+    {
+        $this->smsService = $smsService;
+    }
 
     /**
      * Enviar enlace de restablecimiento de contraseña.
@@ -67,15 +74,8 @@ class CustomerForgotPasswordController extends Controller
         $customer->save();
 
         // Enviar SMS con Twilio
-        $twilio = new Client(env('TWILIO_SID'), env('TWILIO_AUTH_TOKEN'));
         $phone = '+51' . ltrim($customer->phone, '0');
-        $twilio->messages->create(
-            $phone,
-            [
-                'from' => env('TWILIO_FROM'),
-                'body' => "Tu código de recuperación es: $code"
-            ]
-        );
+        $this->smsService->sendRecoveryCode($phone, $code);
 
         return response()->json(['message' => 'Código enviado por SMS.'], 200);
     }
@@ -105,7 +105,7 @@ class CustomerForgotPasswordController extends Controller
         $request->validate([
             'phone' => 'required',
             'code' => 'required',
-            'password' => 'required|confirmed|min:8',
+            'password' => 'required|confirmed',
         ]);
 
         $customer = Customer::where('phone', $request->phone)->first();
