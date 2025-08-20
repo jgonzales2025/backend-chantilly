@@ -124,5 +124,8 @@ return [
     ],
 
     'frontend_url' => env('FRONTEND_URL'),
+    'twilio_sid' => env('TWILIO_SID'),
+    'twilio_auth_token' => env('TWILIO_AUTH_TOKEN'),
+    'twilio_phone' => env('TWILIO_PHONE'),
 
 ];

@@ -16,7 +16,7 @@ return new class extends Migration
             $table->string('name', 100)->nullable();
             $table->string('lastname', 100)->nullable();
             $table->foreignId('id_document_type')->nullable()->constrained('document_types')->onDelete('cascade');
-            $table->string('document_number', 50)->nullable()->unique();
+            $table->string('document_number', 50)->nullable();
             $table->string('email', 150)->unique();
             $table->timestamp('email_verified_at')->nullable();
             $table->string('password', 100)->nullable();

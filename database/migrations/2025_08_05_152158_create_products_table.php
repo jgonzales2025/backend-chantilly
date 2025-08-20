@@ -23,6 +23,7 @@ return new class extends Migration
             $table->string('image')->nullable();
             $table->boolean('status')->default(0);
             $table->boolean('best_status')->default(0);
+            $table->string('product_link')->nullable();
         });
     }
 
