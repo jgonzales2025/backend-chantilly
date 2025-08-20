@@ -24,7 +24,7 @@ class CustomerSeeder extends Seeder
                 'password' => $customer->password(),
                 'address' => $customer->address(),
                 'phone' => $customer->phone(),
-                'deparment' => $customer->department(),
+                'department' => $customer->department(),
                 'province' => $customer->province(),
                 'district' => $customer->district(),
             ]);

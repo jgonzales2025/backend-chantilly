@@ -21,9 +21,17 @@ class UbigeoController extends Controller
 
     public function provincias($coddep)
     {
-        $provincias = Province::where('coddep', $coddep)
-            ->select('coddep', 'codpro', 'nompro')
-            ->get();
+        // Si el código de Lima es '15', ajusta según tu base de datos
+        if ($coddep === '15') {
+            $provincias = Province::where('coddep', $coddep)
+                ->where('nompro', 'Lima') // Solo la provincia de Lima
+                ->select('coddep', 'codpro', 'nompro')
+                ->get();
+        } else {
+            $provincias = Province::where('coddep', $coddep)
+                ->select('coddep', 'codpro', 'nompro')
+                ->get();
+        }
 
         return response()->json($provincias);
     }
