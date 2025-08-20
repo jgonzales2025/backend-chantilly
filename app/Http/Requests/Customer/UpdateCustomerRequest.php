@@ -42,6 +42,9 @@ class UpdateCustomerRequest extends FormRequest
             $rules['department'] = ['nullable', 'string'];
             $rules['province'] = ['nullable', 'string'];
             $rules['district'] = ['nullable', 'string'];
+            $rules['department_code'] = ['nullable', 'string'];
+            $rules['province_code'] = ['nullable', 'string'];
+            $rules['district_code'] = ['nullable', 'string'];
         }
 
 

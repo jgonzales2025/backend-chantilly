@@ -68,7 +68,10 @@ class StoreCustomerRequest extends FormRequest
             'phone' => 'required|string|max:9',
             'department' => 'required|string',
             'province' => 'required|string',
-            'district' => 'required|string'
+            'district' => 'required|string',
+            'department_code' => 'nullable|string',
+            'province_code' => 'nullable|string',
+            'district_code' => 'nullable|string',
         ];
     }
 }

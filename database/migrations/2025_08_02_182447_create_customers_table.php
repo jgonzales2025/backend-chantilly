@@ -25,6 +25,9 @@ return new class extends Migration
             $table->string('department', 100)->nullable();
             $table->string('province', 100)->nullable();
             $table->string('district', 100)->nullable();
+            $table->string('department_code')->nullable();
+            $table->string('province_code')->nullable();
+            $table->string('district_code')->nullable();
             $table->boolean('status')->default(1);
             $table->string('google_id')->nullable()->unique();
             $table->timestamps();

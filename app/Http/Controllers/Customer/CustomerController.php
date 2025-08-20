@@ -46,7 +46,10 @@ class CustomerController extends Controller
             'phone' => $validatedData['phone'],
             'department' => $validatedData['department'],
             'province' => $validatedData['province'],
-            'district' => $validatedData['district']
+            'district' => $validatedData['district'],
+            'department_code' => $validatedData['department_code'],
+            'province_code' => $validatedData['province_code'],
+            'district_code' => $validatedData['district_code'],
         ]);
         $phone = '+51' . ltrim($customer->phone, '0');
         $smsService->sendWelcomeSms($phone, $customer->name);
@@ -102,6 +105,9 @@ class CustomerController extends Controller
             $updateData['department'] = $validatedData['department'];
             $updateData['province'] = $validatedData['province'];
             $updateData['district'] = $validatedData['district'];
+            $updateData['department_code'] = $validatedData['department_code'];
+            $updateData['province_code'] = $validatedData['province_code'];
+            $updateData['district_code'] = $validatedData['district_code'];
         }
 
         $customer->update($updateData);

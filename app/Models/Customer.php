@@ -26,6 +26,9 @@ class Customer extends Authenticatable
         'department',
         'province',
         'district',
+        'department_code',
+        'province_code',
+        'district_code',
         'google_id'
     ];
 
