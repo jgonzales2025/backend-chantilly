@@ -3,10 +3,12 @@
 namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
+use App\Models\Customer;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Password;
+use Twilio\Rest\Client;
 
 class CustomerForgotPasswordController extends Controller
 {
@@ -48,5 +50,79 @@ class CustomerForgotPasswordController extends Controller
         return $status === Password::PASSWORD_RESET
             ? response()->json(['message' => 'Contraseña restablecida correctamente.'], 200)
             : response()->json(['message' => 'Token inválido o expirado.'], 400);
+    }
+
+    public function sendRecoveryCode(Request $request)
+    {
+        $request->validate(['phone' => 'required']);
+
+        $customer = Customer::where('phone', $request->phone)->first();
+        if (!$customer) {
+            return response()->json(['message' => 'Teléfono no encontrado.'], 404);
+        }
+
+        $code = rand(100000, 999999);
+        $customer->recovery_code = $code;
+        $customer->recovery_code_expires_at = now()->addMinutes(10);
+        $customer->save();
+
+        // Enviar SMS con Twilio
+        $twilio = new Client(env('TWILIO_SID'), env('TWILIO_AUTH_TOKEN'));
+        $phone = '+51' . ltrim($customer->phone, '0');
+        $twilio->messages->create(
+            $phone,
+            [
+                'from' => env('TWILIO_FROM'),
+                'body' => "Tu código de recuperación es: $code"
+            ]
+        );
+
+        return response()->json(['message' => 'Código enviado por SMS.'], 200);
+    }
+
+    public function verifyRecoveryCode(Request $request)
+    {
+        $request->validate([
+            'phone' => 'required',
+            'code' => 'required',
+        ]);
+
+        $customer = Customer::where('phone', $request->phone)->first();
+
+        if (
+            !$customer ||
+            $customer->recovery_code !== $request->code ||
+            now()->gt($customer->recovery_code_expires_at)
+        ) {
+            return response()->json(['message' => 'Código inválido o expirado.'], 400);
+        }
+
+        return response()->json(['message' => 'Código válido.'], 200);
+    }
+
+    public function resetWithCode(Request $request)
+    {
+        $request->validate([
+            'phone' => 'required',
+            'code' => 'required',
+            'password' => 'required|confirmed|min:8',
+        ]);
+
+        $customer = Customer::where('phone', $request->phone)->first();
+
+        if (
+            !$customer ||
+            $customer->recovery_code !== $request->code ||
+            now()->gt($customer->recovery_code_expires_at)
+        ) {
+            return response()->json(['message' => 'Código inválido o expirado.'], 400);
+        }
+
+        $customer->password = Hash::make($request->password);
+        $customer->recovery_code = null;
+        $customer->recovery_code_expires_at = null;
+        $customer->save();
+
+        return response()->json(['message' => 'Contraseña restablecida correctamente.'], 200);
     }
 }
