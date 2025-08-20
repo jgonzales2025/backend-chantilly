@@ -44,12 +44,9 @@ class CustomerController extends Controller
             'lastname' => $validatedData['lastname'],
             'address' => $validatedData['address'],
             'phone' => $validatedData['phone'],
-            'deparment' => $validatedData['deparment'],
+            'department' => $validatedData['department'],
             'province' => $validatedData['province'],
-            'district' => $validatedData['district'],
-            'deparment_code' => $validatedData['deparment_code'],
-            'province_code' => $validatedData['province_code'],
-            'district_code' => $validatedData['district_code']
+            'district' => $validatedData['district']
         ]);
         $phone = '+51' . ltrim($customer->phone, '0');
         $smsService->sendWelcomeSms($phone, $customer->name);
@@ -100,14 +97,11 @@ class CustomerController extends Controller
             $updateData['password'] = Hash::make($validatedData['password']);
         }
 
-        if (array_key_exists('deparment', $validatedData))
+        if (array_key_exists('department', $validatedData))
         {
-            $updateData['deparment'] = $validatedData['deparment'];
+            $updateData['department'] = $validatedData['department'];
             $updateData['province'] = $validatedData['province'];
             $updateData['district'] = $validatedData['district'];
-            $updateData['deparment_code'] = $validatedData['deparment_code'];
-            $updateData['province_code'] = $validatedData['province_code'];
-            $updateData['district_code'] = $validatedData['district_code'];
         }
 
         $customer->update($updateData);
