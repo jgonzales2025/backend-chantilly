@@ -37,7 +37,7 @@ class OrderController extends Controller
             $order = Order::create([
                 'customer_id' => $validatedData['customer_id'],
                 'voucher_type' => $validatedData['voucher_type'],
-                'billing_data' => $validatedData['billing_data'],
+                'billing_data' => $validatedData['billing_data'] ?? null,
                 'local_id' => $validatedData['local_id'],
                 'subtotal' => $validatedData['subtotal'],
                 'total' => $validatedData['total_amount'],
@@ -47,8 +47,9 @@ class OrderController extends Controller
             foreach ($validatedData['items'] as $item){
                 OrderItem::create([
                     'order_id' => $order->id,
-                    'product_variant_id' => $item['product_variant_id'],
-                    'cake_flavor_id' => $item['cake_flavor_id'],
+                    'product_variant_id' => $item['product_variant_id'] ?? null,
+                    'product_id' => $item['product_id'] ?? null,
+                    'cake_flavor_id' => $item['cake_flavor_id'] ?? null,
                     'quantity' => $item['quantity'],
                     'unit_price' => $item['unit_price'],
                     'subtotal' => $item['subtotal'],
