@@ -40,7 +40,7 @@ class StoreOrderRequest extends FormRequest
             'items.*.unit_price' => 'required|numeric',
             'items.*.subtotal' => 'required|numeric',
             'items.*.dedication_text' => 'nullable|string',
-            'items.*.delivery_date' => 'required|date',
+            'items.*.delivery_date' => 'nullable|date',
         ];
     }
 }
