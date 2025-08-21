@@ -20,7 +20,7 @@ return new class extends Migration
             $table->decimal('unit_price', 10, 2);
             $table->decimal('subtotal', 10, 2);
             $table->string('dedication_text', 255)->nullable();
-            $table->date('delivery_date');
+            $table->date('delivery_date')->nullable();
             $table->timestamps();
         });
     }
