@@ -34,8 +34,9 @@ class StoreOrderRequest extends FormRequest
 
             // Para order items
             'items' => 'required|array|min:1',
-            'items.*.product_variant_id' => 'required|exists:product_variants,id',
-            'items.*.cake_flavor_id' => 'required|exists:cake_flavors,id',
+            'items.*.product_variant_id' => 'nullable|exists:product_variants,id',
+            'items.*.product_id' => 'nullable|exists:products,id',
+            'items.*.cake_flavor_id' => 'nullable|exists:cake_flavors,id',
             'items.*.quantity' => 'required|integer',
             'items.*.unit_price' => 'required|numeric',
             'items.*.subtotal' => 'required|numeric',
