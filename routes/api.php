@@ -88,9 +88,14 @@ Route::get('/document-types', [DocumentTypeController::class, 'index']);
 Route::get('/auth/google/redirect', [CustomerGoogleAuthController::class, 'redirect']);
 Route::get('/auth/google/callback', [CustomerGoogleAuthController::class, 'callback']);
 
-// Rutas para recuperación de contraseña
+// Rutas para recuperación de contraseña por email
 Route::post('/forgot-password', [CustomerForgotPasswordController::class, 'sendResetLinkEmail']);
 Route::post('/reset-password', [CustomerForgotPasswordController::class, 'reset']);
+
+// Rutas para recuperación de contraseña por sms
+Route::post('/recovery/send-code', [CustomerForgotPasswordController::class, 'sendRecoveryCode']);
+Route::post('/recovery/verify-code', [CustomerForgotPasswordController::class, 'verifyRecoveryCode']);
+Route::post('/recovery/reset-password', [CustomerForgotPasswordController::class, 'resetWithCode']);
 
 // Rutas para los locales
 Route::get('/locals/location', [LocalController::class, 'indexByLocation']);
