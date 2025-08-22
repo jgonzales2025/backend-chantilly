@@ -48,16 +48,15 @@ class PaymentController extends Controller
         $validated = $request->validate([
             'amount' => 'required|numeric|min:0.01',
             'order_id' => 'sometimes|exists:orders,id',
-            'purchaseNumber' => 'sometimes|string|unique:niubiz_transactions,purchase_number',
             'description' => 'sometimes|string|max:255'
         ]);
-
+        
         DB::beginTransaction();
         
         try {
             // Generar purchaseNumber si no se proporciona
             if (!isset($validated['purchaseNumber'])) {
-                $validated['purchaseNumber'] = 'PUR-' . time() . '-' . Str::random(6);
+                $validated['purchaseNumber'] = substr(strval(time() . rand(100,999)), 0, 12);
             }
 
             // Verificar si la orden existe y no está ya pagada
@@ -77,12 +76,23 @@ class PaymentController extends Controller
                     $order->update(['payment_status' => PaymentStatusEnum::PENDING]);
                 }
             }
+            Log::debug('Datos enviados a Niubiz createSession', [
+                'amount' => $validated['amount'],
+                'purchaseNumber' => $validated['purchaseNumber'],
+                'order_id' => $validated['order_id'] ?? null
+            ]);
+
+            if (isset($validated['order_id'])) {
+                $order = Order::with('customer')->find($validated['order_id']);
+                $cliente = $order?->customer; // O $order?->user según tu relación
+            }
 
             // Crear sesión con Niubiz (esto creará el registro en niubiz_transactions)
             $result = $this->niubiz->createSession(
                 $validated['amount'],
-                $validated['purchaseNumber'],
-                $validated['order_id'] ?? null
+                $cliente,
+                $validated['order_id'] ?? null,
+                $validated['purchaseNumber']
             );
 
             DB::commit();
@@ -96,7 +106,7 @@ class PaymentController extends Controller
             return response()->json([
                 'success' => true,
                 'data' => [
-                    'sessionToken' => $result['sessionToken'] ?? null,
+                    'sessionToken' => $result['sessionKey'] ?? null,
                     'purchase_number' => $validated['purchaseNumber'],
                     'merchant_id' => config('niubiz.merchant_id'),
                     'amount' => $validated['amount']
