@@ -40,20 +40,18 @@ class NiubizService
                 'auth' => [$this->user, $this->password],
                 'timeout' => 30,
             ]);
-
-            return json_decode($response->getBody()->getContents(), true);
+            return $response->getBody()->getContents();
         });
     }
 
     /**
      * Crear sesión de pago y guardar en BD
      */
-    public function createSession($amount, $purchaseNumber, $orderId = null)
+    public function createSession($amount, $customer, $orderId)
     {
         // Crear registro de transacción
         $transaction = NiubizTransaction::create([
             'order_id' => $orderId,
-            'purchase_number' => $purchaseNumber,
             'amount' => $amount,
             'currency' => 'PEN',
             'status' => TransactionStatusEnum::PENDING
@@ -61,40 +59,45 @@ class NiubizService
 
         try {
             $url = config("niubiz.urls.session.{$this->env}") . $this->merchantId;
-            $sessionKey = $this->getSessionKey()['sessionKey'] ?? null;
-
+            $sessionKey = $this->getSessionKey();
+            
             $requestData = [
-                "amount" => $amount * 100, // Convertir a centavos
+                "amount" => number_format($amount, 2, '.', ''),
                 "channel" => "web",
-                "antifraud" => null,
-                "purchaseNumber" => $purchaseNumber
+                "antifraud" => [
+                    "clientIp" => request()->ip(),
+                    "merchantDefineData" => [
+                        "MDD4" => $customer->email ?? '',
+                        "MDD21" => '0',
+                        "MDD32" => $customer->id_usuario ?? '',
+                        "MDD75" => 'Registrado',
+                        "MDD77" =>  "5"
+                        ]
+                    ]
             ];
 
             // Guardar request en BD
             $transaction->update(['niubiz_request' => $requestData]);
-
             $response = $this->client->request('POST', $url, [
                 'headers' => [
                     'Content-Type' => 'application/json',
                     'Authorization' => $sessionKey
                 ],
                 'json' => $requestData,
-                'timeout' => 30
+                'timeout' => 10
             ]);
 
             $result = json_decode($response->getBody()->getContents(), true);
-
+            
             // Actualizar con respuesta exitosa
             $transaction->update([
-                'session_token' => $result['sessionToken'] ?? null,
+                'session_token' => $result['sessionKey'] ?? null,
                 'niubiz_response' => $result
             ]);
 
             Log::info('Sesión Niubiz creada exitosamente', [
-                'transaction_id' => $transaction->id,
-                'purchase_number' => $purchaseNumber
+                'transaction_id' => $transaction->id
             ]);
-
             return $result;
 
         } catch (RequestException $e) {
@@ -128,7 +131,7 @@ class NiubizService
 
         try {
             $url = config("niubiz.urls.transaction.{$this->env}") . $this->merchantId;
-            $sessionKey = $this->getSessionKey()['sessionKey'] ?? null;
+            $sessionKey = $this->getSessionKey();
 
             $requestData = [
                 "antifraud" => null,

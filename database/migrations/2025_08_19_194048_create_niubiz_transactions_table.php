@@ -14,7 +14,7 @@ return new class extends Migration
         Schema::create('niubiz_transactions', function (Blueprint $table) {
             $table->id();
             $table->foreignId('order_id')->nullable()->constrained('orders')->onDelete('cascade');
-            $table->string('purchase_number')->unique(); // Número de compra único
+            $table->string('purchase_number')->unique()->nullable(); // Número de compra único
             $table->string('session_token')->nullable(); // Token de sesión
             $table->string('token_id')->nullable(); // Token del formulario de pago
             $table->decimal('amount', 10, 2); // Monto en soles
