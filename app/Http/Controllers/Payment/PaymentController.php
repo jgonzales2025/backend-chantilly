@@ -50,13 +50,16 @@ class PaymentController extends Controller
             'order_id' => 'sometimes|exists:orders,id',
             'description' => 'sometimes|string|max:255'
         ]);
-        
+        Log::info("Datos enviados desde el frontend", $validated);
+
         DB::beginTransaction();
         
         try {
             // Generar purchaseNumber si no se proporciona
             if (!isset($validated['purchaseNumber'])) {
-                $validated['purchaseNumber'] = substr(strval(time() . rand(100,999)), 0, 12);
+                $lastTransaction = NiubizTransaction::orderBy('id', 'desc')->first();
+                $nextNumber = $lastTransaction ? $lastTransaction->id + 1 : 1;
+                $validated['purchaseNumber'] = (string) $nextNumber;
             }
 
             // Verificar si la orden existe y no está ya pagada
@@ -81,7 +84,7 @@ class PaymentController extends Controller
                 'purchaseNumber' => $validated['purchaseNumber'],
                 'order_id' => $validated['order_id'] ?? null
             ]);
-
+            $cliente = null;
             if (isset($validated['order_id'])) {
                 $order = Order::with('customer')->find($validated['order_id']);
                 $cliente = $order?->customer; // O $order?->user según tu relación
@@ -140,7 +143,7 @@ class PaymentController extends Controller
             'amount' => 'required|numeric|min:0.01',
             'purchaseNumber' => 'required|string|exists:niubiz_transactions,purchase_number'
         ]);
-
+        Log::info("Datos recibidos para procesar pago", $validated);
         DB::beginTransaction();
         
         try {
@@ -222,6 +225,39 @@ class PaymentController extends Controller
                 'error' => config('app.debug') ? $e->getMessage() : 'Error interno'
             ], 500);
         }
+    }
+
+    public function payResponse(Request $request)
+    {
+        // Los datos de la transacción llegan por POST
+        $data = $request->all();
+        Log::info('Respuesta de Niubiz recibida', $data);
+
+        $transactionToken = $data['transactionToken'] ?? null;
+        $customerEmail = $data['customerEmail'] ?? null;
+        $channel = $data['channel'] ?? null;
+
+        // BUSCAR el purchaseNumber en la base de datos usando el transactionToken
+        // O usar la sesión más reciente pendiente
+        $transaction = NiubizTransaction::where('status', 'PENDING')
+            ->orderBy('created_at', 'desc')
+            ->first();
+
+        $purchaseNumber = $transaction ? $transaction->purchase_number : null;
+        $amount = $transaction ? $transaction->amount : 117.88;
+
+        // Construir URL de redirección
+        $redirectUrl = 'http://localhost/payment-result.html?' . http_build_query([
+            'tokenId' => $transactionToken,
+            'purchaseNumber' => $purchaseNumber, // Ahora tenemos el purchaseNumber correcto
+            'customerEmail' => $customerEmail,
+            'channel' => $channel,
+            'amount' => $amount,
+            'currency' => 'S/',
+            'autoProcess' => 'true'
+        ]);
+
+        return redirect($redirectUrl);
     }
 
     /**
