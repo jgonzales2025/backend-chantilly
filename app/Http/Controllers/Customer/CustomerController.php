@@ -10,9 +10,18 @@ use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use App\Services\SmsService;
+use Illuminate\Support\Facades\Log;
 
 class CustomerController extends Controller
 {
+
+    protected $smsService;
+
+    public function __construct(SmsService $smsService)
+    {
+        $this->smsService = $smsService;
+    }
+
     /**
      * Listar clientes.
      */
@@ -31,7 +40,7 @@ class CustomerController extends Controller
     /**
      * Registrar cliente.
      */
-    public function store(StoreCustomerRequest $request, SmsService $smsService)
+    public function store(StoreCustomerRequest $request)
     {
         $validatedData = $request->validated();
         $customer = Customer::create([
@@ -51,7 +60,8 @@ class CustomerController extends Controller
             'district_code' => $validatedData['district_code'],
         ]);
         $phone = '+51' . ltrim($customer->phone, '0');
-        $smsService->sendWelcomeSms($phone, $customer->name);
+
+        $this->smsService->sendWelcomeSms($phone, $customer->name);
 
         return new JsonResponse([
             'message' => 'Cliente registrado con éxito',

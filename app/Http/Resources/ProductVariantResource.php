@@ -23,7 +23,7 @@ class ProductVariantResource extends JsonResource
             'price' => $this->price,
             'hours' => $this->hours,
             'sort' => $this->sort,
-            'image' => $this->image ? asset('storage/'. $this->image) : null,
+            'image' => $this->image_url,
             'product' => new ProductResource($this->whenLoaded('product'))
         ];
     }

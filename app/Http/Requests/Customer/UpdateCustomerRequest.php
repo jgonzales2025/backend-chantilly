@@ -23,6 +23,7 @@ class UpdateCustomerRequest extends FormRequest
     public function rules(): array
     {
         $customerId = $this->route('id');
+
         $rules = [
             'email' => ['nullable', 'string', 'email', Rule::unique('customers')->ignore($customerId)],
             'id_document_type' => 'required|integer|exists:document_types,id',

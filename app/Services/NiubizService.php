@@ -45,7 +45,7 @@ class NiubizService
     /**
      * Crear sesión de pago y guardar en BD
      */
-    public function createSession($amount, $customer, $orderId, $purchaseNumber)
+    public function createSession($amount, $customer, $orderId, $purchaseNumber, $diasRegistrado)
     {
         // Crear registro de transacción
         $transaction = NiubizTransaction::create([
@@ -69,7 +69,7 @@ class NiubizService
                         "MDD4" => $customer->email ?? '',
                         "MDD32" => $customer->id ?? '',
                         "MDD75" => 'Registrado',
-                        "MDD77" => 5
+                        "MDD77" => $diasRegistrado
                         ]
                     ]
             ];

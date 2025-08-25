@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Order;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Order\StoreOrderRequest;
+use App\Http\Resources\OrderResource;
 use App\Models\Order;
 use App\Models\OrderItem;
 use Illuminate\Http\JsonResponse;
@@ -15,15 +16,45 @@ class OrderController extends Controller
     /**
      * Listar pedidos.
      */
-    public function index(): JsonResponse
+    public function index(Request $request): JsonResponse
     {
-        $orders = Order::all();
+        $customerId = $request->query('customer_id');
+        $orderNumber = $request->query('order_number');
+        $dateFilter = $request->query('date_filter');
+        $orders = Order::with('items.product', 'items.productVariant', 'local')
+            ->when($customerId, function ($query, $customerId) {
+                return $query->where('customer_id', $customerId);
+            })
+            ->when($orderNumber, function ($query, $orderNumber) {
+                return $query->where('order_number', $orderNumber);
+            })
+            ->when($dateFilter, function ($query, $dateFilter) {
+                switch ($dateFilter) {
+                    case 'ultimos_30_dias':
+                        return $query->where('order_date', '>=', now()->subDays(30));
+                    case 'ultimos_3_meses':
+                        return $query->where('order_date', '>=', now()->subMonths(3));
+                    case 'ultimos_6_meses':
+                        return $query->where('order_date', '>=', now()->subMonths(6));
+                    case '2025':
+                        return $query->whereYear('order_date', 2025);
+                    default:
+                        return $query;
+                }
+            })
+            ->orderBy('order_date', 'desc')
+            ->get();
 
-        if ($orders->isEmpty()){
-            return new JsonResponse(['message' => 'No hay pedidos registrados']);
+        if ($orders->isEmpty()) {
+            return new JsonResponse([
+                'message' => 'No se encontraron pedidos para este cliente'
+            ], 404);
         }
 
-        return new JsonResponse($orders->load('items'), 200);
+        return new JsonResponse([
+            'customer_id' => $customerId,
+            'orders' => OrderResource::collection($orders)
+        ], 200);
     }
 
     /**
@@ -43,7 +74,6 @@ class OrderController extends Controller
                 'total' => $validatedData['total_amount'],
                 'order_date' => now()
             ]);
-
             foreach ($validatedData['items'] as $item){
                 OrderItem::create([
                     'order_id' => $order->id,
@@ -60,7 +90,7 @@ class OrderController extends Controller
 
             return new JsonResponse([
                 'message' => 'Orden creada con éxito',
-                'order' => $order->load('items')
+                'order' => new OrderResource($order->load('items'))
             ]);
         });
         
