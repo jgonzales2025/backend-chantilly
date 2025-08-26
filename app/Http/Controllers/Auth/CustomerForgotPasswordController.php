@@ -7,10 +7,8 @@ use App\Models\Customer;
 use App\Services\SmsService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
-use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Password;
-use Twilio\Rest\Client;
 
 class CustomerForgotPasswordController extends Controller
 {
