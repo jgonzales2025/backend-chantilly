@@ -23,31 +23,26 @@ class Order extends Model
         'status',
         'payment_method',
         'payment_status', 
-        'paid_at'
+        'paid_at',
+        'delivery_date'
     ];
 
     protected $casts = [
         'status' => 'boolean',
         'billing_data' => 'array',
         'payment_status' => PaymentStatusEnum::class,
-        'paid_at' => 'datetime'
+        'paid_at' => 'datetime',
+        'order_date' => 'datetime',
+        'created_at' => 'datetime',
+        'updated_at' => 'datetime',
     ];
 
     protected $hidden = ['created_at','updated_at'];
 
-    protected static function boot()
-    {
-        parent::boot();
-
-        static::creating(function ($order) {
-            $order->order_date = now();
-        });
-    }
-
-    public function getOrderDateAttribute($value)
+    /* public function getOrderDateAttribute($value)
     {
         return Carbon::parse($value)->format('Y-m-d H:i');
-    }
+    } */
 
     public function items(): HasMany
     {

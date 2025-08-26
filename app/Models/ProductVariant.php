@@ -33,4 +33,12 @@ class ProductVariant extends Model
     {
         return $this->hasMany(OrderItem::class);
     }
+
+    public function getImageUrlAttribute(): ?string
+    {
+        return $this->image
+            ? asset("storage/{$this->image}")
+            : null;
+    }
+
 }

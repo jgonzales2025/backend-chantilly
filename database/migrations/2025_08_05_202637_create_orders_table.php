@@ -15,16 +15,17 @@ return new class extends Migration
             $table->id();
             $table->foreignId('customer_id')->constrained('customers')->onDelete('cascade');
             $table->string('order_number')->unique()->nullable();
-            $table->enum('voucher_type', ['BOLETA', 'FACTURA']);
+            $table->enum('voucher_type', ['Boleta', 'Factura']);
             $table->json('billing_data')->nullable();
             $table->foreignId('local_id')->constrained('locals')->onDelete('cascade');
             $table->decimal('subtotal', 10, 2);
             $table->decimal('total', 10, 2);
             $table->dateTime('order_date')->nullable();
             $table->boolean('status')->default(1);
-            $table->string('payment_method')->nullable()->default('niubiz'); // niubiz, yape, etc.
-            $table->enum('payment_status', ['pending', 'paid', 'failed'])->nullable(); // pending, paid, failed
+            $table->string('payment_method')->nullable()->default('Niubiz'); // niubiz, yape, etc.
+            $table->enum('payment_status', ['Pendiente', 'Pagado', 'Fallido'])->nullable(); // pending, paid, failed
             $table->timestamp('paid_at')->nullable();
+            $table->date('delivery_date')->nullable();
             $table->timestamps();
         });
     }

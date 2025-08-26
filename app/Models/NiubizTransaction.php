@@ -21,7 +21,7 @@ class NiubizTransaction extends Model
         'transaction_id',
         'action_code',
         'transaction_date',
-        'niubiz_request',
+        'niubiz_code_http',
         'niubiz_response',
         'error_message',
         'retry_count',

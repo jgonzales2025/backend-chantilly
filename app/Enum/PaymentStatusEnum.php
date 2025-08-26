@@ -4,9 +4,9 @@ namespace App\Enum;
 
 enum PaymentStatusEnum: string
 {
-    case PENDING = 'pending';
-    case PAID = 'paid';
-    case FAILED = 'failed';
+    case PENDING = 'Pendiente';
+    case PAID = 'Pagado';
+    case FAILED = 'Fallido';
 
     public static function values(): array
     {

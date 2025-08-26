@@ -64,7 +64,7 @@ enum CustomerEnum: string
     public function phone()
     {
         return match($this){
-            self::CUSTOMER_01 => '999988888',
+            self::CUSTOMER_01 => '984385774',
             self::CUSTOMER_02 => '999988888',
             self::CUSTOMER_03 => '999988888',
         };

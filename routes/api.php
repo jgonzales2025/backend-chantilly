@@ -122,6 +122,8 @@ Route::middleware('auth:sanctum')->get('/me', function (Request $request) {
 // Proceso de pago
 Route::post('/session', [PaymentController::class, 'getSession']);
 Route::post('/pay', [PaymentController::class, 'pay']);
+Route::get('/payment-config', [PaymentController::class, 'getConfig']);
+Route::post('/niubiz/pay-response', [PaymentController::class, 'payResponse']);
 
 // Rutas para los asesores de ventas
 Route::get('/sale-advisors', [SaleAdvisorController::class, 'index']);

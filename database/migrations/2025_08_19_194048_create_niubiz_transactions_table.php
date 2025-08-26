@@ -22,9 +22,9 @@ return new class extends Migration
             $table->enum('status', ['pending', 'success', 'failed', 'cancelled'])->default('pending');
             $table->string('transaction_id')->nullable(); // ID de transacción de Niubiz
             $table->string('action_code')->nullable(); // Código de respuesta de Niubiz
-            $table->string('transaction_date')->nullable(); // Fecha de transacción de Niubiz
-            $table->json('niubiz_request')->nullable(); // Request enviado a Niubiz
-            $table->json('niubiz_response')->nullable(); // Respuesta completa de Niubiz
+            $table->dateTime('transaction_date')->nullable(); // Fecha de transacción de Niubiz
+            $table->integer('niubiz_code_http')->nullable(); // Código HTTP de respuesta de Niubiz
+            $table->text('niubiz_response')->nullable(); // Respuesta completa de Niubiz
             $table->text('error_message')->nullable(); // Mensaje de error si falla
             $table->integer('retry_count')->default(0); // Contador de reintentos
             $table->timestamp('last_retry_at')->nullable(); // Último intento

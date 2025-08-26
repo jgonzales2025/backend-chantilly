@@ -9,7 +9,6 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Password;
-use Twilio\Rest\Client;
 
 class CustomerForgotPasswordController extends Controller
 {
@@ -73,11 +72,20 @@ class CustomerForgotPasswordController extends Controller
         $customer->recovery_code_expires_at = now()->addMinutes(10);
         $customer->save();
 
-        // Enviar SMS con Twilio
-        $phone = '+51' . ltrim($customer->phone, '0');
-        $this->smsService->sendRecoveryCode($phone, $code);
+        // Formatear número para Perú
+        $phone = "+51" . ltrim($customer->phone, '0'); // sin el +51, ya que la API espera el número local
+        // Enviar SMS usando la API de HARD SYSTEM PERU
+        $sendMsg = $this->smsService->send($phone, $code);
 
-        return response()->json(['message' => 'Código enviado por SMS.'], 200);
+         // Verificar si el SMS fue enviado correctamente
+        if ($sendMsg) {
+            return response()->json(['message' => 'Código enviado por SMS.'], 200);
+        }
+
+        return response()->json([
+            'message' => 'Error al enviar el SMS.'
+        ], 500);
+
     }
 
     public function verifyRecoveryCode(Request $request)

@@ -7,7 +7,9 @@ use App\Enum\TransactionStatusEnum;
 use App\Http\Controllers\Controller;
 use App\Models\NiubizTransaction;
 use App\Models\Order;
+use App\Notifications\OrderPaid;
 use App\Services\NiubizService;
+use App\Services\SmsService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
@@ -16,10 +18,12 @@ use Illuminate\Support\Str;
 class PaymentController extends Controller
 {
     protected $niubiz;
+    protected $smsService;
 
-    public function __construct(NiubizService $niubiz)
+    public function __construct(NiubizService $niubiz, SmsService $smsService)
     {
         $this->niubiz = $niubiz;
+        $this->smsService = $smsService;
     }
 
     /**
@@ -34,7 +38,8 @@ class PaymentController extends Controller
             'data' => [
                 'merchant_id' => config('niubiz.merchant_id'),
                 'checkout_js_url' => config("niubiz.urls.checkout_js.{$env}"),
-                'environment' => $env
+                'environment' => $env,
+                'merchant_logo' => 'http://localhost:8000/storage/logo/logocheckout.png'
             ]
         ]);
     }
@@ -50,20 +55,30 @@ class PaymentController extends Controller
             'order_id' => 'sometimes|exists:orders,id',
             'description' => 'sometimes|string|max:255'
         ]);
-        
+        Log::info("Datos enviados desde el frontend", $validated);
+
         DB::beginTransaction();
         
         try {
             // Generar purchaseNumber si no se proporciona
             if (!isset($validated['purchaseNumber'])) {
-                $validated['purchaseNumber'] = substr(strval(time() . rand(100,999)), 0, 12);
+                $lastTransaction = NiubizTransaction::orderBy('id', 'desc')->first();
+                $nextNumber = $lastTransaction ? $lastTransaction->id + 1 : 1;
+                $validated['purchaseNumber'] = (string) $nextNumber;
             }
 
             // Verificar si la orden existe y no está ya pagada
             $order = null;
+            $diasRegistrado = 0;
             if (isset($validated['order_id'])) {
                 $order = Order::find($validated['order_id']);
-                
+                $cliente = $order?->customer;
+
+                // Calcular días desde el registro
+                if ($cliente && $cliente->created_at) {
+                    $diasRegistrado = now()->diffInDays($cliente->created_at);
+                }
+
                 if ($order && $order->isPaid()) {
                     return response()->json([
                         'success' => false,
@@ -73,7 +88,10 @@ class PaymentController extends Controller
 
                 // Actualizar estado de la orden a pendiente de pago
                 if ($order) {
-                    $order->update(['payment_status' => PaymentStatusEnum::PENDING]);
+                    $order->update([
+                        'payment_status' => PaymentStatusEnum::PENDING,
+                        'order_number' => $validated['purchaseNumber']
+                    ]);
                 }
             }
             Log::debug('Datos enviados a Niubiz createSession', [
@@ -81,7 +99,7 @@ class PaymentController extends Controller
                 'purchaseNumber' => $validated['purchaseNumber'],
                 'order_id' => $validated['order_id'] ?? null
             ]);
-
+            $cliente = null;
             if (isset($validated['order_id'])) {
                 $order = Order::with('customer')->find($validated['order_id']);
                 $cliente = $order?->customer; // O $order?->user según tu relación
@@ -92,15 +110,17 @@ class PaymentController extends Controller
                 $validated['amount'],
                 $cliente,
                 $validated['order_id'] ?? null,
-                $validated['purchaseNumber']
+                $validated['purchaseNumber'],
+                $diasRegistrado
             );
 
             DB::commit();
-
+            $merchant_logo = 'http://192.168.18.28:8000/storage/logo/logocheckout.png';
             Log::info('Sesión de pago iniciada', [
                 'purchase_number' => $validated['purchaseNumber'],
                 'order_id' => $validated['order_id'] ?? null,
-                'amount' => $validated['amount']
+                'amount' => $validated['amount'],
+                'merchant_logo' => $merchant_logo
             ]);
 
             return response()->json([
@@ -109,7 +129,8 @@ class PaymentController extends Controller
                     'sessionToken' => $result['sessionKey'] ?? null,
                     'purchase_number' => $validated['purchaseNumber'],
                     'merchant_id' => config('niubiz.merchant_id'),
-                    'amount' => $validated['amount']
+                    'amount' => $validated['amount'],
+                    'merchant_logo' => 'http://localhost:8000/storage/logo/logocheckout.png'
                 ]
             ]);
 
@@ -140,7 +161,7 @@ class PaymentController extends Controller
             'amount' => 'required|numeric|min:0.01',
             'purchaseNumber' => 'required|string|exists:niubiz_transactions,purchase_number'
         ]);
-
+        Log::info("Datos recibidos para procesar pago", $validated);
         DB::beginTransaction();
         
         try {
@@ -177,6 +198,7 @@ class PaymentController extends Controller
             if ($transaction->order) {
                 if ($isSuccess) {
                     $transaction->order->markAsPaid('niubiz');
+                    $this->sendPaymentNotifications($transaction->order, $transaction);
                 } else {
                     $transaction->order->update(['payment_status' => PaymentStatusEnum::FAILED]);
                 }
@@ -194,7 +216,9 @@ class PaymentController extends Controller
                     'transaction_date' => $result['dataMap']['TRANSACTION_DATE'] ?? null,
                     'amount' => $result['order']['amount'] ?? null,
                     'currency' => $result['order']['currency'] ?? 'PEN',
-                    'purchase_number' => $validated['purchaseNumber']
+                    'purchase_number' => $validated['purchaseNumber'],
+                    'brand' => $result['dataMap']['BRAND'],
+                    'card' => $result['dataMap']['CARD']
                 ],
                 'message' => $isSuccess ? 'Pago procesado exitosamente' : 'Pago rechazado'
             ];
@@ -222,6 +246,39 @@ class PaymentController extends Controller
                 'error' => config('app.debug') ? $e->getMessage() : 'Error interno'
             ], 500);
         }
+    }
+
+    public function payResponse(Request $request)
+    {
+        // Los datos de la transacción llegan por POST
+        $data = $request->all();
+        Log::info('Respuesta de Niubiz recibida', $data);
+
+        $transactionToken = $data['transactionToken'] ?? null;
+        $customerEmail = $data['customerEmail'] ?? null;
+        $channel = $data['channel'] ?? null;
+
+        // BUSCAR el purchaseNumber en la base de datos usando el transactionToken
+        // O usar la sesión más reciente pendiente
+        $transaction = NiubizTransaction::where('status', 'PENDING')
+            ->orderBy('created_at', 'desc')
+            ->first();
+
+        $purchaseNumber = $transaction ? $transaction->purchase_number : null;
+        $amount = $transaction ? $transaction->amount : 117.88;
+
+        // Construir URL de redirección
+        $redirectUrl = 'http://localhost:8080/niubiz/payment-result.html?' . http_build_query([
+            'tokenId' => $transactionToken,
+            'purchaseNumber' => $purchaseNumber, // Ahora tenemos el purchaseNumber correcto
+            'customerEmail' => $customerEmail,
+            'channel' => $channel,
+            'amount' => $amount,
+            'currency' => 'S/',
+            'autoProcess' => 'true'
+        ]);
+
+        return redirect($redirectUrl);
     }
 
     /**
@@ -389,6 +446,64 @@ class PaymentController extends Controller
                 'message' => 'Error al obtener estadísticas',
                 'error' => config('app.debug') ? $e->getMessage() : 'Error interno'
             ], 500);
+        }
+    }
+
+    /**
+     * Enviar notificaciones de pago exitoso
+     */
+    private function sendPaymentNotifications($order, $transaction)
+    {
+        $order->load([
+            'customer', 
+            'items.product', 
+            'items.productVariant.product',
+            'local'
+        ]);
+
+        $customer = $order->customer;
+        
+        if (!$customer) {
+            return;
+        }
+
+        // Enviar correo
+        try {
+            if ($customer->email) {
+                $customer->notify(new OrderPaid($order, $transaction));
+                Log::info('Correo de confirmación enviado', [
+                    'customer_email' => $customer->email,
+                    'order_id' => $order->id
+                ]);
+            }
+        } catch (\Exception $e) {
+            Log::error('Error enviando correo de confirmación', [
+                'error' => $e->getMessage(),
+                'order_id' => $order->id
+            ]);
+        }
+
+        // Enviar SMS
+        try {
+            if ($customer->phone) {
+                $phone = "+51" . ltrim($customer->phone, '0');
+                $orderNumber = $order->order_number;
+                $total = number_format($order->total, 2);
+                
+                $smsSent = $this->smsService->sendPaymentConfirmation($phone, $orderNumber, $total);
+                
+                if ($smsSent) {
+                    Log::info('SMS de confirmación enviado', [
+                        'customer_phone' => $customer->phone,
+                        'order_id' => $order->id
+                    ]);
+                }
+            }
+        } catch (\Exception $e) {
+            Log::error('Error enviando SMS de confirmación', [
+                'error' => $e->getMessage(),
+                'order_id' => $order->id
+            ]);
         }
     }
 
