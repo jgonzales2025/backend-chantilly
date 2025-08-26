@@ -5,8 +5,11 @@ namespace App\Http\Controllers\Payment;
 use App\Enum\PaymentStatusEnum;
 use App\Enum\TransactionStatusEnum;
 use App\Http\Controllers\Controller;
+use App\Http\Requests\Order\StoreOrderRequest;
+use App\Models\Customer;
 use App\Models\NiubizTransaction;
 use App\Models\Order;
+use App\Models\OrderItem;
 use App\Notifications\OrderPaid;
 use App\Services\NiubizService;
 use App\Services\SmsService;
@@ -48,34 +51,30 @@ class PaymentController extends Controller
      * Obtener session para el frontend (checkout.js)
      * Actualizado con BD y validaciones mejoradas
      */
-    public function getSession(Request $request)
+    public function getSession(StoreOrderRequest $req)
     {
-        $validated = $request->validate([
-            'amount' => 'required|numeric|min:0.01',
-            'order_id' => 'sometimes|exists:orders,id',
-            'description' => 'sometimes|string|max:255'
-        ]);
-        Log::info("Datos enviados desde el frontend", $validated);
+        $validatedOrderData = $req->validated();
+
+        Log::info("Datos enviados desde el frontend", $validatedOrderData);
 
         DB::beginTransaction();
         
         try {
             // Generar purchaseNumber si no se proporciona
-            if (!isset($validated['purchaseNumber'])) {
-                $lastTransaction = NiubizTransaction::orderBy('id', 'desc')->first();
-                $nextNumber = $lastTransaction ? $lastTransaction->id + 1 : 1;
-                $validated['purchaseNumber'] = (string) $nextNumber;
-            }
+            $lastTransaction = NiubizTransaction::orderBy('id', 'desc')->first();
+            $nextNumber = $lastTransaction ? $lastTransaction->id + 1 : 1;
+            $validatedOrderData['purchaseNumber'] = (string) $nextNumber;
+            
 
             // Verificar si la orden existe y no está ya pagada
-            $order = null;
+            /* $order = null;
             $diasRegistrado = 0;
             if (isset($validated['order_id'])) {
                 $order = Order::find($validated['order_id']);
-                $cliente = $order?->customer;
+                $cliente = $order?->customer; */
 
                 // Calcular días desde el registro
-                if ($cliente && $cliente->created_at) {
+                /* if ($cliente && $cliente->created_at) {
                     $diasRegistrado = now()->diffInDays($cliente->created_at);
                 }
 
@@ -84,42 +83,45 @@ class PaymentController extends Controller
                         'success' => false,
                         'message' => 'La orden ya está pagada'
                     ], 400);
-                }
+                } */
 
                 // Actualizar estado de la orden a pendiente de pago
-                if ($order) {
+                /* if ($order) {
                     $order->update([
                         'payment_status' => PaymentStatusEnum::PENDING,
                         'order_number' => $validated['purchaseNumber']
                     ]);
                 }
-            }
-            Log::debug('Datos enviados a Niubiz createSession', [
+            } */
+            /* Log::debug('Datos enviados a Niubiz createSession', [
                 'amount' => $validated['amount'],
                 'purchaseNumber' => $validated['purchaseNumber'],
                 'order_id' => $validated['order_id'] ?? null
-            ]);
-            $cliente = null;
+            ]); */
+            /* $cliente = null;
             if (isset($validated['order_id'])) {
                 $order = Order::with('customer')->find($validated['order_id']);
                 $cliente = $order?->customer; // O $order?->user según tu relación
-            }
+            } */
+            $customer = Customer::find($validatedOrderData['customer_id']);
 
+            if ($customer && $customer->created_at) {
+                $diasRegistrado = now()->diffInDays($customer->created_at);
+            }
             // Crear sesión con Niubiz (esto creará el registro en niubiz_transactions)
             $result = $this->niubiz->createSession(
-                $validated['amount'],
-                $cliente,
-                $validated['order_id'] ?? null,
-                $validated['purchaseNumber'],
+                $validatedOrderData['total_amount'],
+                $customer,
+                $validatedOrderData['purchaseNumber'],
                 $diasRegistrado
             );
 
             DB::commit();
             $merchant_logo = 'http://192.168.18.28:8000/storage/logo/logocheckout.png';
             Log::info('Sesión de pago iniciada', [
-                'purchase_number' => $validated['purchaseNumber'],
-                'order_id' => $validated['order_id'] ?? null,
-                'amount' => $validated['amount'],
+                'purchase_number' => $validatedOrderData['purchaseNumber'],
+                'order_id' => $validatedOrderData['order_id'] ?? null,
+                'amount' => $validatedOrderData['total_amount'],
                 'merchant_logo' => $merchant_logo
             ]);
 
@@ -127,10 +129,11 @@ class PaymentController extends Controller
                 'success' => true,
                 'data' => [
                     'sessionToken' => $result['sessionKey'] ?? null,
-                    'purchase_number' => $validated['purchaseNumber'],
+                    'purchase_number' => $validatedOrderData['purchaseNumber'],
                     'merchant_id' => config('niubiz.merchant_id'),
-                    'amount' => $validated['amount'],
-                    'merchant_logo' => 'http://localhost:8000/storage/logo/logocheckout.png'
+                    'amount' => $validatedOrderData['total_amount'],
+                    'merchant_logo' => 'http://localhost:8000/storage/logo/logocheckout.png',
+                    'order_data' => $validatedOrderData
                 ]
             ]);
 
@@ -139,7 +142,7 @@ class PaymentController extends Controller
             
             Log::error('Error obteniendo sesión de pago', [
                 'error' => $e->getMessage(),
-                'request' => $validated
+                'request' => $validatedOrderData
             ]);
 
             return response()->json([
@@ -159,15 +162,18 @@ class PaymentController extends Controller
         $validated = $request->validate([
             'tokenId' => 'required|string',
             'amount' => 'required|numeric|min:0.01',
-            'purchaseNumber' => 'required|string|exists:niubiz_transactions,purchase_number'
+            'purchaseNumber' => 'required|string|exists:niubiz_transactions,purchase_number',
+            'order_data' => 'required|array'
         ]);
         Log::info("Datos recibidos para procesar pago", $validated);
         DB::beginTransaction();
         
         try {
+            $validatedOrderData = $validated['order_data'];
+            $order = $this->createOrder($validatedOrderData);
             // Verificar que la transacción existe y está pendiente
             $transaction = NiubizTransaction::where('purchase_number', $validated['purchaseNumber'])->first();
-            
+            $transaction->update(['order_id' => $order->id]);
             if (!$transaction) {
                 return response()->json([
                     'success' => false,
@@ -197,7 +203,6 @@ class PaymentController extends Controller
             // Actualizar orden si existe
             if ($transaction->order) {
                 if ($isSuccess) {
-                    $transaction->order->markAsPaid('niubiz');
                     $this->sendPaymentNotifications($transaction->order, $transaction);
                 } else {
                     $transaction->order->update(['payment_status' => PaymentStatusEnum::FAILED]);
@@ -505,6 +510,39 @@ class PaymentController extends Controller
                 'order_id' => $order->id
             ]);
         }
+    }
+
+    private function createOrder(array $validatedOrderData)
+    {
+        $order = Order::create([
+            'customer_id' => $validatedOrderData['customer_id'],
+            'voucher_type' => $validatedOrderData['voucher_type'],
+            'billing_data' => $validatedOrderData['billing_data'] ?? null,
+            'local_id' => $validatedOrderData['local_id'],
+            'subtotal' => $validatedOrderData['subtotal'],
+            'total' => $validatedOrderData['total_amount'],
+            'order_date' => now(),
+            'delivery_date' => $validatedOrderData['delivery_date'] ?? null,
+            'order_number' => $validatedOrderData['purchaseNumber'] ?? null
+        ]);
+
+        foreach ($validatedOrderData['items'] as $item) {
+            OrderItem::create([
+                'order_id' => $order->id,
+                'product_variant_id' => $item['product_variant_id'] ?? null,
+                'product_id' => $item['product_id'] ?? null,
+                'cake_flavor_id' => $item['cake_flavor_id'] ?? null,
+                'quantity' => $item['quantity'],
+                'unit_price' => $item['unit_price'],
+                'subtotal' => $item['subtotal'],
+                'dedication_text' => $item['dedication_text'] ?? null,
+                'delivery_date' => $item['delivery_date'] ?? null,
+            ]);
+        }
+
+        Log::info('Orden creada', ['order' => $order, 'items' => $order->items]);
+
+        return $order;
     }
 
 }
