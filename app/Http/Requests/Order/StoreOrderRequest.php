@@ -31,6 +31,7 @@ class StoreOrderRequest extends FormRequest
             'local_id' => 'required|integer|exists:locals,id',
             'subtotal' => 'required|numeric',
             'total_amount' => 'required|numeric',
+            'delivery_date' => 'nullable|date',
 
             // Para order items
             'items' => 'required|array|min:1',

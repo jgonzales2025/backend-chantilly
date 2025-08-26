@@ -10,6 +10,7 @@ use App\Models\OrderItem;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 
 class OrderController extends Controller
 {
@@ -31,11 +32,11 @@ class OrderController extends Controller
             ->when($dateFilter, function ($query, $dateFilter) {
                 switch ($dateFilter) {
                     case 'ultimos_30_dias':
-                        return $query->where('order_date', '>=', now()->subDays(30));
+                        return $query->where('order_date', '>=', now()->subDays(30)->startOfDay());
                     case 'ultimos_3_meses':
-                        return $query->where('order_date', '>=', now()->subMonths(3));
+                        return $query->where('order_date', '>=', now()->subMonths(3)->startOfDay());
                     case 'ultimos_6_meses':
-                        return $query->where('order_date', '>=', now()->subMonths(6));
+                        return $query->where('order_date', '>=', now()->subMonths(6)->startOfDay());
                     case '2025':
                         return $query->whereYear('order_date', 2025);
                     default:
@@ -72,7 +73,8 @@ class OrderController extends Controller
                 'local_id' => $validatedData['local_id'],
                 'subtotal' => $validatedData['subtotal'],
                 'total' => $validatedData['total_amount'],
-                'order_date' => now()
+                'order_date' => now(),
+                'delivery_date' => $validatedData['delivery_date'] ?? null,
             ]);
             foreach ($validatedData['items'] as $item){
                 OrderItem::create([
@@ -84,9 +86,11 @@ class OrderController extends Controller
                     'unit_price' => $item['unit_price'],
                     'subtotal' => $item['subtotal'],
                     'dedication_text' => $item['dedication_text'] ?? null,
-                    'delivery_date' => $item['delivery_date']
+                    'delivery_date' => $item['delivery_date'] ?? null,
                 ]);
             }
+
+            Log::info('Orden creada', ['order' => $order, 'items' => $order->items]);
 
             return new JsonResponse([
                 'message' => 'Orden creada con éxito',

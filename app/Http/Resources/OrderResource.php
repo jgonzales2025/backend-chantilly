@@ -26,6 +26,7 @@ class OrderResource extends JsonResource
             'payment_method' => $this->payment_method,
             'payment_status' => $this->payment_status,
             'order_number' => $this->order_number,
+            'delivery_date' => $this->delivery_date,
             'items' => OrderItemResource::collection($this->items),
         ];
     }

@@ -38,7 +38,8 @@ class PaymentController extends Controller
             'data' => [
                 'merchant_id' => config('niubiz.merchant_id'),
                 'checkout_js_url' => config("niubiz.urls.checkout_js.{$env}"),
-                'environment' => $env
+                'environment' => $env,
+                'merchant_logo' => 'http://localhost:8000/storage/logo/logocheckout.png'
             ]
         ]);
     }
@@ -114,11 +115,12 @@ class PaymentController extends Controller
             );
 
             DB::commit();
-
+            $merchant_logo = 'http://192.168.18.28:8000/storage/logo/logocheckout.png';
             Log::info('Sesión de pago iniciada', [
                 'purchase_number' => $validated['purchaseNumber'],
                 'order_id' => $validated['order_id'] ?? null,
-                'amount' => $validated['amount']
+                'amount' => $validated['amount'],
+                'merchant_logo' => $merchant_logo
             ]);
 
             return response()->json([
@@ -127,7 +129,8 @@ class PaymentController extends Controller
                     'sessionToken' => $result['sessionKey'] ?? null,
                     'purchase_number' => $validated['purchaseNumber'],
                     'merchant_id' => config('niubiz.merchant_id'),
-                    'amount' => $validated['amount']
+                    'amount' => $validated['amount'],
+                    'merchant_logo' => 'http://localhost:8000/storage/logo/logocheckout.png'
                 ]
             ]);
 
@@ -213,7 +216,9 @@ class PaymentController extends Controller
                     'transaction_date' => $result['dataMap']['TRANSACTION_DATE'] ?? null,
                     'amount' => $result['order']['amount'] ?? null,
                     'currency' => $result['order']['currency'] ?? 'PEN',
-                    'purchase_number' => $validated['purchaseNumber']
+                    'purchase_number' => $validated['purchaseNumber'],
+                    'brand' => $result['dataMap']['BRAND'],
+                    'card' => $result['dataMap']['CARD']
                 ],
                 'message' => $isSuccess ? 'Pago procesado exitosamente' : 'Pago rechazado'
             ];
