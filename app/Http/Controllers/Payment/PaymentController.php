@@ -132,7 +132,7 @@ class PaymentController extends Controller
                     'purchase_number' => $validatedOrderData['purchaseNumber'],
                     'merchant_id' => config('niubiz.merchant_id'),
                     'amount' => $validatedOrderData['total_amount'],
-                    'merchant_logo' => 'http://localhost:8000/storage/logo/logocheckout.png',
+                    'merchant_logo' => 'https://chantilly-app-px74f.ondigitalocean.app/storage/logo/logocheckout.png',
                     'order_data' => $validatedOrderData
                 ]
             ]);
