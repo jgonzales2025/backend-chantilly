@@ -64,45 +64,7 @@ class PaymentController extends Controller
             $lastTransaction = NiubizTransaction::orderBy('id', 'desc')->first();
             $nextNumber = $lastTransaction ? $lastTransaction->id + 1 : 1;
             $validatedOrderData['purchaseNumber'] = (string) $nextNumber;
-            
-
-            // Verificar si la orden existe y no está ya pagada
-            /* $order = null;
-            $diasRegistrado = 0;
-            if (isset($validated['order_id'])) {
-                $order = Order::find($validated['order_id']);
-                $cliente = $order?->customer; */
-
-                // Calcular días desde el registro
-                /* if ($cliente && $cliente->created_at) {
-                    $diasRegistrado = now()->diffInDays($cliente->created_at);
-                }
-
-                if ($order && $order->isPaid()) {
-                    return response()->json([
-                        'success' => false,
-                        'message' => 'La orden ya está pagada'
-                    ], 400);
-                } */
-
-                // Actualizar estado de la orden a pendiente de pago
-                /* if ($order) {
-                    $order->update([
-                        'payment_status' => PaymentStatusEnum::PENDING,
-                        'order_number' => $validated['purchaseNumber']
-                    ]);
-                }
-            } */
-            /* Log::debug('Datos enviados a Niubiz createSession', [
-                'amount' => $validated['amount'],
-                'purchaseNumber' => $validated['purchaseNumber'],
-                'order_id' => $validated['order_id'] ?? null
-            ]); */
-            /* $cliente = null;
-            if (isset($validated['order_id'])) {
-                $order = Order::with('customer')->find($validated['order_id']);
-                $cliente = $order?->customer; // O $order?->user según tu relación
-            } */
+           
             $customer = Customer::find($validatedOrderData['customer_id']);
 
             if ($customer && $customer->created_at) {

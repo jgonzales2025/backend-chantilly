@@ -6,7 +6,6 @@ use App\Enum\TransactionStatusEnum;
 use App\Models\NiubizTransaction;
 use GuzzleHttp\Client;
 use GuzzleHttp\Exception\RequestException;
-use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Log;
 
 class NiubizService
@@ -49,7 +48,6 @@ class NiubizService
     {
         // Crear registro de transacción
         $transaction = NiubizTransaction::create([
-            //'order_id' => $orderId,
             'purchase_number' => $purchaseNumber,
             'amount' => $amount,
             'currency' => 'PEN',

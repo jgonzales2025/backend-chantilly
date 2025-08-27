@@ -1,8 +1,10 @@
 <?php
 
+use App\Http\Controllers\Auth\AdminAuthController;
 use App\Http\Controllers\Auth\CustomerGoogleAuthController;
 use App\Http\Controllers\Auth\CustomerAuthController;
 use App\Http\Controllers\Auth\CustomerForgotPasswordController;
+use App\Http\Controllers\Banner\BannerController;
 use App\Http\Controllers\CakeFlavor\CakeFlavorController;
 use App\Http\Controllers\Category\CategoryController;
 use App\Http\Controllers\Customer\CustomerController;
@@ -134,3 +136,10 @@ Route::get('/departamentos', [UbigeoController::class, 'departamentos']);
 Route::get('/provincias/{coddep}', [UbigeoController::class, 'provincias']);
 Route::get('/distritos/{coddep}/{codpro}', [UbigeoController::class, 'distritos']);
 
+// Rutas para el banner
+Route::get('/banner', [BannerController::class, 'index']);
+Route::post('/banner', [BannerController::class, 'store']);
+
+// Ruta para el login del admin
+Route::post('/admin/login', [AdminAuthController::class, 'login']);
+Route::middleware('auth:sanctum')->post('/admin/logout', [AdminAuthController::class, 'logout']);

@@ -36,7 +36,9 @@ class DatabaseSeeder extends Seeder
             ProductVariantSeeder::class,
             OrderSeeder::class,
             OrderItemSeeder::class,
-            TransactionSeeder::class
+            TransactionSeeder::class,
+            BannerSeeder::class,
+            UserSeeder::class
         ]);
         
     }

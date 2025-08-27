@@ -10,6 +10,8 @@ use App\Models\Product;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
+use Intervention\Image\Drivers\Gd\Driver;
+use Intervention\Image\ImageManager;
 
 class ProductController extends Controller
 {
@@ -127,9 +129,22 @@ class ProductController extends Controller
                 Storage::disk('public')->delete($product->image);
             }
 
-            // Guardar nueva imagen
-            $path = $request->file('image')->store('product', 'public');
-            $validatedData['image'] = $path;
+            $image = $request->file('image');
+            
+            // Generar nombre único para la imagen
+            $imageName = time() . '_' . uniqid() . '.jpg';
+            
+            // Crear instancia del ImageManager para v3
+            $manager = new ImageManager(new Driver());
+            
+            // Convertir imagen a JPG usando Intervention Image v3
+            $convertedImage = $manager->read($image->getPathname())
+                ->toJpeg(85); // 85% calidad
+            
+            // Guardar la imagen convertida
+            Storage::disk('public')->put('product/' . $imageName, $convertedImage);
+            
+            $validatedData['image'] = 'product/' . $imageName;
         }
 
         $product->update($validatedData);
