@@ -18,6 +18,28 @@ use Intervention\Image\ImageManager;
 class ProductVariantController extends Controller
 {
     /**
+     * Obtener todas las variantes de productos.
+     */
+    public function allProductVariants(Request $request): JsonResponse
+    {
+        $name = $request->query('name');
+        $prodType = $request->query('product_type_id');
+
+        $productVariants = ProductVariant::with('product', 'product.category', 'product.productType')
+        ->when($name, function ($query) use ($name) {
+            $query->where('description', 'LIKE', "%$name%");
+        })
+        ->when($prodType, function ($query) use ($prodType) {
+            $query->whereHas('products', function ($queryProduct) use ($prodType){
+                $queryProduct->where('product_type_id', $prodType);
+            });
+        })
+        ->get();
+
+        return new JsonResponse(ProductVariantResource::collection($productVariants), 200);
+    }
+
+    /**
      * Listar variantes de productos.
      */
     public function index(Request $request): JsonResponse

@@ -38,10 +38,10 @@ class SmsService
         return $response->successful();
     }
 
-    public function sendPaymentConfirmation($phone, $orderNumber, $total)
+    public function sendPaymentConfirmation($phone, $orderNumber, $total, $deliveryDate)
     {
-        $message = "¡Pago confirmado! Tu pedido #{$orderNumber} por S/ {$total} ha sido procesado exitosamente. Gracias por tu compra en La Casa del Chantilly.";
-        
+        $message = "¡Pago confirmado! Tu pedido #{$orderNumber} por S/ {$total} ha sido procesado exitosamente. Tu pedido será entregado el {$deliveryDate}. Gracias por tu compra en La Casa del Chantilly.";
+
         try {
             $response = Http::withHeaders([
                 'Accept' => 'application/json',

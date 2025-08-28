@@ -455,10 +455,11 @@ class PaymentController extends Controller
             if ($customer->phone) {
                 $phone = "+51" . ltrim($customer->phone, '0');
                 $orderNumber = $order->order_number;
+                $deliveryDate = $order->delivery_date;
                 $total = number_format($order->total, 2);
-                
-                $smsSent = $this->smsService->sendPaymentConfirmation($phone, $orderNumber, $total);
-                
+
+                $smsSent = $this->smsService->sendPaymentConfirmation($phone, $orderNumber, $total, $deliveryDate);
+
                 if ($smsSent) {
                     Log::info('SMS de confirmación enviado', [
                         'customer_phone' => $customer->phone,

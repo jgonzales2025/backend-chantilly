@@ -10,6 +10,7 @@ class Banner extends Model
         'title',
         'description',
         'image_path',
+        'image_path_movil',
         'link_url',
         'status',
         'display_order'
@@ -28,6 +29,13 @@ class Banner extends Model
     {
         return $this->image_path
             ? asset("storage/{$this->image_path}")
+            : null;
+    }
+
+    public function getImageUrlMovilAttribute(): ?string
+    {
+        return $this->image_path_movil
+            ? asset("storage/{$this->image_path_movil}")
             : null;
     }
 }

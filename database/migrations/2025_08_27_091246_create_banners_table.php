@@ -16,6 +16,7 @@ return new class extends Migration
             $table->string('title');
             $table->text('description')->nullable();
             $table->string('image_path')->nullable();
+            $table->string('image_path_movil')->nullable();
             $table->string('link_url')->nullable();
             $table->boolean('status')->default(1);
             $table->integer('display_order')->default(0);

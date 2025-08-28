@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Banner;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Banner\StoreBannerRequest;
+use App\Http\Requests\Banner\UpdateBannerRequest;
 use App\Http\Resources\BannerResource;
 use App\Models\Banner;
 use Illuminate\Http\JsonResponse;
@@ -17,9 +18,11 @@ class BannerController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(Request $request): JsonResponse
     {
-        $banners = Banner::all();
+        $title = $request->query('title');
+        $banners = Banner::when($title, fn($query) => $query->where('title', 'like', "%{$title}%"))
+            ->get();
         return new JsonResponse(BannerResource::collection($banners), 200);
     }
 
@@ -31,23 +34,17 @@ class BannerController extends Controller
         $validatedData = $request->validated();
 
         if ($request->hasFile('image')) {
-            $image = $request->file('image');
-            
-            // Generar nombre único para la imagen
-            $imageName = $validatedData['title'] . '.jpg';
-            
-            // Crear instancia del ImageManager para v3
-            $manager = new ImageManager(new Driver());
-            
-            // Convertir imagen a JPG usando Intervention Image v3
-            $convertedImage = $manager->read($image->getPathname())
-                ->toJpeg(85); // 85% calidad
-            
-            // Guardar la imagen convertida
-            Storage::disk('public')->put('banners/' . $imageName, $convertedImage);
-            
-            // Agregar el nombre de archivo a los datos validados
-            $validatedData['image_path'] = 'banners/' . $imageName;
+            $validatedData['image_path'] = $this->processImage(
+                $request->file('image'), 
+                $validatedData['title']
+            );
+        }
+
+        if ($request->hasFile('image_movil')) {
+            $validatedData['image_path_movil'] = $this->processImage(
+                $request->file('image_movil'), 
+                $validatedData['title'] . '_movil'
+            );
         }
 
         $banner = Banner::create($validatedData);
@@ -66,16 +63,71 @@ class BannerController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, string $id)
+    public function update(UpdateBannerRequest $request, $id)
     {
-        //
+        $banner = Banner::find($id);
+
+        if (!$banner) {
+            return new JsonResponse(['message' => 'Banner no encontrado'], 404);
+        }
+
+        $validatedData = $request->validated();
+
+        if ($request->hasFile('image')) {
+            // Eliminar imagen anterior si existe
+            if ($banner->image_path && Storage::disk('public')->exists($banner->image_path)) {
+                Storage::disk('public')->delete($banner->image_path);
+            }
+
+            $validatedData['image_path'] = $this->processImage(
+                $request->file('image'), 
+                $validatedData['title']
+            );
+        }
+
+        // Procesar imagen móvil
+        if ($request->hasFile('image_movil')) {
+            // Eliminar imagen móvil anterior si existe
+            if ($banner->image_path_movil && Storage::disk('public')->exists($banner->image_path_movil)) {
+                Storage::disk('public')->delete($banner->image_path_movil);
+            }
+
+            $validatedData['image_path_movil'] = $this->processImage(
+                $request->file('image_movil'), 
+                $validatedData['title'] . '_movil'
+            );
+        }
+
+        $banner->update($validatedData);
+
+        return new JsonResponse(new BannerResource($banner), 200);
     }
 
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(string $id)
+    public function destroy($id)
     {
-        //
+        $banner = Banner::find($id);
+
+        if (!$banner) {
+            return new JsonResponse(['message' => 'Banner no encontrado'], 404);
+        }
+
+        $banner->delete();
+
+        return new JsonResponse(['message' => 'Banner eliminado con éxito'], 200);
+    }
+
+    private function processImage($image, $name): string
+    {
+        $imageName = $name . '.jpg';
+        
+        $manager = new ImageManager(new Driver());
+        $convertedImage = $manager->read($image->getPathname())->toJpeg(85);
+        
+        Storage::disk('public')->put('banners/' . $imageName, $convertedImage);
+        
+        return 'banners/' . $imageName;
     }
 }

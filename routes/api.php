@@ -33,6 +33,7 @@ Route::delete('/customers/{id}', [CustomerController::class, 'destroy']);
 
 // Rutas para  productos
 Route::get('/products', [ProductController::class, 'index']);
+Route::get('/products/all', [ProductController::class, 'allProducts']);
 Route::post('/products', [ProductController::class, 'store']);
 Route::get('/products/{id}', [ProductController::class, 'show']);
 Route::put('/products/{id}', [ProductController::class, 'update']);
@@ -42,6 +43,7 @@ Route::delete('/products/{id}', [ProductController::class, 'destroy']);
 Route::get('/products-accessories', [ProductController::class, 'indexAccesories']);
 
 // Rutas para variantes de producto
+Route::get('/products-variant/all', [ProductVariantController::class, 'allProductVariants']);
 Route::get('/products-variant', [ProductVariantController::class, 'index']);
 Route::post('/products-variant', [ProductVariantController::class, 'store']);
 Route::get('/products-variant/{id}', [ProductVariantController::class, 'show']);
@@ -139,6 +141,8 @@ Route::get('/distritos/{coddep}/{codpro}', [UbigeoController::class, 'distritos'
 // Rutas para el banner
 Route::get('/banner', [BannerController::class, 'index']);
 Route::post('/banner', [BannerController::class, 'store']);
+Route::put('/banner/{id}', [BannerController::class, 'update']);
+Route::delete('/banner/{id}', [BannerController::class, 'destroy']);
 
 // Ruta para el login del admin
 Route::post('/admin/login', [AdminAuthController::class, 'login']);

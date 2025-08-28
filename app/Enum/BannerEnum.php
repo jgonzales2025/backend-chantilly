@@ -16,6 +16,7 @@ enum BannerEnum: string
     case BANNER_10 = 'tortas_tematica';
     case BANNER_11 = 'bodatitos_y_mas';
     case BANNER_12 = 'paneton';
+    case BANNER_13 = '¡Pedidos Personalizados!';
 
     public function image_path()
     {
@@ -32,6 +33,26 @@ enum BannerEnum: string
             self::BANNER_10 => 'banners/chantilly4-02.jpg',
             self::BANNER_11 => 'banners/chantilly4-03.jpg',
             self::BANNER_12 => 'banners/das32222-03.jpg',
+            self::BANNER_13 => 'banners/banner2.jpg'
+        };
+    }
+
+    public function image_path_movil()
+    {
+        return match($this) {
+            self::BANNER_01 => null,
+            self::BANNER_02 => null,
+            self::BANNER_03 => null,
+            self::BANNER_04 => null,
+            self::BANNER_05 => null,
+            self::BANNER_06 => null,
+            self::BANNER_07 => null,
+            self::BANNER_08 => null,
+            self::BANNER_09 => null,
+            self::BANNER_10 => null,
+            self::BANNER_11 => null,
+            self::BANNER_12 => null,
+            self::BANNER_13 => 'banners/fondo-banner2.jpg',
         };
     }
 
@@ -50,6 +71,26 @@ enum BannerEnum: string
             self::BANNER_10 => 10,
             self::BANNER_11 => 11,
             self::BANNER_12 => 12,
+            self::BANNER_13 => 0
+        };
+    }
+
+    public function description()
+    {
+        return match($this) {
+            self::BANNER_01 => null,
+            self::BANNER_02 => null,
+            self::BANNER_03 => null,
+            self::BANNER_04 => null,
+            self::BANNER_05 => null,
+            self::BANNER_06 => null,
+            self::BANNER_07 => null,
+            self::BANNER_08 => null,
+            self::BANNER_09 => null,
+            self::BANNER_10 => null,
+            self::BANNER_11 => null,
+            self::BANNER_12 => null,
+            self::BANNER_13 => 'Personaliza tu producto con nosotros, mándanos tu diseño y descripción de lo que necesites, nuestro equipo te ayudará con la cotización del producto.'
         };
     }
 }

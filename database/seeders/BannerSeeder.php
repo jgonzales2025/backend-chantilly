@@ -18,7 +18,9 @@ class BannerSeeder extends Seeder
             Banner::create([
                 'title' => $banner->value,
                 'image_path' => $banner->image_path(),
-                'display_order' => $banner->display_order()
+                'image_path_movil' => $banner->image_path_movil(),
+                'display_order' => $banner->display_order(),
+                'description' => $banner->description()
             ]);
         }
     }

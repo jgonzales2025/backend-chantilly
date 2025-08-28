@@ -16,6 +16,27 @@ use Intervention\Image\ImageManager;
 class ProductController extends Controller
 {
     /**
+     * Obtener todos los productos.
+     */
+    public function allProducts(Request $request): JsonResponse
+    {
+        $name = $request->query('name');
+        $prodType = $request->query('product_type_id');
+
+        $products = Product::when($name, function ($query) use ($name) {
+            $query->where('short_description', 'LIKE', "%$name%");
+        })
+        ->when($prodType, function ($query) use ($prodType) {
+            $query->where('product_type_id', $prodType);
+        })
+        ->get();
+
+        $products->load('theme', 'category', 'productType');
+        return new JsonResponse(ProductResource::collection($products), 200);
+    }
+
+
+    /**
      * Mostrar productos.
      */
     public function index(Request $request)
