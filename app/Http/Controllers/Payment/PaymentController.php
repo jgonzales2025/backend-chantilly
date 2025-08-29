@@ -13,6 +13,7 @@ use App\Models\OrderItem;
 use App\Notifications\OrderPaid;
 use App\Services\NiubizService;
 use App\Services\SmsService;
+use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
@@ -217,35 +218,116 @@ class PaymentController extends Controller
 
     public function payResponse(Request $request)
     {
-        // Los datos de la transacción llegan por POST
-        $data = $request->all();
-        Log::info('Respuesta de Niubiz recibida', $data);
+        try {
+            // Los datos de la transacción llegan por POST
+            $data = $request->all();
+            Log::info('Respuesta de Niubiz recibida', $data);
 
-        $transactionToken = $data['transactionToken'] ?? null;
-        $customerEmail = $data['customerEmail'] ?? null;
-        $channel = $data['channel'] ?? null;
+            $transactionToken = $data['transactionToken'] ?? null;
+            $customerEmail = $data['customerEmail'] ?? null;
+            $channel = $data['channel'] ?? null;
 
-        // BUSCAR el purchaseNumber en la base de datos usando el transactionToken
-        // O usar la sesión más reciente pendiente
-        $transaction = NiubizTransaction::where('status', 'PENDING')
-            ->orderBy('created_at', 'desc')
-            ->first();
+            // BUSCAR el purchaseNumber en la base de datos usando el transactionToken
+            $transaction = NiubizTransaction::where('status', 'PENDING')
+                ->orderBy('created_at', 'desc')
+                ->first();
 
-        $purchaseNumber = $transaction ? $transaction->purchase_number : null;
-        $amount = $transaction ? $transaction->amount : 117.88;
+            $purchaseNumber = $transaction ? $transaction->purchase_number : null;
+            
+            $amount = $transaction ? $transaction->amount : 117.88;
 
-        // Construir URL de redirección
-        $redirectUrl = 'http://localhost:8080/niubiz/payment-result.html?' . http_build_query([
-            'tokenId' => $transactionToken,
-            'purchaseNumber' => $purchaseNumber, // Ahora tenemos el purchaseNumber correcto
-            'customerEmail' => $customerEmail,
-            'channel' => $channel,
-            'amount' => $amount,
-            'currency' => 'S/',
-            'autoProcess' => 'true'
-        ]);
+            // Generar un token único temporal
+            $tempToken = Str::random(32);
+            
+            // GUARDAR en CACHE en lugar de sesión (expira en 15 minutos)
+            cache()->put("payment_result_{$tempToken}", [
+                'tokenId' => $transactionToken,
+                'purchaseNumber' => $purchaseNumber,
+                'customerEmail' => $customerEmail,
+                'channel' => $channel,
+                'amount' => $amount,
+                'currency' => 'PEN',
+                'autoProcess' => true,
+                'timestamp' => now()
+            ], now()->addMinutes(5));
 
-        return redirect($redirectUrl);
+            Log::info('Datos de pago guardados en caché', [
+                'temp_token' => $tempToken,
+                'purchase_number' => $purchaseNumber
+            ]);
+
+            // Redirigir CON el token temporal en la URL
+            $redirectUrl = config('app.frontend_url') . '/checkout/payconfirmation?token=' . $tempToken;
+            
+            return redirect($redirectUrl);
+
+        } catch (Exception $e) {
+            Log::error('Error procesando respuesta de Niubiz: ' . $e->getMessage());
+            
+            return response()->json([
+                'success' => false,
+                'message' => 'Error procesando respuesta de pago',
+                'error' => config('app.debug') ? $e->getMessage() : 'Error interno'
+            ], 500);
+        }
+    }
+    
+    /**
+     * Obtener datos de pago
+     */
+    public function getPaymentData(Request $request)
+    {
+        try {
+            $token = $request->query('token');
+            
+            Log::info('Consultando datos de pago', [
+                'token' => $token,
+                'has_token' => !is_null($token)
+            ]);
+
+            if (!$token) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Token requerido'
+                ], 400);
+            }
+
+            // Obtener datos del cache usando el token
+            $paymentResult = cache()->get("payment_result_{$token}");
+            
+            Log::info('Datos obtenidos del caché', [
+                'token' => $token,
+                'has_data' => !is_null($paymentResult),
+                'data' => $paymentResult
+            ]);
+
+            if (!$paymentResult) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Token inválido o expirado'
+                ], 404);
+            }
+
+            // Eliminar del caché después de obtener (uso único)
+            cache()->forget("payment_result_{$token}");
+
+            return response()->json([
+                'success' => true,
+                'data' => $paymentResult
+            ]);
+
+        } catch (\Exception $e) {
+            Log::error('Error obteniendo datos de pago', [
+                'error' => $e->getMessage(),
+                'token' => $request->query('token')
+            ]);
+
+            return response()->json([
+                'success' => false,
+                'message' => 'Error al obtener datos de pago',
+                'error' => config('app.debug') ? $e->getMessage() : 'Error interno'
+            ], 500);
+        }
     }
 
     /**

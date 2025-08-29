@@ -9,6 +9,7 @@ use App\Http\Resources\BannerResource;
 use App\Models\Banner;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
 use Intervention\Image\Drivers\Gd\Driver;
 use Intervention\Image\ImageManager;
@@ -16,7 +17,7 @@ use Intervention\Image\ImageManager;
 class BannerController extends Controller
 {
     /**
-     * Display a listing of the resource.
+     * Listar banners.
      */
     public function index(Request $request): JsonResponse
     {
@@ -27,7 +28,7 @@ class BannerController extends Controller
     }
 
     /**
-     * Store a newly created resource in storage.
+     * Crear banner.
      */
     public function store(StoreBannerRequest $request): JsonResponse
     {
@@ -36,14 +37,7 @@ class BannerController extends Controller
         if ($request->hasFile('image')) {
             $validatedData['image_path'] = $this->processImage(
                 $request->file('image'), 
-                $validatedData['title']
-            );
-        }
-
-        if ($request->hasFile('image_movil')) {
-            $validatedData['image_path_movil'] = $this->processImage(
-                $request->file('image_movil'), 
-                $validatedData['title'] . '_movil'
+                $validatedData['title'] ?? null
             );
         }
 
@@ -61,7 +55,7 @@ class BannerController extends Controller
     }
 
     /**
-     * Update the specified resource in storage.
+     * Actualizar banner.
      */
     public function update(UpdateBannerRequest $request, $id)
     {
@@ -72,8 +66,9 @@ class BannerController extends Controller
         }
 
         $validatedData = $request->validated();
-
+        Log::info("Datos", $validatedData);
         if ($request->hasFile('image')) {
+            Log::info("Actualizando imagen");
             // Eliminar imagen anterior si existe
             if ($banner->image_path && Storage::disk('public')->exists($banner->image_path)) {
                 Storage::disk('public')->delete($banner->image_path);
@@ -81,30 +76,16 @@ class BannerController extends Controller
 
             $validatedData['image_path'] = $this->processImage(
                 $request->file('image'), 
-                $validatedData['title']
-            );
-        }
-
-        // Procesar imagen móvil
-        if ($request->hasFile('image_movil')) {
-            // Eliminar imagen móvil anterior si existe
-            if ($banner->image_path_movil && Storage::disk('public')->exists($banner->image_path_movil)) {
-                Storage::disk('public')->delete($banner->image_path_movil);
-            }
-
-            $validatedData['image_path_movil'] = $this->processImage(
-                $request->file('image_movil'), 
-                $validatedData['title'] . '_movil'
+                $validatedData['title'] ?? null
             );
         }
 
         $banner->update($validatedData);
-
         return new JsonResponse(new BannerResource($banner), 200);
     }
 
     /**
-     * Remove the specified resource from storage.
+     * Eliminar banner.
      */
     public function destroy($id)
     {
@@ -112,6 +93,10 @@ class BannerController extends Controller
 
         if (!$banner) {
             return new JsonResponse(['message' => 'Banner no encontrado'], 404);
+        }
+        // Eliminar imagen si existe
+        if ($banner->image_path && Storage::disk('public')->exists($banner->image_path)) {
+            Storage::disk('public')->delete($banner->image_path);
         }
 
         $banner->delete();

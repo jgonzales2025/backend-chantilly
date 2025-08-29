@@ -25,7 +25,6 @@ class StoreBannerRequest extends FormRequest
             'title' => 'required|string|max:255',
             'description' => 'nullable|string',
             'image' => 'nullable|image|mimes:jpg,jpeg,png,webp',
-            'image_movil' => 'nullable|image|mimes:jpg,jpeg,png,webp',
             'link_url' => 'nullable|url|max:255',
             'status' => 'nullable|boolean',
             'display_order' => 'nullable|integer|min:0'
