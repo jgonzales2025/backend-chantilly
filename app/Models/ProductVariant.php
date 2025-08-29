@@ -2,12 +2,15 @@
 
 namespace App\Models;
 
+use App\Traits\HasImages;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class ProductVariant extends Model
 {
+    use HasImages;
+
     protected $fillable = [
         'cod_fab',
         'product_id',
@@ -16,8 +19,7 @@ class ProductVariant extends Model
         'size_portion',
         'price',
         'hours',
-        'sort',
-        'image'
+        'sort'
     ];
 
     public $timestamps = false;

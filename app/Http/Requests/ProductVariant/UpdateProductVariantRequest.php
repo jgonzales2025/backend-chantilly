@@ -11,7 +11,7 @@ class UpdateProductVariantRequest extends FormRequest
      */
     public function authorize(): bool
     {
-        return false;
+        return true;
     }
 
     /**
@@ -21,8 +21,33 @@ class UpdateProductVariantRequest extends FormRequest
      */
     public function rules(): array
     {
+        $rules = [
+            'images' => 'nullable|array',
+            'images.*' => 'image|mimes:jpg,jpeg,png,webp'
+        ];
+        
+        // También validar formatos con índices numéricos
+        foreach ($this->allFiles() as $key => $file) {
+            if (preg_match('/^images\.\d+$/', $key)) {
+                $rules[$key] = 'image|mimes:jpg,jpeg,png,webp';
+            }
+        }
+        
+        return $rules;
+    }
+
+    /**
+     * Get custom messages for validator errors.
+     */
+    public function messages(): array
+    {
         return [
-            'image' => 'nullable|image|mimes:jpg,jpeg,png,webp'
+            'images.*.image' => 'El archivo debe ser una imagen válida.',
+            'images.*.mimes' => 'La imagen debe ser de tipo: jpg, jpeg, png, webp o gif.',
+            'images.*.max' => 'La imagen no debe pesar más de 5MB.',
+            '*.image' => 'El archivo debe ser una imagen válida.',
+            '*.mimes' => 'La imagen debe ser de tipo: jpg, jpeg, png, webp o gif.',
+            '*.max' => 'La imagen no debe pesar más de 5MB.'
         ];
     }
 }

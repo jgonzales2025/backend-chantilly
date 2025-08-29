@@ -20,7 +20,16 @@ class ProductResource extends JsonResource
             'large_description' => $this->large_description,
             'min_price' => $this->min_price,
             'max_price' => $this->max_price,
-            'image' => $this->image_url,
+            'images' => $this->whenLoaded('images', function () {
+                return $this->images->map(function ($image) {
+                    return [
+                        'id' => $image->id,
+                        'url' => $image->url,
+                        'is_primary' => $image->is_primary,
+                        'sort_order' => $image->sort_order
+                    ];
+                });
+            }),
             'status' => $this->status,
             'best_status' => $this->best_status,
             'product_type_id' => $this->whenLoaded('productType'),

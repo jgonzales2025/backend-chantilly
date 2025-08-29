@@ -38,7 +38,6 @@ class DatabaseSeeder extends Seeder
             OrderSeeder::class,
             OrderItemSeeder::class,
             TransactionSeeder::class,
-            BannerSeeder::class,
             UserSeeder::class,
             BannerSecundarySeeder::class
         ]);

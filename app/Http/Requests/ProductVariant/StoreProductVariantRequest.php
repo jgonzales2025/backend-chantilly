@@ -29,8 +29,7 @@ class StoreProductVariantRequest extends FormRequest
             'size_portion' => 'required|string',
             'price' => 'required|numeric',
             'hours' => 'nullable|integer',
-            'sort' => 'nullable|integer',
-            'image' => 'nullable|image|mimes:jpg,jpeg,png,webp'
+            'sort' => 'nullable|integer'
         ];
     }
 }

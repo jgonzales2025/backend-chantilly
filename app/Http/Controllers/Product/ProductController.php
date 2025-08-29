@@ -7,14 +7,21 @@ use App\Http\Requests\Product\StoreProductRequest;
 use App\Http\Requests\Product\UpdateProductRequest;
 use App\Http\Resources\ProductResource;
 use App\Models\Product;
+use App\Services\ImageService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Storage;
-use Intervention\Image\Drivers\Gd\Driver;
-use Intervention\Image\ImageManager;
+use Illuminate\Support\Facades\Log;
 
 class ProductController extends Controller
 {
+
+    protected $imageService;
+
+    public function __construct(ImageService $imageService)
+    {
+        $this->imageService = $imageService;
+    }
+
     /**
      * Obtener todos los productos.
      */
@@ -31,7 +38,7 @@ class ProductController extends Controller
         })
         ->get();
 
-        $products->load('theme', 'category', 'productType');
+        $products->load('theme', 'category', 'productType', 'images');
         return new JsonResponse(ProductResource::collection($products), 200);
     }
 
@@ -63,7 +70,7 @@ class ProductController extends Controller
         if($products->isEmpty()){
             return new JsonResponse(['message' => 'No hay productos registrados']);
         }
-        $products->load('theme', 'category', 'productType');
+        $products->load('theme', 'category', 'productType', 'images');
 
         return new JsonResponse([
             'data' => ProductResource::collection($products->items()),
@@ -84,30 +91,7 @@ class ProductController extends Controller
     {
         $validatedData = $request->validated();
 
-        if ($request->hasFile('image')) {
-            $path = $request->file('image')->store('product', 'public');
-
-            $validatedData['image'] = $path;
-        }
-
-        if (isset($validatedData['short_description'])) {
-            $productName = $validatedData['short_description'];
-            $slugName = strtolower(trim($productName));
-            
-            // Reemplazar caracteres especiales del español
-            $slugName = strtr($slugName, [
-                'ñ' => 'n', 
-                'á' => 'a', 'é' => 'e', 'í' => 'i', 'ó' => 'o', 'ú' => 'u',
-                'ü' => 'u'
-            ]);
-            
-            $slugName = preg_replace('/[^a-z0-9\s_-]/', '', $slugName); // Remover caracteres especiales
-            $slugName = preg_replace('/\s+/', '-', $slugName); // Reemplazar espacios por guiones
-            $slugName = preg_replace('/-{2,}/', '-', $slugName); // Reemplazar múltiples guiones por uno solo
-            
-            $validatedData['product_link'] = config('app.frontend_url') . "detalle/{$slugName}";
-        }
-
+        // Crear producto primero
         $product = Product::create($validatedData);
 
         $product->load('theme', 'category', 'productType');
@@ -128,7 +112,7 @@ class ProductController extends Controller
         if(!$product){
             return new JsonResponse(['message' => 'Producto no encontrado'], 404);
         }
-        $product->load('theme', 'category', 'productType');
+        $product->load('theme', 'category', 'productType', 'images');
         return new JsonResponse(new ProductResource($product), 200);
     }
 
@@ -139,38 +123,58 @@ class ProductController extends Controller
     {
         $product = Product::find($id);
 
-        if(!$product){
+        if (!$product) {
             return new JsonResponse(['message' => 'Producto no encontrado'], 404);
         }
 
-        $validatedData = $request->validated();
-
-        if ($request->hasFile('image')) {
-            if ($product->image && Storage::disk('public')->exists($product->image)) {
-                Storage::disk('public')->delete($product->image);
+        // Manejar imágenes si se envían
+        if ($request->hasFile('images')) {
+            // Obtener la carpeta de las imágenes existentes (si las hay)
+            $existingFolder = 'product'; // Carpeta por defecto
+            
+            if ($product->images->isNotEmpty()) {
+                $firstImagePath = $product->images->first()->path_url;
+                // Extraer la carpeta del path: "product/bocadito/BOC01.jpg" -> "product/bocadito"
+                $existingFolder = dirname($firstImagePath);
             }
 
-            $image = $request->file('image');
+            Log::info('Usando carpeta existente:', ['folder' => $existingFolder]);
+
+            // Eliminar imágenes existentes
+            $product->deleteImages();
+
+            // Obtener imágenes de diferentes formas (soporte para Postman)
+            $imageFiles = [];
             
-            // Generar nombre único para la imagen
-            $imageName = time() . '_' . uniqid() . '.jpg';
-            
-            // Crear instancia del ImageManager para v3
-            $manager = new ImageManager(new Driver());
-            
-            // Convertir imagen a JPG usando Intervention Image v3
-            $convertedImage = $manager->read($image->getPathname())
-                ->toJpeg(85); // 85% calidad
-            
-            // Guardar la imagen convertida
-            Storage::disk('public')->put('product/' . $imageName, $convertedImage);
-            
-            $validatedData['image'] = 'product/' . $imageName;
+            if (is_array($request->file('images'))) {
+                $imageFiles = $request->file('images');
+            } else {
+                // Si Postman envía como images.0, images.1, etc.
+                foreach ($request->allFiles() as $key => $file) {
+                    if (preg_match('/^images\.\d+$/', $key)) {
+                        $imageFiles[] = $file;
+                    }
+                }
+            }
+
+            // Agregar nuevas imágenes en la misma carpeta que antes
+            foreach ($imageFiles as $index => $imageFile) {
+                $path = $this->imageService->uploadImage($imageFile, $existingFolder);
+                
+                $product->addImage(
+                    $path, 
+                    $index === 0, // Primera imagen como principal
+                    $index
+                );
+            }
         }
 
-        $product->update($validatedData);
-
-        return new JsonResponse(['message' => 'Producto actualizado con éxito','product' => new ProductResource($product)], 200);
+        $product->load('theme', 'category', 'productType', 'images');
+        
+        return new JsonResponse([
+            'message' => 'Imágenes del producto actualizadas con éxito',
+            'product' => new ProductResource($product)
+        ], 200);
     }
 
     /**
@@ -184,6 +188,8 @@ class ProductController extends Controller
             return new JsonResponse(['message' => 'Producto no encontrado'], 404);
         }
 
+        $product->deleteImages();
+
         $product->delete();
 
         return new JsonResponse(['message' => 'Producto eliminado con éxito'], 200);
@@ -196,9 +202,38 @@ class ProductController extends Controller
         if ($accesorios->isEmpty()) {
             return new JsonResponse(['message' => 'No hay accesorios registrados'], 404);
         }
-
+        $accesorios->load('images');
         return new JsonResponse([
             'accesorios' => ProductResource::collection($accesorios)
         ]);
+    }
+
+    /**
+     * Cambiar imagen principal del producto
+     */
+    public function setPrimaryImage(Request $request, $productId): JsonResponse
+    {
+        $request->validate([
+            'image_id' => 'required|integer|exists:images,id'
+        ]);
+
+        $product = Product::find($productId);
+        
+        if (!$product) {
+            return new JsonResponse(['message' => 'Producto no encontrado'], 404);
+        }
+
+        $imageId = $request->input('image_id');
+        
+        if ($product->setPrimaryImage($imageId)) {
+            $product->load('theme', 'category', 'productType', 'images');
+            
+            return new JsonResponse([
+                'message' => 'Imagen principal actualizada con éxito',
+                'product' => new ProductResource($product)
+            ], 200);
+        }
+
+        return new JsonResponse(['message' => 'Imagen no encontrada para este producto'], 404);
     }
 }

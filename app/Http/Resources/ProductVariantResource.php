@@ -16,15 +16,22 @@ class ProductVariantResource extends JsonResource
     {
         return [
             'id' => $this->id,
-            'cod_fav' => $this->cod_fab,
+            'product_id' => $this->product_id,
             'description' => $this->description,
             'portions' => $this->portions,
-            'size_portion' => $this->size_portion,
             'price' => $this->price,
             'hours' => $this->hours,
-            'sort' => $this->sort,
-            'image' => $this->image_url,
-            'product' => new ProductResource($this->whenLoaded('product'))
+            'status' => $this->status,
+            'images' => $this->whenLoaded('images', function () {
+                return $this->images->map(function ($image) {
+                    return [
+                        'id' => $image->id,
+                        'url' => asset('storage/' . $image->path_url),
+                        'is_primary' => $image->is_primary
+                    ];
+                });
+            }),
+            'product' => $this->whenLoaded('product'),
         ];
     }
 }

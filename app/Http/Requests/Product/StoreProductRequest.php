@@ -29,7 +29,6 @@ class StoreProductRequest extends FormRequest
             'min_price' => 'required|numeric',
             'max_price' => 'nullable|numeric',
             'theme_id' => 'nullable|integer|exists:themes,id',
-            'image' => 'nullable|image|mimes:jpg,jpeg,png,webp',
             'status' => 'required|boolean',
             'best_status' => 'required|boolean'
         ];

@@ -34,10 +34,12 @@ class BannerController extends Controller
     {
         $validatedData = $request->validated();
 
+        $maxDisplayOrder = Banner::max('display_order') ?? 0;
+        $validatedData['display_order'] = $maxDisplayOrder + 1;
+
         if ($request->hasFile('image')) {
             $validatedData['image_path'] = $this->processImage(
-                $request->file('image'), 
-                $validatedData['title'] ?? null
+                $request->file('image')
             );
         }
 
@@ -104,10 +106,11 @@ class BannerController extends Controller
         return new JsonResponse(['message' => 'Banner eliminado con éxito'], 200);
     }
 
-    private function processImage($image, $name): string
+    private function processImage($image): string
     {
-        $imageName = $name . '.jpg';
-        
+        $originalName = pathinfo($image->getClientOriginalName(), PATHINFO_FILENAME);
+        $imageName = $originalName . '.jpg';
+
         $manager = new ImageManager(new Driver());
         $convertedImage = $manager->read($image->getPathname())->toJpeg(85);
         

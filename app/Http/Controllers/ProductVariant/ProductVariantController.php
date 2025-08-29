@@ -5,18 +5,26 @@ namespace App\Http\Controllers\ProductVariant;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Product\UpdateProductRequest;
 use App\Http\Requests\ProductVariant\StoreProductVariantRequest;
+use App\Http\Requests\ProductVariant\UpdateProductVariantRequest;
 use App\Http\Resources\ProductResource;
 use App\Http\Resources\ProductVariantResource;
 use App\Models\Product;
 use App\Models\ProductVariant;
+use App\Services\ImageService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Storage;
-use Intervention\Image\Drivers\Gd\Driver;
-use Intervention\Image\ImageManager;
+use Illuminate\Support\Facades\Log;
 
 class ProductVariantController extends Controller
 {
+
+    protected $imageService;
+
+    public function __construct(ImageService $imageService)
+    {
+        $this->imageService = $imageService;
+    }
+
     /**
      * Obtener todas las variantes de productos.
      */
@@ -25,7 +33,7 @@ class ProductVariantController extends Controller
         $name = $request->query('name');
         $prodType = $request->query('product_type_id');
 
-        $productVariants = ProductVariant::with('product', 'product.category', 'product.productType')
+        $productVariants = ProductVariant::with('product', 'product.category', 'product.productType', 'images')
         ->when($name, function ($query) use ($name) {
             $query->where('description', 'LIKE', "%$name%");
         })
@@ -46,7 +54,7 @@ class ProductVariantController extends Controller
     {
         $name = $request->query('name');
 
-        $productVariants = ProductVariant::with('product', 'product.category', 'product.productType')
+        $productVariants = ProductVariant::with('product', 'product.category', 'product.productType', 'images')
         ->when($name, function($query) use ($name){
             $query->where('description', 'LIKE', "%$name%");
         })
@@ -74,12 +82,6 @@ class ProductVariantController extends Controller
     {
         $validatedData = $request->validated();
 
-        if ($request->hasFile('image')) {
-            $path = $request->file('image')->store('productVariant', 'public');
-
-            $validatedData['image'] = $path;
-        }
-
         $productVariant = ProductVariant::create($validatedData);
 
         $productVariant->load('product');
@@ -97,13 +99,11 @@ class ProductVariantController extends Controller
     {
         //$portionName = $request->query('portion_name');
 
-        $productVariant = ProductVariant::find($id);
+        $productVariant = ProductVariant::with('product', 'images')->find($id);
 
         if(!$productVariant){
             return new JsonResponse(['message' => 'Variante de producto no encontrado'], 404);
         }
-
-        $productVariant->load('product');
 
         return new JsonResponse(['productVariant' => new ProductVariantResource($productVariant)], 200);
     }
@@ -116,7 +116,8 @@ class ProductVariantController extends Controller
     {
         $portionName = $request->query('portion_name');
 
-        $productVariant = ProductVariant::where('product_id', $id)
+        $productVariant = ProductVariant::with('images')
+            ->where('product_id', $id)
             ->when($portionName, function($query) use ($portionName) {
                 $query->where('portions', 'LIKE', "%$portionName%");
             })
@@ -134,7 +135,7 @@ class ProductVariantController extends Controller
     /**
      * Actualizar variante de producto por id.
      */
-    public function update(UpdateProductRequest $request, $id): JsonResponse
+    public function update(UpdateProductVariantRequest $request, $id): JsonResponse
     {
         $productVariant = ProductVariant::find($id);
 
@@ -144,35 +145,55 @@ class ProductVariantController extends Controller
 
         $validatedData = $request->validated();
 
-        if ($request->hasFile('image')) {
-            if ($productVariant->image && Storage::disk('public')->exists($productVariant->image)) {
-                Storage::disk('public')->delete($productVariant->image);
+        // Manejar imágenes si se envían
+        if ($request->hasFile('images')) {
+            // Obtener la carpeta de las imágenes existentes (si las hay)
+            $existingFolder = 'productVariant'; // Carpeta por defecto
+            
+            if ($productVariant->images->isNotEmpty()) {
+                $firstImagePath = $productVariant->images->first()->path_url;
+                // Extraer la carpeta del path
+                $existingFolder = dirname($firstImagePath);
             }
 
-            $image = $request->file('image');
-            
-            // Generar nombre único para la imagen
-            $imageName = time() . '_' . uniqid() . '.jpg';
-            
-            // Crear instancia del ImageManager para v3
-            $manager = new ImageManager(new Driver());
-            
-            // Convertir imagen a JPG usando Intervention Image v3
-            $convertedImage = $manager->read($image->getPathname())
-                ->toJpeg(85); // 85% calidad
-            
-            // Guardar la imagen convertida
-            Storage::disk('public')->put('productVariant/' . $imageName, $convertedImage);
+            Log::info('Usando carpeta existente para ProductVariant:', ['folder' => $existingFolder]);
 
-            $validatedData['image'] = 'productVariant/' . $imageName;
+            // Eliminar imágenes existentes
+            $productVariant->deleteImages();
+
+            // Obtener imágenes de diferentes formas (soporte para Postman)
+            $imageFiles = [];
+            
+            if (is_array($request->file('images'))) {
+                $imageFiles = $request->file('images');
+            } else {
+                // Si Postman envía como images.0, images.1, etc.
+                foreach ($request->allFiles() as $key => $file) {
+                    if (preg_match('/^images\.\d+$/', $key)) {
+                        $imageFiles[] = $file;
+                    }
+                }
+            }
+
+            // Agregar nuevas imágenes en la misma carpeta que antes
+            foreach ($imageFiles as $index => $imageFile) {
+                $path = $this->imageService->uploadImage($imageFile, $existingFolder);
+                
+                $productVariant->addImage(
+                    $path, 
+                    $index === 0, // Primera imagen como principal
+                    $index
+                );
+            }
         }
 
         $productVariant->update($validatedData);
+        $productVariant->load('images');
 
         return new JsonResponse([
             'message' => 'Variante de producto actualizado con éxito', 
             'product' => new ProductVariantResource($productVariant)
-        ],200);
+        ], 200);
 
     }
 
@@ -187,6 +208,9 @@ class ProductVariantController extends Controller
             return new JsonResponse(['message' => 'Variante de producto no encontrado'], 404);
         }
 
+        // Eliminar imágenes antes de eliminar la variante
+        $productVariant->deleteImages();
+        
         $productVariant->delete();
 
         return new JsonResponse(['message' => 'Variante de producto eliminado correctamente'], 200);
