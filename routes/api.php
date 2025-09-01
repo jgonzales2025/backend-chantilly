@@ -147,6 +147,7 @@ Route::get('/banner', [BannerController::class, 'index']);
 Route::post('/banner', [BannerController::class, 'store']);
 Route::post('/banner/{id}', [BannerController::class, 'update']);
 Route::delete('/banner/{id}', [BannerController::class, 'destroy']);
+Route::delete('/banners/all', [BannerController::class, 'destroyAll']);
 
 // Rutas para el banner secundario
 Route::get('/banner-secondary', [BannerSecundaryController::class, 'index']);

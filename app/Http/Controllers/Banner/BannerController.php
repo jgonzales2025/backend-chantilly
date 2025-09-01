@@ -118,4 +118,32 @@ class BannerController extends Controller
         
         return 'banners/' . $imageName;
     }
+
+    /**
+     * Eliminar todos los banners.
+     */
+    public function destroyAll(Request $request): JsonResponse
+    {
+        $banners = Banner::all();
+        
+        if ($banners->isEmpty()) {
+            return new JsonResponse(['message' => 'No hay banners para eliminar'], 200);
+        }
+
+        // Eliminar todas las imágenes asociadas
+        foreach ($banners as $banner) {
+            if ($banner->image_path && Storage::disk('public')->exists($banner->image_path)) {
+                Storage::disk('public')->delete($banner->image_path);
+            }
+        }
+
+        // Eliminar todos los banners de la base de datos
+        $deletedCount = Banner::count();
+        Banner::truncate(); // O puedes usar Banner::query()->delete();
+
+        return new JsonResponse([
+            'message' => 'Todos los banners han sido eliminados con éxito',
+            'deleted_count' => $deletedCount
+        ], 200);
+    }
 }
