@@ -8,6 +8,7 @@ use App\Http\Controllers\Banner\BannerController;
 use App\Http\Controllers\Banner\BannerSecundaryController;
 use App\Http\Controllers\CakeFlavor\CakeFlavorController;
 use App\Http\Controllers\Category\CategoryController;
+use App\Http\Controllers\Complaint\ComplaintController;
 use App\Http\Controllers\Customer\CustomerController;
 use App\Http\Controllers\DocumentType\DocumentTypeController;
 use App\Http\Controllers\Local\LocalController;
@@ -156,3 +157,7 @@ Route::delete('/banner-secondary/{id}', [BannerSecundaryController::class, 'dest
 // Ruta para el login del admin
 Route::post('/admin/login', [AdminAuthController::class, 'login']);
 Route::middleware('auth:sanctum')->post('/admin/logout', [AdminAuthController::class, 'logout']);
+
+// Ruta para el libro de reclamaciones
+Route::get('/complaints', [ComplaintController::class, 'index']);
+Route::post('/complaints', [ComplaintController::class, 'store']);
