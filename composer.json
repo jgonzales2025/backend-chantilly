@@ -10,6 +10,7 @@
     "license": "MIT",
     "require": {
         "php": "^8.2",
+        "ext-gd": "*",
         "dedoc/scramble": "^0.12.28",
         "guzzlehttp/guzzle": "^7.9",
         "intervention/image": "^3.11",
