@@ -20,15 +20,12 @@ return new class extends Migration
             $table->string('customer_name');
             $table->string('customer_lastname');
             $table->string('dni_ruc', 11);
-            $table->string('department');
-            $table->string('province');
-            $table->string('district');
             $table->text('address');
             $table->string('email');
             $table->string('phone', 9);
             $table->text('parent_data')->nullable();
             $table->enum('well_hired', ['Producto', 'Servicio']);
-            $table->integer('amount')->default(0);
+            $table->decimal('amount', 10, 2);
             $table->text('description');
             $table->enum('type_complaint', ['Reclamo', 'Queja']);
             $table->text('detail_complaint');

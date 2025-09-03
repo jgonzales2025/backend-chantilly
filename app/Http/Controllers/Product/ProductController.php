@@ -214,7 +214,7 @@ class ProductController extends Controller
     public function setPrimaryImage(Request $request, $productId): JsonResponse
     {
         $request->validate([
-            'image_id' => 'required|integer|exists:images,id'
+            'image_index' => 'required|integer'
         ]);
 
         $product = Product::find($productId);
@@ -222,9 +222,16 @@ class ProductController extends Controller
         if (!$product) {
             return new JsonResponse(['message' => 'Producto no encontrado'], 404);
         }
-
-        $imageId = $request->input('image_id');
         
+        $imageIndex = $request->input('image_index');
+        $images = $product->images()->orderBy('sort_order')->get();
+
+        if (!isset($images[$imageIndex])) {
+            return new JsonResponse(['message' => 'Índice de imagen inválido'], 404);
+        }
+
+        $imageId = $images[$imageIndex]->id;
+
         if ($product->setPrimaryImage($imageId)) {
             $product->load('theme', 'category', 'productType', 'images');
             

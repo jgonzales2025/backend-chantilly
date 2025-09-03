@@ -41,6 +41,7 @@ Route::post('/products', [ProductController::class, 'store']);
 Route::get('/products/{id}', [ProductController::class, 'show']);
 Route::post('/products/{id}', [ProductController::class, 'update']);
 Route::delete('/products/{id}', [ProductController::class, 'destroy']);
+Route::post('/products/{id}/set-primary-image', [ProductController::class, 'setPrimaryImage']);
 
 // Ruta para traer accesorios
 Route::get('/products-accessories', [ProductController::class, 'indexAccesories']);
@@ -146,6 +147,7 @@ Route::get('/distritos/{coddep}/{codpro}', [UbigeoController::class, 'distritos'
 Route::get('/banner', [BannerController::class, 'index']);
 Route::post('/banner', [BannerController::class, 'store']);
 Route::post('/banner/{id}', [BannerController::class, 'update']);
+Route::post('/banners/bulk', [BannerController::class, 'bulkStore']);
 Route::delete('/banner/{id}', [BannerController::class, 'destroy']);
 Route::delete('/banners/all', [BannerController::class, 'destroyAll']);
 
@@ -162,3 +164,4 @@ Route::middleware('auth:sanctum')->post('/admin/logout', [AdminAuthController::c
 // Ruta para el libro de reclamaciones
 Route::get('/complaints', [ComplaintController::class, 'index']);
 Route::post('/complaints', [ComplaintController::class, 'store']);
+Route::get('/complaints/next-number', [ComplaintController::class, 'getNextComplaintNumber']);

@@ -22,8 +22,6 @@ class UpdateBannerRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'title' => 'nullable|string|max:255',
-            'description' => 'nullable|string',
             'image' => 'nullable|image|mimes:jpg,jpeg,png,webp',
             'link_url' => 'nullable|url|max:255',
             'status' => 'nullable|boolean',

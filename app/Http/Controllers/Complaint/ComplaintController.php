@@ -20,6 +20,18 @@ class ComplaintController extends Controller
         return new JsonResponse(ComplaintResource::collection($complaints), 200);
     }
 
+    /**
+     * Obtener el próximo número de queja disponible
+     */
+    public function getNextComplaintNumber(): JsonResponse
+    {
+        $nextNumber = Complaint::generateComplaintNumber();
+        
+        return new JsonResponse([
+            'number_complaint' => $nextNumber
+        ], 200);
+    }
+
     public function store(StoreComplaintRequest $request): JsonResponse
     {
         $data = $request->validated();

@@ -52,12 +52,6 @@ class SmsService
                 'mensaje' => $message
             ]);
 
-            Log::info('SMS de confirmación de pago enviado', [
-                'phone' => $phone,
-                'order_number' => $orderNumber,
-                'response_status' => $response->status()
-            ]);
-
             return $response->successful();
         } catch (\Exception $e) {
             Log::error('Error enviando SMS de confirmación', [

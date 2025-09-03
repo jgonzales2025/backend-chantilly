@@ -23,6 +23,7 @@ class BannerController extends Controller
     {
         $title = $request->query('title');
         $banners = Banner::when($title, fn($query) => $query->where('title', 'like', "%{$title}%"))
+            ->orderBy('display_order', 'asc')
             ->get();
         return new JsonResponse(BannerResource::collection($banners), 200);
     }
@@ -46,6 +47,40 @@ class BannerController extends Controller
         $banner = Banner::create($validatedData);
 
         return new JsonResponse(new BannerResource($banner), 201);
+    }
+
+    /**
+     * Almacenar múltiples banners.
+     */
+    public function bulkStore(Request $request): JsonResponse
+    {
+
+        $validatedData = $request->validate([
+            'banners' => 'required|array|max:12',
+            'banners.*.image' => 'nullable|image|mimes:jpg,jpeg,png,webp',
+            'banners.*.link_url' => 'nullable|url|max:255',
+            'banners.*.status' => 'nullable|boolean',
+        ]);
+
+        $cantidad = Banner::count();
+
+        if($cantidad == 12) {
+            return new JsonResponse(['message' => 'Se ha alcanzado el límite máximo de banners'], 429);
+        }
+
+        $banners = [];
+        foreach ($validatedData['banners'] as $data) {
+            $maxDisplayOrder = Banner::max('display_order') ?? 0;
+            $data['display_order'] = $maxDisplayOrder + 1;
+
+            if (isset($data['image'])) {
+                $data['image_path'] = $this->processImage($data['image']);
+            }
+
+            $banners[] = Banner::create($data);
+        }
+
+        return new JsonResponse(BannerResource::collection($banners), 201);
     }
 
     /**

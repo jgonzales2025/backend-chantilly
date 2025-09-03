@@ -13,13 +13,13 @@ class Banner extends Model
         'display_order'
     ];
 
-    protected $casts = [
-        'status' => 'boolean'
-    ];
-
     protected $hidden = [
         'created_at',
         'updated_at'
+    ];
+
+    protected $casts = [
+        'status' => 'boolean'
     ];
 
     public function getImageUrlAttribute(): ?string
