@@ -3,12 +3,10 @@
 namespace App\Http\Controllers\ProductVariant;
 
 use App\Http\Controllers\Controller;
-use App\Http\Requests\Product\UpdateProductRequest;
 use App\Http\Requests\ProductVariant\StoreProductVariantRequest;
 use App\Http\Requests\ProductVariant\UpdateProductVariantRequest;
 use App\Http\Resources\ProductResource;
 use App\Http\Resources\ProductVariantResource;
-use App\Models\Product;
 use App\Models\ProductVariant;
 use App\Services\ImageService;
 use Illuminate\Http\JsonResponse;
@@ -135,7 +133,7 @@ class ProductVariantController extends Controller
     /**
      * Actualizar variante de producto por id.
      */
-    public function update(UpdateProductVariantRequest $request, $id): JsonResponse
+    public function addImages(UpdateProductVariantRequest $request, $id): JsonResponse
     {
         $productVariant = ProductVariant::find($id);
 
@@ -147,6 +145,15 @@ class ProductVariantController extends Controller
 
         // Manejar imágenes si se envían
         if ($request->hasFile('images')) {
+            // Verificar límite de 3 imágenes
+            $currentImageCount = $productVariant->images()->count();
+
+            if ($currentImageCount >= 3) {
+                return new JsonResponse([
+                    'message' => 'El producto ya tiene el máximo de 3 imágenes permitidas'
+                ], 422);
+            }
+
             // Obtener la carpeta de las imágenes existentes (si las hay)
             $existingFolder = 'productVariant'; // Carpeta por defecto
             
@@ -158,8 +165,8 @@ class ProductVariantController extends Controller
 
             Log::info('Usando carpeta existente para ProductVariant:', ['folder' => $existingFolder]);
 
-            // Eliminar imágenes existentes
-            $productVariant->deleteImages();
+            // Obtener el último sort_order para continuar la secuencia
+            $lastSortOrder = $productVariant->images()->max('sort_order') ?? -1;
 
             // Obtener imágenes de diferentes formas (soporte para Postman)
             $imageFiles = [];
@@ -181,8 +188,8 @@ class ProductVariantController extends Controller
                 
                 $productVariant->addImage(
                     $path, 
-                    $index === 0, // Primera imagen como principal
-                    $index
+                    false,
+                    $lastSortOrder + $index + 1 // Continuar la secuencia
                 );
             }
         }
@@ -200,19 +207,49 @@ class ProductVariantController extends Controller
     /**
      * Eliminar variante de producto por id.
      */
-    public function destroy($id)
+    public function deleteImage(Request $request, $id)
     {
+        $request->validate([
+            'image_index' => 'required|integer|min:0'
+        ]);
+
         $productVariant = ProductVariant::find($id);
 
         if(!$productVariant){
             return new JsonResponse(['message' => 'Variante de producto no encontrado'], 404);
         }
 
-        // Eliminar imágenes antes de eliminar la variante
-        $productVariant->deleteImages();
-        
-        $productVariant->delete();
+        $imageIndex = $request->input('image_index');
+        $images = $productVariant->images()->orderBy('sort_order')->get();
 
-        return new JsonResponse(['message' => 'Variante de producto eliminado correctamente'], 200);
+        if (!isset($images[$imageIndex])) {
+            return new JsonResponse(['message' => 'Índice de imagen inválido'], 404);
+        }
+
+        $imageToDelete = $images[$imageIndex];
+        
+        // Verificar si la imagen a eliminar es la principal
+        $wasPrimary = $imageToDelete->is_primary;
+        
+        // Eliminar archivo físico usando ImageService
+        $this->imageService->deleteImage($imageToDelete->path_url);
+        
+        // Eliminar registro de la base de datos
+        $imageToDelete->delete();
+        
+        // Si la imagen eliminada era la principal, establecer otra como principal
+        if ($wasPrimary) {
+            $remainingImages = $productVariant->images()->orderBy('sort_order')->get();
+            if ($remainingImages->isNotEmpty()) {
+                $remainingImages->first()->update(['is_primary' => true]);
+            }
+        }
+
+        $productVariant->load('theme', 'category', 'productType', 'images');
+
+        return new JsonResponse([
+            'message' => 'Imagen eliminada con éxito',
+            'product' => new ProductResource($productVariant)
+        ], 200);
     }
 }

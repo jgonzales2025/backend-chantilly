@@ -3,7 +3,7 @@
 namespace App\Traits;
 
 use App\Models\Image;
-use Illuminate\Support\Facades\Storage;
+use App\Services\ImageService;
 
 trait HasImages
 {
@@ -40,10 +40,10 @@ trait HasImages
      */
     public function deleteImages()
     {
+        $imageService = app(ImageService::class);
+
         foreach ($this->images as $image) {
-            if ($image->path_url && Storage::disk('public')->exists($image->path_url)) {
-                Storage::disk('public')->delete($image->path_url);
-            }
+            $imageService->deleteImage($image->path_url);
             $image->delete();
         }
     }

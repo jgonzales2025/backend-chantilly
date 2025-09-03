@@ -22,7 +22,7 @@ class UpdateProductVariantRequest extends FormRequest
     public function rules(): array
     {
         $rules = [
-            'images' => 'nullable|array',
+            'images' => 'nullable|array|max:3',
             'images.*' => 'image|mimes:jpg,jpeg,png,webp'
         ];
         

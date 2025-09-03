@@ -9,7 +9,6 @@ use App\Http\Resources\BannerResource;
 use App\Models\Banner;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
 use Intervention\Image\Drivers\Gd\Driver;
 use Intervention\Image\ImageManager;
@@ -103,9 +102,8 @@ class BannerController extends Controller
         }
 
         $validatedData = $request->validated();
-        Log::info("Datos", $validatedData);
+
         if ($request->hasFile('image')) {
-            Log::info("Actualizando imagen");
             // Eliminar imagen anterior si existe
             if ($banner->image_path && Storage::disk('public')->exists($banner->image_path)) {
                 Storage::disk('public')->delete($banner->image_path);
@@ -174,7 +172,7 @@ class BannerController extends Controller
 
         // Eliminar todos los banners de la base de datos
         $deletedCount = Banner::count();
-        Banner::truncate(); // O puedes usar Banner::query()->delete();
+        Banner::truncate();
 
         return new JsonResponse([
             'message' => 'Todos los banners han sido eliminados con éxito',

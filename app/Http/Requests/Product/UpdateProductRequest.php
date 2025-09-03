@@ -22,7 +22,7 @@ class UpdateProductRequest extends FormRequest
     public function rules(): array
     {
         $rules = [
-            'images' => 'nullable|array',
+            'images' => 'nullable|array|max:3',
             'images.*' => 'image|mimes:jpg,jpeg,png,webp'
         ];
         
@@ -42,6 +42,7 @@ class UpdateProductRequest extends FormRequest
     public function messages(): array
     {
         return [
+            'images.max' => 'No se pueden subir más de 3 imágenes por producto.',
             'images.*.image' => 'El archivo debe ser una imagen válida.',
             'images.*.mimes' => 'La imagen debe ser de tipo: jpg, jpeg, png, webp o gif.',
             'images.*.max' => 'La imagen no debe pesar más de 5MB.',

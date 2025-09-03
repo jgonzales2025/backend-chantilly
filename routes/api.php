@@ -39,8 +39,8 @@ Route::get('/products', [ProductController::class, 'index']);
 Route::get('/products/all', [ProductController::class, 'allProducts']);
 Route::post('/products', [ProductController::class, 'store']);
 Route::get('/products/{id}', [ProductController::class, 'show']);
-Route::post('/products/{id}', [ProductController::class, 'update']);
-Route::delete('/products/{id}', [ProductController::class, 'destroy']);
+Route::post('/products/{id}/images', [ProductController::class, 'addImages']);
+Route::delete('/products/{id}/images', [ProductController::class, 'deleteImage']);
 Route::post('/products/{id}/set-primary-image', [ProductController::class, 'setPrimaryImage']);
 
 // Ruta para traer accesorios
@@ -52,8 +52,8 @@ Route::get('/products-variant', [ProductVariantController::class, 'index']);
 Route::post('/products-variant', [ProductVariantController::class, 'store']);
 Route::get('/products-variant/{id}', [ProductVariantController::class, 'show']);
 Route::get('/products-variant/{id}', [ProductVariantController::class, 'showByPortion']);
-Route::post('/products-variant/{id}', [ProductVariantController::class, 'update']);
-Route::delete('/products-variant/{id}', [ProductVariantController::class, 'destroy']);
+Route::post('/products-variant/{id}/images', [ProductVariantController::class, 'addImages']);
+Route::delete('/products-variant/{id}/images', [ProductVariantController::class, 'deleteImage']);
 
 // Rutas para temática
 Route::get('/theme', [ThemeController::class, 'index']);

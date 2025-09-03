@@ -10,7 +10,6 @@ use App\Models\Product;
 use App\Services\ImageService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Log;
 
 class ProductController extends Controller
 {
@@ -112,6 +111,7 @@ class ProductController extends Controller
         if(!$product){
             return new JsonResponse(['message' => 'Producto no encontrado'], 404);
         }
+            
         $product->load('theme', 'category', 'productType', 'images');
         return new JsonResponse(new ProductResource($product), 200);
     }
@@ -119,7 +119,7 @@ class ProductController extends Controller
     /**
      * Actualizar producto por id.
      */
-    public function update(UpdateProductRequest $request, $id): JsonResponse
+    public function addImages(UpdateProductRequest $request, $id): JsonResponse
     {
         $product = Product::find($id);
 
@@ -129,6 +129,17 @@ class ProductController extends Controller
 
         // Manejar imágenes si se envían
         if ($request->hasFile('images')) {
+            // Verificar límite de 3 imágenes
+            $currentImageCount = $product->images()->count();
+            
+            if ($currentImageCount >= 3) {
+                return new JsonResponse([
+                    'message' => 'El producto ya tiene el máximo de 3 imágenes permitidas'
+                ], 422);
+            }
+            // Verificar si el producto no tiene imágenes para establecer la primera como principal
+            $isFirstImage = $currentImageCount === 0;
+
             // Obtener la carpeta de las imágenes existentes (si las hay)
             $existingFolder = 'product'; // Carpeta por defecto
             
@@ -138,10 +149,8 @@ class ProductController extends Controller
                 $existingFolder = dirname($firstImagePath);
             }
 
-            Log::info('Usando carpeta existente:', ['folder' => $existingFolder]);
-
-            // Eliminar imágenes existentes
-            $product->deleteImages();
+            // Obtener el último sort_order para continuar la secuencia
+            $lastSortOrder = $product->images()->max('sort_order') ?? -1;
 
             // Obtener imágenes de diferentes formas (soporte para Postman)
             $imageFiles = [];
@@ -161,10 +170,13 @@ class ProductController extends Controller
             foreach ($imageFiles as $index => $imageFile) {
                 $path = $this->imageService->uploadImage($imageFile, $existingFolder);
                 
+                // La primera imagen será principal si el producto no tenía imágenes
+                $isPrimary = $isFirstImage && $index === 0;
+
                 $product->addImage(
                     $path, 
-                    $index === 0, // Primera imagen como principal
-                    $index
+                    $isPrimary,
+                    $lastSortOrder + $index + 1 // Continuar la secuencia
                 );
             }
         }
@@ -180,19 +192,50 @@ class ProductController extends Controller
     /**
      * Eliminar producto
      */
-    public function destroy($id)
+    public function deleteImage(Request $request, $productId)
     {
-        $product = Product::find($id);
+        $request->validate([
+            'image_index' => 'required|integer|min:0'
+        ]);
 
-        if(!$product){
+        $product = Product::find($productId);
+        
+        if (!$product) {
             return new JsonResponse(['message' => 'Producto no encontrado'], 404);
         }
+        
+        $imageIndex = $request->input('image_index');
+        $images = $product->images()->orderBy('sort_order')->get();
 
-        $product->deleteImages();
+        if (!isset($images[$imageIndex])) {
+            return new JsonResponse(['message' => 'Índice de imagen inválido'], 404);
+        }
 
-        $product->delete();
+        $imageToDelete = $images[$imageIndex];
+        
+        // Verificar si la imagen a eliminar es la principal
+        $wasPrimary = $imageToDelete->is_primary;
+        
+        // Eliminar archivo físico usando ImageService
+        $this->imageService->deleteImage($imageToDelete->path_url);
+        
+        // Eliminar registro de la base de datos
+        $imageToDelete->delete();
+        
+        // Si la imagen eliminada era la principal, establecer otra como principal
+        if ($wasPrimary) {
+            $remainingImages = $product->images()->orderBy('sort_order')->get();
+            if ($remainingImages->isNotEmpty()) {
+                $remainingImages->first()->update(['is_primary' => true]);
+            }
+        }
 
-        return new JsonResponse(['message' => 'Producto eliminado con éxito'], 200);
+        $product->load('theme', 'category', 'productType', 'images');
+        
+        return new JsonResponse([
+            'message' => 'Imagen eliminada con éxito',
+            'product' => new ProductResource($product)
+        ], 200);
     }
 
     public function indexAccesories(): JsonResponse
