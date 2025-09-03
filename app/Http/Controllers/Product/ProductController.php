@@ -26,19 +26,23 @@ class ProductController extends Controller
      */
     public function allProducts(Request $request): JsonResponse
     {
-        $name = $request->query('name');
-        $prodType = $request->query('product_type_id');
+        try {
+            $name = $request->query('name');
+            $prodType = $request->query('product_type_id');
 
-        $products = Product::when($name, function ($query) use ($name) {
+            $products = Product::when($name, function ($query) use ($name) {
             $query->where('short_description', 'LIKE', "%$name%");
-        })
-        ->when($prodType, function ($query) use ($prodType) {
+            })
+            ->when($prodType, function ($query) use ($prodType) {
             $query->where('product_type_id', $prodType);
-        })
-        ->get();
+            })
+            ->get();
 
-        $products->load('theme', 'category', 'productType', 'images');
-        return new JsonResponse(ProductResource::collection($products), 200);
+            $products->load('theme', 'category', 'productType', 'images');
+            return new JsonResponse(ProductResource::collection($products), 200);
+        } catch (\Exception $e) {
+            return new JsonResponse(['message' => 'Error al obtener los productos', 'error' => $e->getMessage()], 500);
+        }
     }
 
 
