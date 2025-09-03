@@ -15,7 +15,7 @@ class ProductVariantSeeder extends Seeder
     public function run(): void
     {
         foreach(ProductVariantEnum::cases() as $variant){
-            ProductVariant::create([
+            $createdProduct = ProductVariant::create([
                 'cod_fab' => $variant->codfab(),
                 'product_id' => $variant->productId(),
                 'description' => $variant->value,
@@ -23,8 +23,14 @@ class ProductVariantSeeder extends Seeder
                 'size_portion' => $variant->sizeportion(),
                 'price' => $variant->price(),
                 'hours' => $variant->hours(),
-                'image' => $variant->image(),
             ]);
+
+            // Agregar imagen a la tabla images usando el trait
+            $createdProduct->addImage(
+                $variant->image(), // path/url de la imagen
+                true, // es imagen principal
+                0 // sort order
+            );
         }
     }
 }

@@ -50,4 +50,9 @@ class Local extends Model
             ->orderBy('distance');
     }
 
+    public function complaints(): HasMany
+    {
+        return $this->hasMany(Complaint::class);
+    }
+
 }

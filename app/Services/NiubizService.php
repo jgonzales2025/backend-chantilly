@@ -6,7 +6,6 @@ use App\Enum\TransactionStatusEnum;
 use App\Models\NiubizTransaction;
 use GuzzleHttp\Client;
 use GuzzleHttp\Exception\RequestException;
-use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Log;
 
 class NiubizService
@@ -27,7 +26,7 @@ class NiubizService
     }
 
     /**
-     * Obtener sessionKey con caché
+     * Obtener token de seguridad de Niubiz
      */
     public function getSessionKey()
     {
@@ -45,11 +44,10 @@ class NiubizService
     /**
      * Crear sesión de pago y guardar en BD
      */
-    public function createSession($amount, $customer, $orderId, $purchaseNumber, $diasRegistrado)
+    public function createSession($amount, $customer, $purchaseNumber, $diasRegistrado)
     {
         // Crear registro de transacción
         $transaction = NiubizTransaction::create([
-            'order_id' => $orderId,
             'purchase_number' => $purchaseNumber,
             'amount' => $amount,
             'currency' => 'PEN',
@@ -58,8 +56,9 @@ class NiubizService
 
         try {
             $url = config("niubiz.urls.session.{$this->env}") . $this->merchantId;
-            $sessionKey = $this->getSessionKey();
+            $sessionKey = $this->getSessionKey(); // Obteniendo token de seguridad de Niubiz
             
+            // Datos a enviar en la petición a Niubiz
             $requestData = [
                 "amount" => number_format($amount, 2, '.', ''),
                 "channel" => "web",
@@ -74,6 +73,7 @@ class NiubizService
                     ]
             ];
 
+            // Envío de la petición a Niubiz para obtener el token de sesión
             $response = $this->client->request('POST', $url, [
                 'headers' => [
                     'Content-Type' => 'application/json',
@@ -84,16 +84,13 @@ class NiubizService
             ]);
             
             $result = json_decode($response->getBody()->getContents(), true);
-            Log::info('Respuesta', $result);
-            // Actualizar con respuesta exitosa
+
+            // Actualizar el token de sesión en la transacción
             $transaction->update([
                 'session_token' => $result['sessionKey'] ?? null
             ]);
 
-            Log::info('Sesión Niubiz creada exitosamente', [
-                'transaction_id' => $transaction->id
-            ]);
-            return $result;
+            return $result; // Se retorna el token de sesión
 
         } catch (RequestException $e) {
             // Guardar error en BD
@@ -101,11 +98,6 @@ class NiubizService
                 'status' => TransactionStatusEnum::FAILED,
                 'error_message' => $e->getMessage(),
                 'niubiz_response' => ['error' => $e->getMessage()]
-            ]);
-
-            Log::error('Error creando sesión Niubiz', [
-                'transaction_id' => $transaction->id,
-                'error' => $e->getMessage()
             ]);
 
             throw new \Exception('Error al crear sesión de pago: ' . $e->getMessage());
@@ -137,22 +129,19 @@ class NiubizService
                     "amount" => $amount,
                     "currency" => "PEN",
                     "purchaseNumber" => $purchaseNumber,
-                    "tokenId" => $tokenId
+                    "tokenId" => $tokenId // Token enviado por niubiz
                 ],
                 "card" => [
                     "token" => $tokenId
                 ]
             ];
-            Log::info('Iniciando pago Niubiz', [
-                'purchase_number' => $purchaseNumber,
-                'request' => $requestData
-            ]);
 
             // Actualizar con token y request
             $transaction->update([
                 'token_id' => $tokenId
             ]);
 
+            // Se envía la petición a niubiz para procesar el pago
             $response = $this->client->request('POST', $url, [
                 'headers' => [
                     'Content-Type' => 'application/json',
@@ -164,28 +153,16 @@ class NiubizService
 
             $result = json_decode($response->getBody()->getContents(), true);
             
-            Log::info('Respuesta de Niubiz', [
-                'purchase_number' => $purchaseNumber,
-                'response' => $result
-            ]);
             // Determinar estado basado en respuesta
             $actionCode = $result['dataMap']['ACTION_CODE'] ?? null;
-            $isSuccess = $actionCode === '000';
+            $isSuccess = $actionCode === '000'; // Codigo de éxito enviado por niubiz.
             
             $status = $isSuccess ? 
                 TransactionStatusEnum::SUCCESS : 
                 TransactionStatusEnum::FAILED;
 
-            Log::info('Estado de la transacción Niubiz', [
-                'purchase_number' => $purchaseNumber,
-                'status' => $status->value,
-                'action_code' => $actionCode
-            ]);
+            $httpCode = $response->getStatusCode(); // Se obtiene el código HTTP de la respuesta
 
-            $httpCode = $response->getStatusCode();
-            Log::info('Código HTTP de Niubiz', [
-                'http_code' => $httpCode
-            ]);
             // Actualizar transacción
             $transaction->update([
                 'status' => $status,
@@ -201,13 +178,6 @@ class NiubizService
             if ($isSuccess && $transaction->order) {
                 $transaction->order->markAsPaid('niubiz');
             }
-
-            Log::info('Pago Niubiz procesado', [
-                'transaction_id' => $transaction->id,
-                'purchase_number' => $purchaseNumber,
-                'status' => $status->value,
-                'action_code' => $actionCode
-            ]);
 
             return $result;
 

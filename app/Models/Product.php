@@ -2,12 +2,15 @@
 
 namespace App\Models;
 
+use App\Traits\HasImages;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Product extends Model
 {
+    use HasImages;
+
     protected $fillable = [
         'short_description',
         'large_description',
@@ -16,7 +19,6 @@ class Product extends Model
         'min_price',
         'max_price',
         'theme_id',
-        'image',
         'status',
         'best_status',
         'product_link'

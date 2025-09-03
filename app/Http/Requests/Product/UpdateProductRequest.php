@@ -21,18 +21,35 @@ class UpdateProductRequest extends FormRequest
      */
     public function rules(): array
     {
+        $rules = [
+            'images' => 'nullable|array|max:3',
+            'images.*' => 'image|mimes:jpg,jpeg,png,webp'
+        ];
+        
+        // También validar formatos con índices numéricos
+        foreach ($this->allFiles() as $key => $file) {
+            if (preg_match('/^images\.\d+$/', $key)) {
+                $rules[$key] = 'image|mimes:jpg,jpeg,png,webp';
+            }
+        }
+        
+        return $rules;
+    }
+
+    /**
+     * Get custom messages for validator errors.
+     */
+    public function messages(): array
+    {
         return [
-            'short_description' => 'nullable|string',
-            'large_description' => 'nullable|string',
-            'product_type_id' => 'required|integer|exists:product_types,id',
-            'category_id' => 'nullable|integer|exists:categories,id',
-            'min_price' => 'required|numeric',
-            'max_price' => 'required|numeric',
-            'theme_id' => 'nullable|integer|exists:themes,id',
-            'image_url' => 'nullable|string',
-            'status' => 'required|boolean',
-            'best_status' => 'required|boolean',
-            'product_link' => 'nullable|string'
+            'images.max' => 'No se pueden subir más de 3 imágenes por producto.',
+            'images.*.image' => 'El archivo debe ser una imagen válida.',
+            'images.*.mimes' => 'La imagen debe ser de tipo: jpg, jpeg, png, webp o gif.',
+            'images.*.max' => 'La imagen no debe pesar más de 5MB.',
+            '*.image' => 'El archivo debe ser una imagen válida.',
+            '*.mimes' => 'La imagen debe ser de tipo: jpg, jpeg, png, webp o gif.',
+            '*.max' => 'La imagen no debe pesar más de 5MB.'
         ];
     }
+
 }

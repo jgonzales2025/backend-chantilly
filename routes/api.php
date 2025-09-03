@@ -1,10 +1,14 @@
 <?php
 
+use App\Http\Controllers\Auth\AdminAuthController;
 use App\Http\Controllers\Auth\CustomerGoogleAuthController;
 use App\Http\Controllers\Auth\CustomerAuthController;
 use App\Http\Controllers\Auth\CustomerForgotPasswordController;
+use App\Http\Controllers\Banner\BannerController;
+use App\Http\Controllers\Banner\BannerSecundaryController;
 use App\Http\Controllers\CakeFlavor\CakeFlavorController;
 use App\Http\Controllers\Category\CategoryController;
+use App\Http\Controllers\Complaint\ComplaintController;
 use App\Http\Controllers\Customer\CustomerController;
 use App\Http\Controllers\DocumentType\DocumentTypeController;
 use App\Http\Controllers\Local\LocalController;
@@ -13,6 +17,7 @@ use App\Http\Controllers\Order\OrderController;
 use App\Http\Controllers\Page\PageController;
 use App\Http\Controllers\Payment\PaymentController;
 use App\Http\Controllers\Product\ProductController;
+use App\Http\Controllers\ProductType\ProductTypeController;
 use App\Http\Controllers\ProductVariant\ProductVariantController;
 use App\Http\Controllers\SaleAdvisor\SaleAdvisorController;
 use App\Http\Controllers\Tematica\ThemeController;
@@ -31,21 +36,24 @@ Route::delete('/customers/{id}', [CustomerController::class, 'destroy']);
 
 // Rutas para  productos
 Route::get('/products', [ProductController::class, 'index']);
+Route::get('/products/all', [ProductController::class, 'allProducts']);
 Route::post('/products', [ProductController::class, 'store']);
 Route::get('/products/{id}', [ProductController::class, 'show']);
-Route::put('/products/{id}', [ProductController::class, 'update']);
-Route::delete('/products/{id}', [ProductController::class, 'destroy']);
+Route::post('/products/{id}/images', [ProductController::class, 'addImages']);
+Route::delete('/products/{id}/images', [ProductController::class, 'deleteImage']);
+Route::post('/products/{id}/set-primary-image', [ProductController::class, 'setPrimaryImage']);
 
 // Ruta para traer accesorios
 Route::get('/products-accessories', [ProductController::class, 'indexAccesories']);
 
 // Rutas para variantes de producto
+Route::get('/products-variant/all', [ProductVariantController::class, 'allProductVariants']);
 Route::get('/products-variant', [ProductVariantController::class, 'index']);
 Route::post('/products-variant', [ProductVariantController::class, 'store']);
 Route::get('/products-variant/{id}', [ProductVariantController::class, 'show']);
 Route::get('/products-variant/{id}', [ProductVariantController::class, 'showByPortion']);
-Route::put('/products-variant/{id}', [ProductVariantController::class, 'update']);
-Route::delete('/products-variant/{id}', [ProductVariantController::class, 'destroy']);
+Route::post('/products-variant/{id}/images', [ProductVariantController::class, 'addImages']);
+Route::delete('/products-variant/{id}/images', [ProductVariantController::class, 'deleteImage']);
 
 // Rutas para temática
 Route::get('/theme', [ThemeController::class, 'index']);
@@ -55,7 +63,7 @@ Route::put('/theme/{id}', [ThemeController::class, 'update']);
 Route::delete('/theme/{id}', [ThemeController::class, 'destroy']);
 
 // Rutas para tipo de producto
-Route::get('/product-types', [ProductType::class, 'index']);
+Route::get('/product-types', [ProductTypeController::class, 'index']);
 
 // Rutas para categorías
 Route::get('/categories', [CategoryController::class, 'index']);
@@ -124,6 +132,7 @@ Route::post('/session', [PaymentController::class, 'getSession']);
 Route::post('/pay', [PaymentController::class, 'pay']);
 Route::get('/payment-config', [PaymentController::class, 'getConfig']);
 Route::post('/niubiz/pay-response', [PaymentController::class, 'payResponse']);
+Route::get('/payment-data', [PaymentController::class, 'getPaymentData']);
 
 // Rutas para los asesores de ventas
 Route::get('/sale-advisors', [SaleAdvisorController::class, 'index']);
@@ -134,3 +143,25 @@ Route::get('/departamentos', [UbigeoController::class, 'departamentos']);
 Route::get('/provincias/{coddep}', [UbigeoController::class, 'provincias']);
 Route::get('/distritos/{coddep}/{codpro}', [UbigeoController::class, 'distritos']);
 
+// Rutas para el banner
+Route::get('/banner', [BannerController::class, 'index']);
+Route::post('/banner', [BannerController::class, 'store']);
+Route::post('/banner/{id}', [BannerController::class, 'update']);
+Route::post('/banners/bulk', [BannerController::class, 'bulkStore']);
+Route::delete('/banner/{id}', [BannerController::class, 'destroy']);
+Route::delete('/banners/all', [BannerController::class, 'destroyAll']);
+
+// Rutas para el banner secundario
+Route::get('/banner-secondary', [BannerSecundaryController::class, 'index']);
+Route::post('/banner-secondary', [BannerSecundaryController::class, 'store']);
+Route::post('/banner-secondary/{id}', [BannerSecundaryController::class, 'update']);
+Route::delete('/banner-secondary/{id}', [BannerSecundaryController::class, 'destroy']);
+
+// Ruta para el login del admin
+Route::post('/admin/login', [AdminAuthController::class, 'login']);
+Route::middleware('auth:sanctum')->post('/admin/logout', [AdminAuthController::class, 'logout']);
+
+// Ruta para el libro de reclamaciones
+Route::get('/complaints', [ComplaintController::class, 'index']);
+Route::post('/complaints', [ComplaintController::class, 'store']);
+Route::get('/complaints/next-number', [ComplaintController::class, 'getNextComplaintNumber']);

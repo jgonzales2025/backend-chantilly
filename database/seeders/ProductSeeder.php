@@ -15,7 +15,7 @@ class ProductSeeder extends Seeder
     public function run(): void
     {
         foreach(ProductEnum::cases() as $product){
-            Product::create([
+            $createdProduct = Product::create([
                 'short_description' => $product->value,
                 'large_description' => $product->large_description(),
                 'product_type_id' => $product->type_id(),
@@ -23,11 +23,17 @@ class ProductSeeder extends Seeder
                 'min_price' => $product->min_price(),
                 'max_price' => $product->max_price(),
                 'theme_id' => $product->theme_id(),
-                'image' => $product->image(),
                 'status' => $product->status(),
                 'best_status' => $product->best_status(),
                 'product_link' => $product->product_link()
             ]);
+
+            // Agregar imagen a la tabla images usando el trait
+            $createdProduct->addImage(
+                $product->image(), // path/url de la imagen
+                true, // es imagen principal
+                0 // sort order
+            );
         }
     }
 }

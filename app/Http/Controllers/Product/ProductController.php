@@ -7,12 +7,41 @@ use App\Http\Requests\Product\StoreProductRequest;
 use App\Http\Requests\Product\UpdateProductRequest;
 use App\Http\Resources\ProductResource;
 use App\Models\Product;
+use App\Services\ImageService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Storage;
 
 class ProductController extends Controller
 {
+
+    protected $imageService;
+
+    public function __construct(ImageService $imageService)
+    {
+        $this->imageService = $imageService;
+    }
+
+    /**
+     * Obtener todos los productos.
+     */
+    public function allProducts(Request $request): JsonResponse
+    {
+        $name = $request->query('name');
+        $prodType = $request->query('product_type_id');
+
+        $products = Product::when($name, function ($query) use ($name) {
+            $query->where('short_description', 'LIKE', "%$name%");
+        })
+        ->when($prodType, function ($query) use ($prodType) {
+            $query->where('product_type_id', $prodType);
+        })
+        ->get();
+
+        $products->load('theme', 'category', 'productType', 'images');
+        return new JsonResponse(ProductResource::collection($products), 200);
+    }
+
+
     /**
      * Mostrar productos.
      */
@@ -40,7 +69,7 @@ class ProductController extends Controller
         if($products->isEmpty()){
             return new JsonResponse(['message' => 'No hay productos registrados']);
         }
-        $products->load('theme', 'category', 'productType');
+        $products->load('theme', 'category', 'productType', 'images');
 
         return new JsonResponse([
             'data' => ProductResource::collection($products->items()),
@@ -61,30 +90,7 @@ class ProductController extends Controller
     {
         $validatedData = $request->validated();
 
-        if ($request->hasFile('image')) {
-            $path = $request->file('image')->store('product', 'public');
-
-            $validatedData['image'] = $path;
-        }
-
-        if (isset($validatedData['short_description'])) {
-            $productName = $validatedData['short_description'];
-            $slugName = strtolower(trim($productName));
-            
-            // Reemplazar caracteres especiales del español
-            $slugName = strtr($slugName, [
-                'ñ' => 'n', 
-                'á' => 'a', 'é' => 'e', 'í' => 'i', 'ó' => 'o', 'ú' => 'u',
-                'ü' => 'u'
-            ]);
-            
-            $slugName = preg_replace('/[^a-z0-9\s_-]/', '', $slugName); // Remover caracteres especiales
-            $slugName = preg_replace('/\s+/', '-', $slugName); // Reemplazar espacios por guiones
-            $slugName = preg_replace('/-{2,}/', '-', $slugName); // Reemplazar múltiples guiones por uno solo
-            
-            $validatedData['product_link'] = config('app.frontend_url') . "detalle/{$slugName}";
-        }
-
+        // Crear producto primero
         $product = Product::create($validatedData);
 
         $product->load('theme', 'category', 'productType');
@@ -105,52 +111,131 @@ class ProductController extends Controller
         if(!$product){
             return new JsonResponse(['message' => 'Producto no encontrado'], 404);
         }
-        $product->load('theme', 'category', 'productType');
+            
+        $product->load('theme', 'category', 'productType', 'images');
         return new JsonResponse(new ProductResource($product), 200);
     }
 
     /**
      * Actualizar producto por id.
      */
-    public function update(UpdateProductRequest $request, $id): JsonResponse
+    public function addImages(UpdateProductRequest $request, $id): JsonResponse
     {
         $product = Product::find($id);
 
-        if(!$product){
+        if (!$product) {
             return new JsonResponse(['message' => 'Producto no encontrado'], 404);
         }
 
-        $validatedData = $request->validated();
+        // Manejar imágenes si se envían
+        if ($request->hasFile('images')) {
+            // Verificar límite de 3 imágenes
+            $currentImageCount = $product->images()->count();
+            
+            if ($currentImageCount >= 3) {
+                return new JsonResponse([
+                    'message' => 'El producto ya tiene el máximo de 3 imágenes permitidas'
+                ], 422);
+            }
+            // Verificar si el producto no tiene imágenes para establecer la primera como principal
+            $isFirstImage = $currentImageCount === 0;
 
-        if ($request->hasFile('image')) {
-            if ($product->image && Storage::disk('public')->exists($product->image)) {
-                Storage::disk('public')->delete($product->image);
+            // Obtener la carpeta de las imágenes existentes (si las hay)
+            $existingFolder = 'product'; // Carpeta por defecto
+            
+            if ($product->images->isNotEmpty()) {
+                $firstImagePath = $product->images->first()->path_url;
+                // Extraer la carpeta del path: "product/bocadito/BOC01.jpg" -> "product/bocadito"
+                $existingFolder = dirname($firstImagePath);
             }
 
-            // Guardar nueva imagen
-            $path = $request->file('image')->store('product', 'public');
-            $validatedData['image'] = $path;
+            // Obtener el último sort_order para continuar la secuencia
+            $lastSortOrder = $product->images()->max('sort_order') ?? -1;
+
+            // Obtener imágenes de diferentes formas (soporte para Postman)
+            $imageFiles = [];
+            
+            if (is_array($request->file('images'))) {
+                $imageFiles = $request->file('images');
+            } else {
+                // Si Postman envía como images.0, images.1, etc.
+                foreach ($request->allFiles() as $key => $file) {
+                    if (preg_match('/^images\.\d+$/', $key)) {
+                        $imageFiles[] = $file;
+                    }
+                }
+            }
+
+            // Agregar nuevas imágenes en la misma carpeta que antes
+            foreach ($imageFiles as $index => $imageFile) {
+                $path = $this->imageService->uploadImage($imageFile, $existingFolder);
+                
+                // La primera imagen será principal si el producto no tenía imágenes
+                $isPrimary = $isFirstImage && $index === 0;
+
+                $product->addImage(
+                    $path, 
+                    $isPrimary,
+                    $lastSortOrder + $index + 1 // Continuar la secuencia
+                );
+            }
         }
 
-        $product->update($validatedData);
-
-        return new JsonResponse(['message' => 'Producto actualizado con éxito','product' => new ProductResource($product)], 200);
+        $product->load('theme', 'category', 'productType', 'images');
+        
+        return new JsonResponse([
+            'message' => 'Imágenes del producto actualizadas con éxito',
+            'product' => new ProductResource($product)
+        ], 200);
     }
 
     /**
      * Eliminar producto
      */
-    public function destroy($id)
+    public function deleteImage(Request $request, $productId)
     {
-        $product = Product::find($id);
+        $request->validate([
+            'image_index' => 'required|integer|min:0'
+        ]);
 
-        if(!$product){
+        $product = Product::find($productId);
+        
+        if (!$product) {
             return new JsonResponse(['message' => 'Producto no encontrado'], 404);
         }
+        
+        $imageIndex = $request->input('image_index');
+        $images = $product->images()->orderBy('sort_order')->get();
 
-        $product->delete();
+        if (!isset($images[$imageIndex])) {
+            return new JsonResponse(['message' => 'Índice de imagen inválido'], 404);
+        }
 
-        return new JsonResponse(['message' => 'Producto eliminado con éxito'], 200);
+        $imageToDelete = $images[$imageIndex];
+        
+        // Verificar si la imagen a eliminar es la principal
+        $wasPrimary = $imageToDelete->is_primary;
+        
+        // Eliminar archivo físico usando ImageService
+        $this->imageService->deleteImage($imageToDelete->path_url);
+        
+        // Eliminar registro de la base de datos
+        $imageToDelete->delete();
+        
+        // Si la imagen eliminada era la principal, establecer otra como principal
+        if ($wasPrimary) {
+            $remainingImages = $product->images()->orderBy('sort_order')->get();
+            if ($remainingImages->isNotEmpty()) {
+                $remainingImages->first()->update(['is_primary' => true]);
+            }
+        }
+
+        $product->load('theme', 'category', 'productType', 'images');
+        
+        return new JsonResponse([
+            'message' => 'Imagen eliminada con éxito',
+            'product' => new ProductResource($product)
+        ], 200);
     }
 
     public function indexAccesories(): JsonResponse
@@ -160,9 +245,45 @@ class ProductController extends Controller
         if ($accesorios->isEmpty()) {
             return new JsonResponse(['message' => 'No hay accesorios registrados'], 404);
         }
-
+        $accesorios->load('images');
         return new JsonResponse([
             'accesorios' => ProductResource::collection($accesorios)
         ]);
+    }
+
+    /**
+     * Cambiar imagen principal del producto
+     */
+    public function setPrimaryImage(Request $request, $productId): JsonResponse
+    {
+        $request->validate([
+            'image_index' => 'required|integer'
+        ]);
+
+        $product = Product::find($productId);
+        
+        if (!$product) {
+            return new JsonResponse(['message' => 'Producto no encontrado'], 404);
+        }
+        
+        $imageIndex = $request->input('image_index');
+        $images = $product->images()->orderBy('sort_order')->get();
+
+        if (!isset($images[$imageIndex])) {
+            return new JsonResponse(['message' => 'Índice de imagen inválido'], 404);
+        }
+
+        $imageId = $images[$imageIndex]->id;
+
+        if ($product->setPrimaryImage($imageId)) {
+            $product->load('theme', 'category', 'productType', 'images');
+            
+            return new JsonResponse([
+                'message' => 'Imagen principal actualizada con éxito',
+                'product' => new ProductResource($product)
+            ], 200);
+        }
+
+        return new JsonResponse(['message' => 'Imagen no encontrada para este producto'], 404);
     }
 }

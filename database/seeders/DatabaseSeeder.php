@@ -2,6 +2,7 @@
 
 namespace Database\Seeders;
 
+use App\Models\BannerSecundary;
 use App\Models\Order;
 use App\Models\User;
 // use Illuminate\Database\Console\Seeds\WithoutModelEvents;
@@ -36,7 +37,9 @@ class DatabaseSeeder extends Seeder
             ProductVariantSeeder::class,
             OrderSeeder::class,
             OrderItemSeeder::class,
-            TransactionSeeder::class
+            TransactionSeeder::class,
+            UserSeeder::class,
+            BannerSecundarySeeder::class
         ]);
         
     }
