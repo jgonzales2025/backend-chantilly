@@ -26,8 +26,6 @@ class ProductController extends Controller
      */
     public function allProducts(Request $request): JsonResponse
     {
-        var_dump('here');
-        exit;
         try {
             $name = $request->query('name');
             $prodType = $request->query('product_type_id');
