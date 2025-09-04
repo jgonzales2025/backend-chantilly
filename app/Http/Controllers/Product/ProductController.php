@@ -97,7 +97,7 @@ class ProductController extends Controller
         // Crear producto primero
         $product = Product::create($validatedData);
 
-        $product->load('theme', 'category', 'productType');
+        $product->load('theme', 'category', 'productType', 'images');
         
         return new JsonResponse([
             'message' => 'Producto registrado con éxito',

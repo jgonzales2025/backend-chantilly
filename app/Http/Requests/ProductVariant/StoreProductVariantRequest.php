@@ -22,7 +22,6 @@ class StoreProductVariantRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'cod_fab' => 'required|string',
             'product_id' => 'required|integer|exists:products,id',
             'description' => 'required|string',
             'portions' => 'required|string',

@@ -12,7 +12,6 @@ class ProductVariant extends Model
     use HasImages;
 
     protected $fillable = [
-        'cod_fab',
         'product_id',
         'description',
         'portions',

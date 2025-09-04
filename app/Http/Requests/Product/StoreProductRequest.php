@@ -22,6 +22,7 @@ class StoreProductRequest extends FormRequest
     public function rules(): array
     {
         return [
+            'cod_fab' => 'nullable|string|max:255',
             'short_description' => 'nullable|string',
             'large_description' => 'nullable|string',
             'product_type_id' => 'required|integer|exists:product_types,id',

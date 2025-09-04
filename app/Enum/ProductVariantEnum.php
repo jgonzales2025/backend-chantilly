@@ -27,34 +27,6 @@ enum ProductVariantEnum: string
     case PRODUCTVARIANT_21 = 'TORTA DE TRES LECHE DE FRESA D22';
     case PRODUCTVARIANT_22 = 'TORTA DE TRES LECHE DE FRESA 32x24';
 
-    public function codfab()
-    {
-        return match($this) {
-            self::PRODUCTVARIANT_01 => 'TE1',
-            self::PRODUCTVARIANT_02 => 'TE4',
-            self::PRODUCTVARIANT_03 => 'TE100',
-            self::PRODUCTVARIANT_04 => 'TE101',
-            self::PRODUCTVARIANT_05 => 'TE102',
-            self::PRODUCTVARIANT_06 => 'TE103',
-            self::PRODUCTVARIANT_07 => 'TE140',
-            self::PRODUCTVARIANT_08 => 'TE141',
-            self::PRODUCTVARIANT_09 => 'TE142',
-            self::PRODUCTVARIANT_10 => 'TE143',
-            self::PRODUCTVARIANT_11 => 'TE147',
-            self::PRODUCTVARIANT_12 => 'TE148',
-            self::PRODUCTVARIANT_13 => 'TE156',
-            self::PRODUCTVARIANT_14 => 'TE26',
-            self::PRODUCTVARIANT_15 => 'PT52',
-            self::PRODUCTVARIANT_16 => 'TE25',
-            self::PRODUCTVARIANT_17 => 'TE150',
-            self::PRODUCTVARIANT_18 => 'TE28',
-            self::PRODUCTVARIANT_19 => 'TE151',
-            self::PRODUCTVARIANT_20 => 'TE154',
-            self::PRODUCTVARIANT_21 => 'TE155',
-            self::PRODUCTVARIANT_22 => 'TE157',
-        };
-    }
-
     public function productId()
     {
         return match($this) {

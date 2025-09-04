@@ -199,7 +199,7 @@ class ProductVariantController extends Controller
 
         return new JsonResponse([
             'message' => 'Variante de producto actualizado con éxito', 
-            'product' => new ProductVariantResource($productVariant)
+            'variant' => new ProductVariantResource($productVariant)
         ], 200);
 
     }
@@ -245,11 +245,11 @@ class ProductVariantController extends Controller
             }
         }
 
-        $productVariant->load('theme', 'category', 'productType', 'images');
+        $productVariant->load('images');
 
         return new JsonResponse([
             'message' => 'Imagen eliminada con éxito',
-            'product' => new ProductResource($productVariant)
+            'variant' => new ProductVariantResource($productVariant)
         ], 200);
     }
 }
