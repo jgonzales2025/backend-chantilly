@@ -50,10 +50,11 @@ Route::get('/products-accessories', [ProductController::class, 'indexAccesories'
 Route::get('/products-variant/all', [ProductVariantController::class, 'allProductVariants']);
 Route::get('/products-variant', [ProductVariantController::class, 'index']);
 Route::post('/products-variant', [ProductVariantController::class, 'store']);
-Route::get('/products-variant/{id}', [ProductVariantController::class, 'show']);
+Route::get('/products-variant/show/{id}', [ProductVariantController::class, 'show']);
 Route::get('/products-variant/{id}', [ProductVariantController::class, 'showByPortion']);
 Route::post('/products-variant/{id}/images', [ProductVariantController::class, 'addImages']);
 Route::delete('/products-variant/{id}/images', [ProductVariantController::class, 'deleteImage']);
+Route::post('/products-variant/{id}/set-primary-image', [ProductVariantController::class, 'setPrimaryImage']);
 
 // Rutas para temática
 Route::get('/theme', [ThemeController::class, 'index']);

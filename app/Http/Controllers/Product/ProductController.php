@@ -10,6 +10,7 @@ use App\Models\Product;
 use App\Services\ImageService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
 
 class ProductController extends Controller
 {
@@ -125,7 +126,7 @@ class ProductController extends Controller
      */
     public function addImages(UpdateProductRequest $request, $id): JsonResponse
     {
-        $product = Product::find($id);
+        $product = Product::with('images')->find($id);
 
         if (!$product) {
             return new JsonResponse(['message' => 'Producto no encontrado'], 404);
@@ -135,7 +136,7 @@ class ProductController extends Controller
         if ($request->hasFile('images')) {
             // Verificar límite de 3 imágenes
             $currentImageCount = $product->images()->count();
-            
+            Log::info("Imágenes actuales del producto (ID: {$id}): {$currentImageCount}");
             if ($currentImageCount >= 3) {
                 return new JsonResponse([
                     'message' => 'El producto ya tiene el máximo de 3 imágenes permitidas'
@@ -144,14 +145,8 @@ class ProductController extends Controller
             // Verificar si el producto no tiene imágenes para establecer la primera como principal
             $isFirstImage = $currentImageCount === 0;
 
-            // Obtener la carpeta de las imágenes existentes (si las hay)
-            $existingFolder = 'product'; // Carpeta por defecto
-            
-            if ($product->images->isNotEmpty()) {
-                $firstImagePath = $product->images->first()->path_url;
-                // Extraer la carpeta del path: "product/bocadito/BOC01.jpg" -> "product/bocadito"
-                $existingFolder = dirname($firstImagePath);
-            }
+            $typeProductId = $product->product_type_id;
+            $existingFolder = $this->pathDirectory($typeProductId);
 
             // Obtener el último sort_order para continuar la secuencia
             $lastSortOrder = $product->images()->max('sort_order') ?? -1;
@@ -289,5 +284,18 @@ class ProductController extends Controller
         }
 
         return new JsonResponse(['message' => 'Imagen no encontrada para este producto'], 404);
+    }
+
+    private function pathDirectory($id)
+    {
+        match ($id) {
+            1 => $folder = 'product/torta_vitrina',
+            2 => $folder = 'product/torta_tematica',
+            3 => $folder = 'product/postre',
+            4 => $folder = 'product/bocadito',
+            5 => $folder = 'product/accesorio',
+            default => $folder = 'product/promociones',
+        };
+        return $folder;
     }
 }

@@ -9,6 +9,7 @@ use App\Http\Resources\BannerSecundaryResource;
 use App\Models\BannerSecundary;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
 use Intervention\Image\Drivers\Gd\Driver;
 use Intervention\Image\ImageManager;
@@ -35,15 +36,13 @@ class BannerSecundaryController extends Controller
 
         if ($request->hasFile('image')) {
             $validatedData['image_path'] = $this->processImage(
-                $request->file('image'), 
-                $validatedData['title'] ?? null
+                $request->file('image')
             );
         }
 
         if ($request->hasFile('image_movil')) {
             $validatedData['image_path_movil'] = $this->processImage(
-                $request->file('image_movil'), 
-                $validatedData['title'] . '_movil'
+                $request->file('image_movil')
             );
         }
 
@@ -72,8 +71,7 @@ class BannerSecundaryController extends Controller
             }
 
             $validatedData['image_path'] = $this->processImage(
-                $request->file('image'), 
-                $validatedData['title'] ?? null
+                $request->file('image'),
             );
         }
 
@@ -85,8 +83,7 @@ class BannerSecundaryController extends Controller
             }
 
             $validatedData['image_path_movil'] = $this->processImage(
-                $request->file('image_movil'), 
-                $validatedData['title'] . '_movil'
+                $request->file('image_movil')
             );
         }
 
@@ -121,10 +118,10 @@ class BannerSecundaryController extends Controller
         return new JsonResponse(['message' => 'Banner eliminado con éxito'], 200);
     }
 
-    private function processImage($image, $name): string
+    private function processImage($image): string
     {
-        $imageName = $name . '.jpg';
-        
+        $imageName = $image->getClientOriginalName();
+        Log::info("Nombre original de la imagen: {$imageName}");
         $manager = new ImageManager(new Driver());
         $convertedImage = $manager->read($image->getPathname())->toJpeg(85);
         
