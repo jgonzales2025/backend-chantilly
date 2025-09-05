@@ -23,25 +23,19 @@ use App\Http\Controllers\SaleAdvisor\SaleAdvisorController;
 use App\Http\Controllers\Tematica\ThemeController;
 use App\Http\Controllers\Ubigeo\UbigeoController;
 use App\Models\Company;
-use App\Models\ProductType;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
+
+// RUTAS API - NO PROTEGIDAS
+
 // Rutas para clientes
-Route::get('/customers', [CustomerController::class, 'index']);
-Route::post('/customers', [CustomerController::class, 'store']);
-Route::get('/customers/{id}', [CustomerController::class, 'show']);
-Route::put('/customers/{id}', [CustomerController::class, 'update']);
-Route::delete('/customers/{id}', [CustomerController::class, 'destroy']);
+Route::resource('/customers', CustomerController::class)->only(['index', 'store', 'show']);
 
 // Rutas para  productos
 Route::get('/products', [ProductController::class, 'index']);
 Route::get('/products/all', [ProductController::class, 'allProducts']);
-Route::post('/products', [ProductController::class, 'store']);
 Route::get('/products/{id}', [ProductController::class, 'show']);
-Route::post('/products/{id}/images', [ProductController::class, 'addImages']);
-Route::delete('/products/{id}/images', [ProductController::class, 'deleteImage']);
-Route::post('/products/{id}/set-primary-image', [ProductController::class, 'setPrimaryImage']);
 
 // Ruta para traer accesorios
 Route::get('/products-accessories', [ProductController::class, 'indexAccesories']);
@@ -49,30 +43,17 @@ Route::get('/products-accessories', [ProductController::class, 'indexAccesories'
 // Rutas para variantes de producto
 Route::get('/products-variant/all', [ProductVariantController::class, 'allProductVariants']);
 Route::get('/products-variant', [ProductVariantController::class, 'index']);
-Route::post('/products-variant', [ProductVariantController::class, 'store']);
 Route::get('/products-variant/show/{id}', [ProductVariantController::class, 'show']);
 Route::get('/products-variant/{id}', [ProductVariantController::class, 'showByPortion']);
-Route::post('/products-variant/{id}/images', [ProductVariantController::class, 'addImages']);
-Route::delete('/products-variant/{id}/images', [ProductVariantController::class, 'deleteImage']);
-Route::post('/products-variant/{id}/set-primary-image', [ProductVariantController::class, 'setPrimaryImage']);
-Route::delete('/products-variant/{id}', [ProductVariantController::class, 'destroy']);
 
 // Rutas para temática
-Route::get('/theme', [ThemeController::class, 'index']);
-Route::post('/theme', [ThemeController::class, 'store']);
-Route::get('/theme/{id}', [ThemeController::class, 'show']);
-Route::put('/theme/{id}', [ThemeController::class, 'update']);
-Route::delete('/theme/{id}', [ThemeController::class, 'destroy']);
+Route::apiResource('/theme', ThemeController::class);
 
 // Rutas para tipo de producto
 Route::get('/product-types', [ProductTypeController::class, 'index']);
 
 // Rutas para categorías
-Route::get('/categories', [CategoryController::class, 'index']);
-Route::post('/categories', [CategoryController::class, 'store']);
-Route::get('/categories/{id}', [CategoryController::class, 'show']);
-Route::put('/categories/{id}', [CategoryController::class, 'update']);
-Route::delete('/categories/{id}', [CategoryController::class, 'destroy']);
+Route::apiResource('/categories', CategoryController::class);
 
 // Ruta para el login
 Route::post('/login', [CustomerAuthController::class, 'login']);
@@ -80,16 +61,8 @@ Route::post('/login', [CustomerAuthController::class, 'login']);
 // Ruta para la compañia
 Route::get('/companies', [Company::class, 'index']);
 
-// Ruta para pedidos
-Route::get('/orders', [OrderController::class, 'index']);
-Route::post('/orders', [OrderController::class, 'store']);
-
 // Ruta para sabores de keke
-Route::get('/cake-flavors', [CakeFlavorController::class, 'index']);
-Route::post('/cake-flavors', [CakeFlavorController::class, 'store']);
-Route::get('/cake-flavors/{id}', [CakeFlavorController::class, 'show']);
-Route::put('/cake-flavors/{id}', [CakeFlavorController::class, 'update']);
-Route::delete('/cake-flavors/{id}', [CakeFlavorController::class, 'destroy']);
+Route::apiResource('/cake-flavors', CakeFlavorController::class);
 
 // Ruta para los tipos de documentos
 Route::get('/document-types', [DocumentTypeController::class, 'index']);
@@ -120,21 +93,16 @@ Route::post('/messages-customer-bot', [MessageCustomerBotController::class, 'sto
 // Ruta para las paginas
 Route::get('/pages', [PageController::class, 'index']);
 
-Route::middleware('auth:sanctum')->group(function() {
-    
-    Route::post('/logout', [CustomerAuthController::class, 'logout']);
-});
+// Rutas para el banner secundario
+Route::get('/banner-secondary', [BannerSecundaryController::class, 'index']);
 
-Route::middleware('auth:sanctum')->get('/me', function (Request $request) {
-    return response()->json($request->user());
-});
+// Ruta para el login del admin
+Route::post('/admin/login', [AdminAuthController::class, 'login']);
 
-// Proceso de pago
-Route::post('/session', [PaymentController::class, 'getSession']);
-Route::post('/pay', [PaymentController::class, 'pay']);
-Route::get('/payment-config', [PaymentController::class, 'getConfig']);
-Route::post('/niubiz/pay-response', [PaymentController::class, 'payResponse']);
-Route::get('/payment-data', [PaymentController::class, 'getPaymentData']);
+// Ruta para el libro de reclamaciones
+Route::get('/complaints', [ComplaintController::class, 'index']);
+Route::post('/complaints', [ComplaintController::class, 'store']);
+Route::get('/complaints/next-number', [ComplaintController::class, 'getNextComplaintNumber']);
 
 // Rutas para los asesores de ventas
 Route::get('/sale-advisors', [SaleAdvisorController::class, 'index']);
@@ -147,23 +115,56 @@ Route::get('/distritos/{coddep}/{codpro}', [UbigeoController::class, 'distritos'
 
 // Rutas para el banner
 Route::get('/banner', [BannerController::class, 'index']);
-Route::post('/banner', [BannerController::class, 'store']);
-Route::post('/banner/{id}', [BannerController::class, 'update']);
-Route::post('/banners/bulk', [BannerController::class, 'bulkStore']);
-Route::delete('/banner/{id}', [BannerController::class, 'destroy']);
-Route::delete('/banners/all', [BannerController::class, 'destroyAll']);
 
-// Rutas para el banner secundario
-Route::get('/banner-secondary', [BannerSecundaryController::class, 'index']);
-Route::post('/banner-secondary', [BannerSecundaryController::class, 'store']);
-Route::post('/banner-secondary/{id}', [BannerSecundaryController::class, 'update']);
-Route::delete('/banner-secondary/{id}', [BannerSecundaryController::class, 'destroy']);
+// Rutas protegidas - requieren autenticación
+Route::middleware('auth:sanctum')->group(function () {
+    Route::post('/banner', [BannerController::class, 'store']);
+    Route::post('/banner/{id}', [BannerController::class, 'update']);
+    Route::post('/banners/bulk', [BannerController::class, 'bulkStore']);
+    Route::delete('/banner/{id}', [BannerController::class, 'destroy']);
+    Route::delete('/banners/all', [BannerController::class, 'destroyAll']);
 
-// Ruta para el login del admin
-Route::post('/admin/login', [AdminAuthController::class, 'login']);
-Route::middleware('auth:sanctum')->post('/admin/logout', [AdminAuthController::class, 'logout']);
+    // Proceso de pago
+    Route::post('/session', [PaymentController::class, 'getSession']);
+    Route::post('/pay', [PaymentController::class, 'pay']);
+    Route::get('/payment-config', [PaymentController::class, 'getConfig']);
+    Route::post('/niubiz/pay-response', [PaymentController::class, 'payResponse']);
+    Route::get('/payment-data', [PaymentController::class, 'getPaymentData']);
 
-// Ruta para el libro de reclamaciones
-Route::get('/complaints', [ComplaintController::class, 'index']);
-Route::post('/complaints', [ComplaintController::class, 'store']);
-Route::get('/complaints/next-number', [ComplaintController::class, 'getNextComplaintNumber']);
+    // Cerrar sesión cliente
+    Route::post('/logout', [CustomerAuthController::class, 'logout']);
+
+    // Ruta para pedidos
+    Route::get('/orders', [OrderController::class, 'index']);
+    Route::post('/orders', [OrderController::class, 'store']);
+
+    // Rutas para variantes de producto
+    Route::post('/products-variant', [ProductVariantController::class, 'store']);
+    Route::post('/products-variant/{id}/images', [ProductVariantController::class, 'addImages']);
+    Route::delete('/products-variant/{id}/images', [ProductVariantController::class, 'deleteImage']);
+    Route::post('/products-variant/{id}/set-primary-image', [ProductVariantController::class, 'setPrimaryImage']);
+    Route::delete('/products-variant/{id}', [ProductVariantController::class, 'destroy']);
+
+    // Rutas para  productos
+    Route::post('/products', [ProductController::class, 'store']);
+    Route::post('/products/{id}/images', [ProductController::class, 'addImages']);
+    Route::delete('/products/{id}/images', [ProductController::class, 'deleteImage']);
+    Route::post('/products/{id}/set-primary-image', [ProductController::class, 'setPrimaryImage']);
+
+    // Rutas para clientes
+    Route::put('/customers/{id}', [CustomerController::class, 'update']);
+    Route::delete('/customers/{id}', [CustomerController::class, 'destroy']);
+
+    // Rutas para el banner secundario
+    Route::post('/banner-secondary', [BannerSecundaryController::class, 'store']);
+    Route::post('/banner-secondary/{id}', [BannerSecundaryController::class, 'update']);
+    Route::delete('/banner-secondary/{id}', [BannerSecundaryController::class, 'destroy']);
+
+    // Ruta para el deslogueo del admin
+    Route::post('/admin/logout', [AdminAuthController::class, 'logout']);
+
+    // Ruta para el /me
+    Route::get('/me', function (Request $request) {
+        return response()->json($request->user());
+    });
+});
