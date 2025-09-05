@@ -55,6 +55,7 @@ Route::get('/products-variant/{id}', [ProductVariantController::class, 'showByPo
 Route::post('/products-variant/{id}/images', [ProductVariantController::class, 'addImages']);
 Route::delete('/products-variant/{id}/images', [ProductVariantController::class, 'deleteImage']);
 Route::post('/products-variant/{id}/set-primary-image', [ProductVariantController::class, 'setPrimaryImage']);
+Route::delete('/products-variant/{id}', [ProductVariantController::class, 'destroy']);
 
 // Rutas para temática
 Route::get('/theme', [ThemeController::class, 'index']);
