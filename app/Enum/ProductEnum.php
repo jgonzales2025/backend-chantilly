@@ -45,6 +45,52 @@ enum ProductEnum: string
     case PRODUCT_39 = 'VELA NUMERADA COLOR AZUL NÚMERO 8';
     case PRODUCT_40 = 'VELA NUMERADA COLOR AZUL NÚMERO 9';
 
+    public function codfab()
+    {
+        return match($this) {
+            self::PRODUCT_01 => 'TE1',
+            self::PRODUCT_02 => 'TE4',
+            self::PRODUCT_03 => 'TE100',
+            self::PRODUCT_04 => 'TE101',
+            self::PRODUCT_05 => 'TE102',
+            self::PRODUCT_06 => 'TE103',
+            self::PRODUCT_07 => 'TE140',
+            self::PRODUCT_08 => 'TE141',
+            self::PRODUCT_09 => 'TE142',
+            self::PRODUCT_10 => 'TE143',
+            self::PRODUCT_11 => 'TE147',
+            self::PRODUCT_12 => 'TE148',
+            self::PRODUCT_13 => 'TE156',
+            self::PRODUCT_14 => 'TE26',
+            self::PRODUCT_15 => 'PT52',
+            self::PRODUCT_16 => 'TE25',
+            self::PRODUCT_17 => 'TE150',
+            self::PRODUCT_18 => 'TE28',
+            self::PRODUCT_19 => 'TE151',
+            self::PRODUCT_20 => 'TE154',
+            self::PRODUCT_21 => 'TE155',
+            self::PRODUCT_22 => 'TE157',
+            self::PRODUCT_23 => 'TE158',
+            self::PRODUCT_24 => 'TE159',
+            self::PRODUCT_25 => 'TE160',
+            self::PRODUCT_26 => 'TE161',
+            self::PRODUCT_27 => 'TE162',
+            self::PRODUCT_28 => 'TE163',
+            self::PRODUCT_29 => 'TE164',
+            self::PRODUCT_30 => 'TE165',
+            self::PRODUCT_31 => 'TE166',
+            self::PRODUCT_32 => 'TE167',
+            self::PRODUCT_33 => 'TE168',
+            self::PRODUCT_34 => 'TE169',
+            self::PRODUCT_35 => 'TE170',
+            self::PRODUCT_36 => 'TE171',
+            self::PRODUCT_37 => 'TE172',
+            self::PRODUCT_38 => 'TE173',
+            self::PRODUCT_39 => 'TE174',
+            self::PRODUCT_40 => 'TE175',
+        };
+    }
+
     public function large_description()
     {
         return match($this) {

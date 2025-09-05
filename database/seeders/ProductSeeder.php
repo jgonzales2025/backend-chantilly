@@ -16,6 +16,7 @@ class ProductSeeder extends Seeder
     {
         foreach(ProductEnum::cases() as $product){
             $createdProduct = Product::create([
+                'cod_fab' => $product->codfab(),
                 'short_description' => $product->value,
                 'large_description' => $product->large_description(),
                 'product_type_id' => $product->type_id(),

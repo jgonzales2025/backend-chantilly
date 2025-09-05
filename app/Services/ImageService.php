@@ -3,6 +3,7 @@
 namespace App\Services;
 
 use Illuminate\Http\UploadedFile;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
 use Intervention\Image\Drivers\Gd\Driver;
 use Intervention\Image\ImageManager;
@@ -23,10 +24,8 @@ class ImageService
     {
         // Obtener nombre sin extensión
         $originalName = pathinfo($file->getClientOriginalName(), PATHINFO_FILENAME);
-        
         // Siempre convertir a JPG
         $imageName = $originalName . '.jpg';
-        
         $convertedImage = $this->manager->read($file->getPathname())
             ->toJpeg(85);
         

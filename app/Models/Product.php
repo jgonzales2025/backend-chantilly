@@ -12,6 +12,7 @@ class Product extends Model
     use HasImages;
 
     protected $fillable = [
+        'cod_fab',
         'short_description',
         'large_description',
         'product_type_id',

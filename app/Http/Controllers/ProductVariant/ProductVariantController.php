@@ -82,7 +82,7 @@ class ProductVariantController extends Controller
 
         $productVariant = ProductVariant::create($validatedData);
 
-        $productVariant->load('product');
+        $productVariant->load('product', 'images');
 
         return new JsonResponse([
             'message' => 'Variante de producto creado exitosamente',
@@ -154,16 +154,10 @@ class ProductVariantController extends Controller
                 ], 422);
             }
 
-            // Obtener la carpeta de las imágenes existentes (si las hay)
-            $existingFolder = 'productVariant'; // Carpeta por defecto
-            
-            if ($productVariant->images->isNotEmpty()) {
-                $firstImagePath = $productVariant->images->first()->path_url;
-                // Extraer la carpeta del path
-                $existingFolder = dirname($firstImagePath);
-            }
+            // Verificar si el producto no tiene imágenes para establecer la primera como principal
+            $isFirstImage = $currentImageCount === 0;
 
-            Log::info('Usando carpeta existente para ProductVariant:', ['folder' => $existingFolder]);
+            $existingFolder = 'productVariant'; // Carpeta por defecto
 
             // Obtener el último sort_order para continuar la secuencia
             $lastSortOrder = $productVariant->images()->max('sort_order') ?? -1;
@@ -185,10 +179,13 @@ class ProductVariantController extends Controller
             // Agregar nuevas imágenes en la misma carpeta que antes
             foreach ($imageFiles as $index => $imageFile) {
                 $path = $this->imageService->uploadImage($imageFile, $existingFolder);
+
+                // La primera imagen será principal si el producto no tenía imágenes
+                $isPrimary = $isFirstImage && $index === 0;
                 
                 $productVariant->addImage(
                     $path, 
-                    false,
+                    $isPrimary,
                     $lastSortOrder + $index + 1 // Continuar la secuencia
                 );
             }
@@ -199,9 +196,25 @@ class ProductVariantController extends Controller
 
         return new JsonResponse([
             'message' => 'Variante de producto actualizado con éxito', 
-            'product' => new ProductVariantResource($productVariant)
+            'variant' => new ProductVariantResource($productVariant)
         ], 200);
 
+    }
+
+    /**
+     * Eliminar variante de producto por id.
+     */
+    public function destroy($id): JsonResponse
+    {
+        $productVariant = ProductVariant::find($id);
+
+        if (!$productVariant) {
+            return new JsonResponse(['message' => 'Variante de producto no encontrada'], 404);
+        }
+
+        $productVariant->delete();
+
+        return new JsonResponse(['message' => 'Variante de producto eliminada con éxito'], 200);
     }
 
     /**
@@ -245,11 +258,47 @@ class ProductVariantController extends Controller
             }
         }
 
-        $productVariant->load('theme', 'category', 'productType', 'images');
+        $productVariant->load('images');
 
         return new JsonResponse([
             'message' => 'Imagen eliminada con éxito',
-            'product' => new ProductResource($productVariant)
+            'variant' => new ProductVariantResource($productVariant)
         ], 200);
+    }
+
+    /**
+     * Cambiar imagen principal del producto
+     */
+    public function setPrimaryImage(Request $request, $productVariantId): JsonResponse
+    {
+        $request->validate([
+            'image_index' => 'required|integer'
+        ]);
+
+        $productVariant = ProductVariant::find($productVariantId);
+
+        if (!$productVariant) {
+            return new JsonResponse(['message' => 'Variante de producto no encontrada'], 404);
+        }
+        
+        $imageIndex = $request->input('image_index');
+        $images = $productVariant->images()->orderBy('sort_order')->get();
+
+        if (!isset($images[$imageIndex])) {
+            return new JsonResponse(['message' => 'Índice de imagen inválido'], 404);
+        }
+
+        $imageId = $images[$imageIndex]->id;
+
+        if ($productVariant->setPrimaryImage($imageId)) {
+            $productVariant->load('images');
+
+            return new JsonResponse([
+                'message' => 'Imagen principal actualizada con éxito',
+                'variant' => new ProductVariantResource($productVariant)
+            ], 200);
+        }
+
+        return new JsonResponse(['message' => 'Imagen no encontrada para esta variante de producto'], 404);
     }
 }

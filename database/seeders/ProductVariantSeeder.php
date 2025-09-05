@@ -16,7 +16,6 @@ class ProductVariantSeeder extends Seeder
     {
         foreach(ProductVariantEnum::cases() as $variant){
             $createdProduct = ProductVariant::create([
-                'cod_fab' => $variant->codfab(),
                 'product_id' => $variant->productId(),
                 'description' => $variant->value,
                 'portions' => $variant->portions(),
