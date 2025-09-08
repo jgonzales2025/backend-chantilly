@@ -28,4 +28,17 @@ class UpdateBannerRequest extends FormRequest
             'display_order' => 'nullable|integer|min:0'
         ];
     }
+
+    public function messages(): array
+    {
+        return [
+            'image.image' => 'El archivo debe ser una imagen.',
+            'image.mimes' => 'La imagen debe ser un archivo de tipo: jpg, jpeg, png, webp.',
+            'link_url.url' => 'El enlace debe ser una URL válida.',
+            'link_url.max' => 'El enlace no debe exceder los 255 caracteres.',
+            'status.boolean' => 'El estado debe ser verdadero o falso.',
+            'display_order.integer' => 'El orden de visualización debe ser un número entero.',
+            'display_order.min' => 'El orden de visualización no puede ser negativo.'
+        ];
+    }
 }
