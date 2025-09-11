@@ -40,7 +40,7 @@ class StoreComplaintRequest extends FormRequest
             'date_complaint' => 'required|date',
             'path_evidence' => 'nullable|image|mimes:jpeg,png,jpg,webp|max:2048', // Max 2MB
             'observations' => 'required|string',
-            'path_customer_signature' => 'nullable|image|mimes:jpeg,png,jpg,webp|max:2048', // Max 2MB
+            'path_customer_signature' => 'required|image|mimes:jpeg,png,jpg,webp|max:2048', // Max 2MB
         ];
     }
 
@@ -112,6 +112,7 @@ class StoreComplaintRequest extends FormRequest
             
             'observations.required' => 'Las observaciones son obligatorias.',
             
+            'path_customer_signature.required' => 'La firma del cliente es obligatoria.',
             'path_customer_signature.image' => 'La firma debe ser una imagen.',
             'path_customer_signature.mimes' => 'La firma debe ser un archivo de tipo: jpeg, png, jpg, webp.',
             'path_customer_signature.max' => 'La firma no puede exceder los 2MB.',

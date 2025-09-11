@@ -26,7 +26,10 @@ class LocalSeeder extends Seeder
                 'end_time' => $local->end_time(),
                 'link_local' => $local->link_local(),
                 'latitud' => $local->latitud(),
-                'longitud' => $local->longitud()
+                'longitud' => $local->longitud(),
+                'ruc' => $local->ruc(),
+                'razon_social' => $local->razon_social(),
+                'tax_address' => $local->tax_address()
             ]);
         }
     }

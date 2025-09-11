@@ -10,7 +10,6 @@ use App\Models\Product;
 use App\Services\ImageService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Log;
 
 class ProductController extends Controller
 {
@@ -136,7 +135,6 @@ class ProductController extends Controller
         if ($request->hasFile('images')) {
             // Verificar límite de 3 imágenes
             $currentImageCount = $product->images()->count();
-            Log::info("Imágenes actuales del producto (ID: {$id}): {$currentImageCount}");
             if ($currentImageCount >= 3) {
                 return new JsonResponse([
                     'message' => 'El producto ya tiene el máximo de 3 imágenes permitidas'

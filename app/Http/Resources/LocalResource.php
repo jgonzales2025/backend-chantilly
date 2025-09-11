@@ -28,7 +28,10 @@ class LocalResource extends JsonResource
             'latitud' => $this->latitud,
             'longitud' => $this->longitud,
             'company_id' => $this->company_id,
-            'distance' => $this->distance
+            'distance' => $this->distance,
+            'ruc' => $this->ruc,
+            'razon_social' => $this->razon_social,
+            'tax_address' => $this->tax_address
         ];
     }
 }
