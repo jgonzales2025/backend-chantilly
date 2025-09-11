@@ -295,4 +295,85 @@ enum LocalEnum: string
             self::LOCAL_21 => -77.060699462890600,
         };
     }
+
+    public function ruc()
+    {
+        return match($this) {
+            self::LOCAL_01 => '20552150148',
+            self::LOCAL_02 => '20552150148',
+            self::LOCAL_03 => '20601911257',
+            self::LOCAL_04 => '20556263168',
+            self::LOCAL_05 => '20552150148',
+            self::LOCAL_06 => '20601911257',
+            self::LOCAL_07 => '20552150148',
+            self::LOCAL_08 => '20552150148',
+            self::LOCAL_09 => '20601911257',
+            self::LOCAL_10 => '20556263168',
+            self::LOCAL_11 => '20556263168',
+            self::LOCAL_12 => '20601911257',
+            self::LOCAL_13 => '20556263168',
+            self::LOCAL_14 => '20602802460',
+            self::LOCAL_15 => '20556263168',
+            self::LOCAL_16 => '20552150148',
+            self::LOCAL_17 => '20602802460',
+            self::LOCAL_18 => '20552150148',
+            self::LOCAL_19 => '20602802460',
+            self::LOCAL_20 => '20602802460',
+            self::LOCAL_21 => '20556263168',
+        };
+    }
+
+    public function razon_social()
+    {
+        return match($this) {
+            self::LOCAL_01 => 'COMERCIALIZADORA AR LA CASA DEL CHANTILLY S.A.C.',
+            self::LOCAL_02 => 'COMERCIALIZADORA AR LA CASA DEL CHANTILLY S.A.C.',
+            self::LOCAL_03 => 'DISTRIBUIDORA MM LA CASA DEL CHANTILLY E.I.R.L.',
+            self::LOCAL_04 => 'PRODUCTORA C & A LA CASA DEL CHANTILLY S.A.C.',
+            self::LOCAL_05 => 'COMERCIALIZADORA AR LA CASA DEL CHANTILLY S.A.C.',
+            self::LOCAL_06 => 'DISTRIBUIDORA MM LA CASA DEL CHANTILLY E.I.R.L.',
+            self::LOCAL_07 => 'COMERCIALIZADORA AR LA CASA DEL CHANTILLY S.A.C.',
+            self::LOCAL_08 => 'COMERCIALIZADORA AR LA CASA DEL CHANTILLY S.A.C.',
+            self::LOCAL_09 => 'DISTRIBUIDORA MM LA CASA DEL CHANTILLY E.I.R.L.',
+            self::LOCAL_10 => 'PRODUCTORA C & A LA CASA DEL CHANTILLY S.A.C.',
+            self::LOCAL_11 => 'PRODUCTORA C & A LA CASA DEL CHANTILLY S.A.C.',
+            self::LOCAL_12 => 'DISTRIBUIDORA MM LA CASA DEL CHANTILLY E.I.R.L.',
+            self::LOCAL_13 => 'PRODUCTORA C & A LA CASA DEL CHANTILLY S.A.C.',
+            self::LOCAL_14 => 'INVERSIONES M & S LA CASA DEL CHANTILLY S.A.C.',
+            self::LOCAL_15 => 'PRODUCTORA C & A LA CASA DEL CHANTILLY S.A.C.',
+            self::LOCAL_16 => 'COMERCIALIZADORA AR LA CASA DEL CHANTILLY S.A.C.',
+            self::LOCAL_17 => 'INVERSIONES M & S LA CASA DEL CHANTILLY S.A.C.',
+            self::LOCAL_18 => 'COMERCIALIZADORA AR LA CASA DEL CHANTILLY S.A.C.',
+            self::LOCAL_19 => 'INVERSIONES M & S LA CASA DEL CHANTILLY S.A.C.',
+            self::LOCAL_20 => 'INVERSIONES M & S LA CASA DEL CHANTILLY S.A.C.',
+            self::LOCAL_21 => 'PRODUCTORA C & A LA CASA DEL CHANTILLY S.A.C.',
+        };
+    }
+
+    public function tax_address()
+    {
+        return match($this) {
+            self::LOCAL_01 => 'LOTE. 176 INT. 2B FND. CHACRA CERRO (A 3 C. ACUARIO AV UNIV) LIMA-LIMA-COMAS',
+            self::LOCAL_02 => 'LOTE. 176 INT. 2B FND. CHACRA CERRO (A 3 C. ACUARIO AV UNIV) LIMA-LIMA-COMAS',
+            self::LOCAL_03 => 'LOTE. 176 INT. 2B FND. CHACRA CERRO (A 3 C. ACUARIO AV UNIV) LIMA-LIMA-COMAS',
+            self::LOCAL_04 => 'LOTE. 176 INT. 2B FND. CHACRA CERRO (A 3 C. ACUARIO AV UNIV) LIMA-LIMA-COMAS',
+            self::LOCAL_05 => 'LOTE. 176 INT. 2B FND. CHACRA CERRO (A 3 C. ACUARIO AV UNIV) LIMA-LIMA-COMAS',
+            self::LOCAL_06 => 'LOTE. 176 INT. 2B FND. CHACRA CERRO (A 3 C. ACUARIO AV UNIV) LIMA-LIMA-COMAS',
+            self::LOCAL_07 => 'LOTE. 176 INT. 2B FND. CHACRA CERRO (A 3 C. ACUARIO AV UNIV) LIMA-LIMA-COMAS',
+            self::LOCAL_08 => 'LOTE. 176 INT. 2B FND. CHACRA CERRO (A 3 C. ACUARIO AV UNIV) LIMA-LIMA-COMAS',
+            self::LOCAL_09 => 'LOTE. 176 INT. 2B FND. CHACRA CERRO (A 3 C. ACUARIO AV UNIV) LIMA-LIMA-COMAS',
+            self::LOCAL_10 => 'LOTE. 176 INT. 2B FND. CHACRA CERRO (A 3 C. ACUARIO AV UNIV) LIMA-LIMA-COMAS',
+            self::LOCAL_11 => 'LOTE. 176 INT. 2B FND. CHACRA CERRO (A 3 C. ACUARIO AV UNIV) LIMA-LIMA-COMAS',
+            self::LOCAL_12 => 'LOTE. 176 INT. 2B FND. CHACRA CERRO (A 3 C. ACUARIO AV UNIV) LIMA-LIMA-COMAS',
+            self::LOCAL_13 => 'LOTE. 176 INT. 2B FND. CHACRA CERRO (A 3 C. ACUARIO AV UNIV) LIMA-LIMA-COMAS',
+            self::LOCAL_14 => 'LOTE. 176 INT. 2B FND. CHACRA CERRO (A 3 C. ACUARIO AV UNIV) LIMA-LIMA-COMAS',
+            self::LOCAL_15 => 'LOTE. 176 INT. 2B FND. CHACRA CERRO (A 3 C. ACUARIO AV UNIV) LIMA-LIMA-COMAS',
+            self::LOCAL_16 => 'LOTE. 176 INT. 2B FND. CHACRA CERRO (A 3 C. ACUARIO AV UNIV) LIMA-LIMA-COMAS',
+            self::LOCAL_17 => 'LOTE. 176 INT. 2B FND. CHACRA CERRO (A 3 C. ACUARIO AV UNIV) LIMA-LIMA-COMAS',
+            self::LOCAL_18 => 'LOTE. 176 INT. 2B FND. CHACRA CERRO (A 3 C. ACUARIO AV UNIV) LIMA-LIMA-COMAS',
+            self::LOCAL_19 => 'LOTE. 176 INT. 2B FND. CHACRA CERRO (A 3 C. ACUARIO AV UNIV) LIMA-LIMA-COMAS',
+            self::LOCAL_20 => 'LOTE. 176 INT. 2B FND. CHACRA CERRO (A 3 C. ACUARIO AV UNIV) LIMA-LIMA-COMAS',
+            self::LOCAL_21 => 'LOTE. 176 INT. 2B FND. CHACRA CERRO (A 3 C. ACUARIO AV UNIV) LIMA-LIMA-COMAS',
+        };
+    }
 }

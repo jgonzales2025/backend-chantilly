@@ -27,21 +27,34 @@ class AdminAuthController extends Controller
 
         $token = $admin->createToken('admin-token')->plainTextToken;
 
+        // Configurar la cookie con el token
+        $cookie = cookie(
+            'auth_token',
+            $token,
+            60 * 24 * 7,
+            null,
+            null,
+            true, // Solo HTTPS en producción
+            true, // HttpOnly
+            false,
+            'Lax' // Protección CSRF
+        );
+
         return response()->json([
-            'success' => true,
             'message' => 'Login exitoso',
             'user' => $admin,
-            'token' => $token
-        ], 200);
+        ], 200)->withCookie($cookie);
     }
 
     public function logout(Request $request)
     {
         $request->user()->currentAccessToken()->delete();
 
+        // Eliminar la cookie de autenticación
+        $cookie = cookie()->forget('auth_token');
+
         return response()->json([
-            'success' => true,
             'message' => 'Cierre de sesión exitoso'
-        ], 200);
+        ], 200)->withCookie($cookie);
     }
 }

@@ -13,7 +13,7 @@ use Illuminate\Validation\ValidationException;
 
 class CustomerAuthController extends Controller
 {
-    public function login(LoginRequest $request) : JsonResponse
+    public function login(LoginRequest $request)
     {
         $credentials = $request->validated();
 
@@ -27,18 +27,32 @@ class CustomerAuthController extends Controller
 
         $token = $customer->createToken('customer_token')->plainTextToken;
 
-        return new JsonResponse([
+        // Configurar la cookie con el token
+        $cookie = cookie(
+            'auth_token',
+            $token,
+            60 * 24 * 7, // 7 días por defecto
+            null,
+            null,
+            config('app.env') === 'production', // Solo HTTPS en producción
+            true, // HttpOnly
+            false,
+            'Lax' // Protección CSRF
+        );
+
+        return response()->json([
             'message' => 'Login exitoso',
-            'token' => $token,
-            'token_type' => 'Bearer',
             'customer' => $customer
-        ]);
+        ], 201)->withCookie($cookie);
     }
 
-    public function logout(Request $request): JsonResponse
+    public function logout(Request $request)
     {
         $request->user()->currentAccessToken()->delete();
 
-        return new JsonResponse(['message' => 'Logout exitoso']);
+        // Eliminar la cookie de autenticación
+        $cookie = cookie()->forget('auth_token');
+
+        return response()->json(['message' => 'Logout exitoso'])->withCookie($cookie);
     }
 }

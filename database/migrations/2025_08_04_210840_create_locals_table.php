@@ -24,6 +24,9 @@ return new class extends Migration
             $table->string('link_local')->nullable();
             $table->decimal('latitud', 12, 10)->nullable();
             $table->decimal('longitud', 12, 10)->nullable();
+            $table->string('ruc', 11)->nullable();
+            $table->string('razon_social', 255)->nullable();
+            $table->string('tax_address', 255)->nullable();
             $table->foreignId('company_id')->nullable()->constrained('companies')->onDelete('cascade');
         });
     }

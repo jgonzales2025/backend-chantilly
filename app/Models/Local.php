@@ -20,6 +20,9 @@ class Local extends Model
         'link_local',
         'latitud',
         'longitud',
+        'ruc',
+        'razon_social',
+        'tax_address',
         'company_id'
     ];
 

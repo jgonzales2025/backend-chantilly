@@ -56,13 +56,6 @@
                                             
                                             <p style="font-family: 'Helvetica Neue',Helvetica,Arial,sans-serif; font-size: 14px; font-weight: normal; margin: 0; margin-bottom: 15px; margin-top: 30px;">Si no solicitaste este cambio, puedes ignorar este mensaje.</p>
                                             
-                                            <p style="font-family: 'Helvetica Neue',Helvetica,Arial,sans-serif; font-size: 14px; font-weight: normal; margin: 0; margin-bottom: 15px;">Si tienes problemas al hacer clic en el botón, copia y pega esta URL en tu navegador:</p>
-                                            
-                                            <!-- URL de respaldo -->
-                                            <div style="background: #f8f9fa; border: 1px solid #e9ecef; border-radius: 3px; padding: 15px; margin: 20px 0; word-break: break-all;">
-                                                <a href="{{ $url }}" style="color: #007bff; text-decoration: none; font-family: 'Helvetica Neue',Helvetica,Arial,sans-serif; font-size: 12px;">{{ $url }}</a>
-                                            </div>
-                                            
                                             <p style="font-family: 'Helvetica Neue',Helvetica,Arial,sans-serif; font-size: 14px; font-weight: normal; margin: 0; margin-top: 30px;">
                                                 Saludos,<br>
                                                 <strong>La Casa del Chantilly</strong>
