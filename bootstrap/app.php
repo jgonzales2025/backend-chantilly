@@ -17,6 +17,11 @@ return Application::configure(basePath: dirname(__DIR__))
         ]);
         
         $middleware->web(\Illuminate\Http\Middleware\HandleCors::class);
+
+        $middleware->alias([
+            'customer.auth' => \App\Http\Middleware\CustomerAuth::class,
+            'admin.auth' => \App\Http\Middleware\AdminAuth::class,
+        ]);
     })
     ->withExceptions(function (Exceptions $exceptions): void {
         //

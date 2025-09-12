@@ -25,7 +25,7 @@ class CustomerAuthController extends Controller
             ]);
         }
 
-        $token = $customer->createToken('customer_token')->plainTextToken;
+        $token = $customer->createToken('customer_token', ['customer'])->plainTextToken;
 
         // Configurar la cookie con el token
         $cookie = cookie(
@@ -43,7 +43,7 @@ class CustomerAuthController extends Controller
         return response()->json([
             'message' => 'Login exitoso',
             'customer' => $customer
-        ], 201)->withCookie($cookie);
+        ], 200)->withCookie($cookie);
     }
 
     public function logout(Request $request)
