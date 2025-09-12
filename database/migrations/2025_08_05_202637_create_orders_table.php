@@ -16,7 +16,7 @@ return new class extends Migration
             $table->foreignId('customer_id')->constrained('customers')->onDelete('cascade');
             $table->string('order_number')->unique()->nullable();
             $table->enum('voucher_type', ['Boleta', 'Factura']);
-            $table->array('billing_data')->nullable();
+            $table->text('billing_data')->nullable();
             $table->foreignId('local_id')->constrained('locals')->onDelete('cascade');
             $table->decimal('subtotal', 10, 2);
             $table->decimal('total', 10, 2);
