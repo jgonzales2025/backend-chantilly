@@ -33,11 +33,24 @@ class CustomerGoogleAuthController extends Controller
                 ]);
             }
             // Crear token con Sanctum
-            $token = $customer->createToken('auth_token')->plainTextToken;
+            $token = $customer->createToken('customer_token', ['customer'])->plainTextToken;
 
+            // Configurar la cookie con el token
+            $cookie = cookie(
+                'auth_token',
+                $token,
+                60 * 24 * 7, // 7 días por defecto
+                null,
+                null,
+                config('app.env') === 'production', // Solo HTTPS en producción
+                true, // HttpOnly
+                false,
+                'Lax' // Protección CSRF
+            );
             $frontendUrl = config('app.frontend_url');
 
-            return redirect()->to($frontendUrl . '?token=' . $token . '&customer=' . urlencode(json_encode($customer)));
+            return redirect()->to($frontendUrl . '?customer=' . urlencode(json_encode($customer)))
+            ->withCookie($cookie);
 
         } catch (\Exception $e) {
             return response()->json(['error' => 'Error de autenticación con Google'], 500);
