@@ -65,7 +65,6 @@ class ProductController extends Controller
         if($products->isEmpty()){
             return new JsonResponse(['message' => 'No hay productos registrados']);
         }
-        $products->load('theme', 'category', 'productType', 'images');
 
         return new JsonResponse([
             'data' => ProductResource::collection($products->items()),
