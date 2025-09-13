@@ -51,24 +51,16 @@ class ProductController extends Controller
      */
     public function index(Request $request)
     {
-        $themeId = $request->query('theme_id');
-        $name = $request->query('name');
-        $prodType = $request->query('product_type_id');
-        $bestStatus = $request->query('best_status');
+        $filters = [
+            'theme_id' => $request->query('theme_id'),
+            'name' => $request->query('name'),
+            'product_type_id' => $request->query('product_type_id'),
+            'best_status' => $request->query('best_status'),
+        ];
 
-        $products = Product::when($themeId, function ($query) use ($themeId){
-            $query->where('theme_id', $themeId);
-        })
-        ->when($name, function ($query) use ($name){
-            $query->where('short_description', 'LIKE', "%$name%");
-        })
-        ->when($prodType, function ($query) use ($prodType){
-            $query->where('product_type_id', $prodType);
-        })
-        ->when($bestStatus, function ($query) use ($bestStatus){
-            $query->where('best_status', $bestStatus);
-        })
-        ->paginate(8);
+        $products = Product::with('theme', 'category', 'productType', 'images')
+            ->filterProducts($filters)
+            ->paginate(8);
         
         if($products->isEmpty()){
             return new JsonResponse(['message' => 'No hay productos registrados']);

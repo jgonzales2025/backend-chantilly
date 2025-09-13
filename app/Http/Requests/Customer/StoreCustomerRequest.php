@@ -24,7 +24,7 @@ class StoreCustomerRequest extends FormRequest
     {
         return [
             'email' => 'required|string|max:255|email|unique:customers',
-            'password' => 'required|string|confirmed',
+            'password' => 'required|string|min:8|confirmed',
             'id_document_type' => 'required|integer|exists:document_types,id',
             'document_number' => [
                 'required',
@@ -72,6 +72,7 @@ class StoreCustomerRequest extends FormRequest
             'department_code' => 'nullable|string',
             'province_code' => 'nullable|string',
             'district_code' => 'nullable|string',
+            'recaptcha_token' => 'required|string'
         ];
     }
 
@@ -87,6 +88,7 @@ class StoreCustomerRequest extends FormRequest
             'password.required' => 'La contraseña es obligatoria.',
             'password.string' => 'La contraseña debe ser una cadena de texto.',
             'password.confirmed' => 'Las contraseñas no coinciden.',
+            'password.min' => 'La contraseña debe tener al menos 8 caracteres.',
 
             'id_document_type.required' => 'El tipo de documento es obligatorio.',
             'id_document_type.integer' => 'El tipo de documento debe ser un número entero.',
@@ -123,6 +125,9 @@ class StoreCustomerRequest extends FormRequest
             'department_code.string' => 'El código de departamento debe ser una cadena de texto.',
             'province_code.string' => 'El código de provincia debe ser una cadena de texto.',
             'district_code.string' => 'El código de distrito debe ser una cadena de texto.',
+
+            'recaptcha_token.required' => 'El token de reCAPTCHA es obligatorio.',
+            'recaptcha_token.string' => 'El token de reCAPTCHA debe ser una cadena de texto.'
         ];
     }
 }

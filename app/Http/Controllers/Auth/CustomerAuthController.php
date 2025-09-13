@@ -5,14 +5,13 @@ namespace App\Http\Controllers\Auth;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Login\LoginRequest;
 use App\Models\Customer;
-use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\ValidationException;
 
 class CustomerAuthController extends Controller
 {
+
     public function login(LoginRequest $request)
     {
         $credentials = $request->validated();
@@ -42,7 +41,8 @@ class CustomerAuthController extends Controller
 
         return response()->json([
             'message' => 'Login exitoso',
-            'customer' => $customer
+            'customer' => $customer,
+            'token' => $token
         ], 200)->withCookie($cookie);
     }
 

@@ -28,7 +28,6 @@ class Order extends Model
     ];
 
     protected $casts = [
-        'status' => 'boolean',
         'billing_data' => 'array',
         'payment_status' => PaymentStatusEnum::class,
         'paid_at' => 'datetime',
@@ -112,6 +111,31 @@ class Order extends Model
     public function scopePaymentPending($query)
     {
         return $query->where('payment_status', PaymentStatusEnum::PENDING);
+    }
+
+    // Scope para filtrar órdenes
+    public function scopeFilterOrders($query, $filters = [])
+    {
+        return $query->when($filters['customer_id'] ?? false, function ($query, $customerId) {
+                return $query->where('customer_id', $customerId);
+            })
+            ->when($filters['order_number'] ?? false, function ($query, $orderNumber) {
+                return $query->where('order_number', $orderNumber);
+            })
+            ->when($filters['date_filter'] ?? false, function ($query, $dateFilter) {
+                switch ($dateFilter) {
+                    case 'ultimos_30_dias':
+                        return $query->where('order_date', '>=', now()->subDays(30)->startOfDay());
+                    case 'ultimos_3_meses':
+                        return $query->where('order_date', '>=', now()->subMonths(3)->startOfDay());
+                    case 'ultimos_6_meses':
+                        return $query->where('order_date', '>=', now()->subMonths(6)->startOfDay());
+                    case '2025':
+                        return $query->whereYear('order_date', 2025);
+                    default:
+                        return $query;
+                }
+            });
     }
 
 }

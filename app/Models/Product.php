@@ -64,5 +64,21 @@ class Product extends Model
             : null;
     }
 
-
+    // Filtros para productos
+    public function scopeFilterProducts($query, $filters = [])
+    {
+        return $query
+            ->when($filters['theme_id'] ?? false, function ($query, $themeId) {
+                return $query->where('theme_id', $themeId);
+            })
+            ->when($filters['name'] ?? false, function ($query, $name) {
+                return $query->where('short_description', 'LIKE', "%{$name}%");
+            })
+            ->when($filters['product_type_id'] ?? false, function ($query, $prodType) {
+                return $query->where('product_type_id', $prodType);
+            })
+            ->when($filters['best_status'] ?? false, function ($query, $bestStatus) {
+                return $query->where('best_status', $bestStatus);
+            });
+    }
 }

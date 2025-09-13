@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Auth;
 use App\Http\Controllers\Controller;
 use App\Models\Customer;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Str;
 use Laravel\Socialite\Facades\Socialite;
 
@@ -20,6 +21,8 @@ class CustomerGoogleAuthController extends Controller
         try {
             $googleUser = Socialite::driver('google')->stateless()->user();
             
+            Log::info('Google User:', ['user' => $googleUser]);
+            Log::info('ESTOY AQUI');
             
             $customer = Customer::where('email', $googleUser->getEmail())->first();
             
@@ -49,7 +52,7 @@ class CustomerGoogleAuthController extends Controller
             );
             $frontendUrl = config('app.frontend_url');
 
-            return redirect()->to($frontendUrl . '?customer=' . urlencode(json_encode($customer)))
+            return redirect()->to($frontendUrl . '?token=' . $token . '&customer=' . urlencode(json_encode($customer)))
             ->withCookie($cookie);
 
         } catch (\Exception $e) {

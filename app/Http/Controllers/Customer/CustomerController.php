@@ -6,20 +6,21 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\Customer\StoreCustomerRequest;
 use App\Http\Requests\Customer\UpdateCustomerRequest;
 use App\Models\Customer;
+use App\Services\RecaptchaService;
 use Illuminate\Http\JsonResponse;
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use App\Services\SmsService;
-use Illuminate\Support\Facades\Log;
+use Illuminate\Validation\ValidationException;
 
 class CustomerController extends Controller
 {
 
-    protected $smsService;
+    protected $smsService, $recaptchaService;
 
-    public function __construct(SmsService $smsService)
+    public function __construct(SmsService $smsService, RecaptchaService $recaptchaService)
     {
         $this->smsService = $smsService;
+        $this->recaptchaService = $recaptchaService;
     }
 
     /**
@@ -43,6 +44,17 @@ class CustomerController extends Controller
     public function store(StoreCustomerRequest $request)
     {
         $validatedData = $request->validated();
+
+        // Validar el token en Google
+        $isValid = $this->recaptchaService->validateToken($validatedData['recaptcha_token']);
+
+        if (!$isValid) {
+            throw ValidationException::withMessages([
+                'recaptcha' => 'La validación de reCAPTCHA falló.',
+            ]);
+        }
+
+
         $customer = Customer::create([
             'email' => $validatedData['email'],
             'password' => Hash::make($validatedData['password']),

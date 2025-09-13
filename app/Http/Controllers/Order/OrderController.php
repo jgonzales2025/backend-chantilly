@@ -19,30 +19,14 @@ class OrderController extends Controller
      */
     public function index(Request $request): JsonResponse
     {
-        $customerId = $request->query('customer_id');
-        $orderNumber = $request->query('order_number');
-        $dateFilter = $request->query('date_filter');
+        $filters = [
+            'customer_id' => $request->query('customer_id'),
+            'order_number' => $request->query('order_number'),
+            'date_filter' => $request->query('date_filter'),
+        ];
+
         $orders = Order::with('items.product', 'items.productVariant', 'local')
-            ->when($customerId, function ($query, $customerId) {
-                return $query->where('customer_id', $customerId);
-            })
-            ->when($orderNumber, function ($query, $orderNumber) {
-                return $query->where('order_number', $orderNumber);
-            })
-            ->when($dateFilter, function ($query, $dateFilter) {
-                switch ($dateFilter) {
-                    case 'ultimos_30_dias':
-                        return $query->where('order_date', '>=', now()->subDays(30)->startOfDay());
-                    case 'ultimos_3_meses':
-                        return $query->where('order_date', '>=', now()->subMonths(3)->startOfDay());
-                    case 'ultimos_6_meses':
-                        return $query->where('order_date', '>=', now()->subMonths(6)->startOfDay());
-                    case '2025':
-                        return $query->whereYear('order_date', 2025);
-                    default:
-                        return $query;
-                }
-            })
+            ->filterOrders($filters)
             ->orderBy('order_date', 'desc')
             ->get();
 
@@ -53,7 +37,6 @@ class OrderController extends Controller
         }
 
         return new JsonResponse([
-            'customer_id' => $customerId,
             'orders' => OrderResource::collection($orders)
         ], 200);
     }

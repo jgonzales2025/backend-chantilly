@@ -31,9 +31,9 @@ return new class extends Migration
             $table->text('detail_complaint');
             $table->string('order');
             $table->date('date_complaint');
-            $table->string('path_evidence');
+            $table->string('path_evidence')->nullable();
             $table->text('observations');
-            $table->string('path_customer_signature');
+            $table->string('path_customer_signature')->nullable();
             $table->timestamps();
         });
     }
