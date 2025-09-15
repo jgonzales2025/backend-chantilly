@@ -4,8 +4,6 @@ namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
 use App\Models\Customer;
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Str;
 use Laravel\Socialite\Facades\Socialite;
 
@@ -20,9 +18,6 @@ class CustomerGoogleAuthController extends Controller
     {
         try {
             $googleUser = Socialite::driver('google')->stateless()->user();
-            
-            Log::info('Google User:', ['user' => $googleUser]);
-            Log::info('ESTOY AQUI');
             
             $customer = Customer::where('email', $googleUser->getEmail())->first();
             

@@ -9,7 +9,6 @@ use App\Models\Complaint;
 use App\Notifications\ComplaintRegistered;
 use App\Services\RecaptchaService;
 use Illuminate\Http\JsonResponse;
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Notification;
 use Illuminate\Validation\ValidationException;
 

@@ -10,7 +10,6 @@ use App\Models\OrderItem;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Log;
 
 class OrderController extends Controller
 {
@@ -72,8 +71,6 @@ class OrderController extends Controller
                     'delivery_date' => $item['delivery_date'] ?? null,
                 ]);
             }
-
-            Log::info('Orden creada', ['order' => $order, 'items' => $order->items]);
 
             return new JsonResponse([
                 'message' => 'Orden creada con éxito',

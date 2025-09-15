@@ -6,7 +6,6 @@ use App\Http\Controllers\Controller;
 use App\Models\Department;
 use App\Models\District;
 use App\Models\Province;
-use Illuminate\Http\Request;
 
 class UbigeoController extends Controller
 {

@@ -7,7 +7,6 @@ use App\Http\Requests\Theme\StoreThemeRequest;
 use App\Http\Requests\Theme\UpdateThemeRequest;
 use App\Models\Theme;
 use Illuminate\Http\JsonResponse;
-use Illuminate\Http\Request;
 
 class ThemeController extends Controller
 {
