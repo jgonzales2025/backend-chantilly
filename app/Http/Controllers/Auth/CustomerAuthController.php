@@ -41,8 +41,7 @@ class CustomerAuthController extends Controller
 
         return response()->json([
             'message' => 'Login exitoso',
-            'customer' => $customer,
-            'token' => $token
+            'customer' => $customer
         ], 200)->withCookie($cookie);
     }
 
