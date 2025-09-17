@@ -262,6 +262,7 @@ class PaymentController extends Controller
             $responseData = [
                 'success' => $isSuccess,
                 'data' => [
+                    'action_description' => $result['dataMap']['ACTION_DESCRIPTION'] ?? null,
                     'transaction_id' => $result['dataMap']['TRANSACTION_ID'] ?? null,
                     'action_code' => $actionCode,
                     'action_description' => $result['dataMap']['ACTION_DESCRIPTION'] ?? null,
@@ -270,7 +271,8 @@ class PaymentController extends Controller
                     'currency' => $result['order']['currency'] ?? 'PEN',
                     'purchase_number' => $validated['purchaseNumber'],
                     'brand' => $result['dataMap']['BRAND'],
-                    'card' => $result['dataMap']['CARD']
+                    'card' => $result['dataMap']['CARD'],
+                    'error_message' => $result['dataMap']['ERROR_MESSAGE'] ?? null
                 ],
                 'message' => $isSuccess ? 'Pago procesado exitosamente' : 'Pago rechazado'
             ];

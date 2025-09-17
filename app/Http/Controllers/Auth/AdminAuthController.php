@@ -41,7 +41,8 @@ class AdminAuthController extends Controller
 
         return response()->json([
             'message' => 'Login exitoso',
-            'user' => $admin
+            'user' => $admin,
+            'token' => $token
         ], 200)->withCookie($cookie);
     }
 
