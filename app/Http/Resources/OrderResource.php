@@ -28,6 +28,7 @@ class OrderResource extends JsonResource
             'order_number' => $this->order_number,
             'delivery_date' => $this->delivery_date,
             'items' => OrderItemResource::collection($this->items),
+            'status' => $this->status
         ];
     }
 }

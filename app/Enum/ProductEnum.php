@@ -544,7 +544,7 @@ enum ProductEnum: string
             self::PRODUCT_05 => config('app.frontend_url').'/detalle/mini-pastel-de-acelga',
             self::PRODUCT_06 => config('app.frontend_url').'/detalle/butifarras-de-jamon',
             self::PRODUCT_07 => config('app.frontend_url').'/detalle/petipan-de-pollo',
-            self::PRODUCT_08 => config('app.frontend_url').'/detalle/canapes-de-jamón-y-queso',
+            self::PRODUCT_08 => config('app.frontend_url').'/detalle/canapes-de-jamon-y-queso',
             self::PRODUCT_09 => config('app.frontend_url').'/detalle/brochetas-de-pollo',
             self::PRODUCT_10 => config('app.frontend_url').'/detalle/petipan-de-tocino-y-huevo',
             self::PRODUCT_11 => config('app.frontend_url').'/detalle/mini-triple-jamon-y-queso',

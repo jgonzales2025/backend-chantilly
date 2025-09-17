@@ -42,8 +42,7 @@ class PaymentController extends Controller
             'data' => [
                 'merchant_id' => config('niubiz.merchant_id'),
                 'checkout_js_url' => config("niubiz.urls.checkout_js.{$env}"),
-                'environment' => $env,
-                'merchant_logo' => 'http://localhost:8000/storage/logo/logocheckout.png'
+                'environment' => $env
             ]
         ]);
     }

@@ -9,7 +9,6 @@ use App\Http\Resources\BannerSecundaryResource;
 use App\Models\BannerSecundary;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
 use Intervention\Image\Drivers\Gd\Driver;
 use Intervention\Image\ImageManager;
@@ -121,7 +120,6 @@ class BannerSecundaryController extends Controller
     private function processImage($image): string
     {
         $imageName = $image->getClientOriginalName();
-        Log::info("Nombre original de la imagen: {$imageName}");
         $manager = new ImageManager(new Driver());
         $convertedImage = $manager->read($image->getPathname())->toJpeg(85);
         

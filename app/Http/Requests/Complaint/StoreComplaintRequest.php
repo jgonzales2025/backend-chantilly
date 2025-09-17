@@ -40,7 +40,8 @@ class StoreComplaintRequest extends FormRequest
             'date_complaint' => 'required|date',
             'path_evidence' => 'nullable|image|mimes:jpeg,png,jpg,webp|max:2048', // Max 2MB
             'observations' => 'required|string',
-            'path_customer_signature' => 'required|image|mimes:jpeg,png,jpg,webp|max:2048', // Max 2MB
+            'path_customer_signature' => 'nullable|image|mimes:jpeg,png,jpg,webp|max:2048', // Max 2MB
+            'recaptcha_token' => 'required|string'
         ];
     }
 

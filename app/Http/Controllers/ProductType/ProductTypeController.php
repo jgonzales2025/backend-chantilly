@@ -5,7 +5,6 @@ namespace App\Http\Controllers\ProductType;
 use App\Http\Controllers\Controller;
 use App\Models\ProductType;
 use Illuminate\Http\JsonResponse;
-use Illuminate\Http\Request;
 
 class ProductTypeController extends Controller
 {

@@ -175,4 +175,8 @@ Route::middleware(['auth:sanctum', 'admin.auth'])->group(function () {
     // Ruta para el deslogueo del admin
     Route::post('/admin/logout', [AdminAuthController::class, 'logout']);
     
+    // Ruta para el me del admin
+    Route::get('/admin/me', function (Request $request) {
+        return response()->json($request->user());
+    });
 });

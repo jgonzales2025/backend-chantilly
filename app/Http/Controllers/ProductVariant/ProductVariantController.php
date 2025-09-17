@@ -5,13 +5,11 @@ namespace App\Http\Controllers\ProductVariant;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\ProductVariant\StoreProductVariantRequest;
 use App\Http\Requests\ProductVariant\UpdateProductVariantRequest;
-use App\Http\Resources\ProductResource;
 use App\Http\Resources\ProductVariantResource;
 use App\Models\ProductVariant;
 use App\Services\ImageService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Log;
 
 class ProductVariantController extends Controller
 {

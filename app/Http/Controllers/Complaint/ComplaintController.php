@@ -7,12 +7,21 @@ use App\Http\Requests\Complaint\StoreComplaintRequest;
 use App\Http\Resources\ComplaintResource;
 use App\Models\Complaint;
 use App\Notifications\ComplaintRegistered;
+use App\Services\RecaptchaService;
 use Illuminate\Http\JsonResponse;
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Notification;
+use Illuminate\Validation\ValidationException;
 
 class ComplaintController extends Controller
 {
+
+    protected $recaptchaService;
+
+    public function __construct()
+    {
+        $this->recaptchaService = new RecaptchaService();
+    }
+
     public function index(): JsonResponse
     {
         $complaints = Complaint::with('local')->get();
@@ -35,6 +44,15 @@ class ComplaintController extends Controller
     public function store(StoreComplaintRequest $request): JsonResponse
     {
         $data = $request->validated();
+
+        // Validar el token en Google
+        $isValid = $this->recaptchaService->validateToken($data['recaptcha_token']);
+
+        if (!$isValid) {
+            throw ValidationException::withMessages([
+                'recaptcha' => 'La validación de reCAPTCHA falló.',
+            ]);
+        }
 
         if ($request->hasFile('path_evidence')) {
             $data['path_evidence'] = $request->file('path_evidence')->store('complaints/evidence', 'public');

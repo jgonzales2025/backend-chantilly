@@ -21,7 +21,7 @@ return new class extends Migration
             $table->decimal('subtotal', 10, 2);
             $table->decimal('total', 10, 2);
             $table->dateTime('order_date')->nullable();
-            $table->boolean('status')->default(1);
+            $table->string('status')->default('Pendiente');
             $table->string('payment_method')->nullable()->default('Niubiz');
             $table->enum('payment_status', ['Pendiente', 'Pagado', 'Fallido'])->nullable();
             $table->timestamp('paid_at')->nullable();
