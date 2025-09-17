@@ -18,18 +18,15 @@ class CustomerGoogleAuthController extends Controller
     {
         try {
             $googleUser = Socialite::driver('google')->stateless()->user();
-            
-            $customer = Customer::where('email', $googleUser->getEmail())->first();
-            
-            if (!$customer) {
-                // Puedes ajustar los campos según tu tabla
-                $customer = Customer::create([
+
+            $customer = Customer::firstOrCreate(
+                ['email' => $googleUser->getEmail()],
+                [
                     'name' => $googleUser->getName(),
-                    'email' => $googleUser->getEmail(),
                     'google_id' => $googleUser->getId(),
                     'password' => bcrypt(Str::random(16)), // Clave aleatoria
-                ]);
-            }
+                ]
+            );
             // Crear token con Sanctum
             $token = $customer->createToken('customer_token', ['customer'])->plainTextToken;
 

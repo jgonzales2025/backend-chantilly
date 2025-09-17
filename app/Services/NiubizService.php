@@ -37,7 +37,6 @@ class NiubizService
             'timeout' => 30,
         ]);
         
-        Log::info('Nuevo sessionKey generado para Niubiz');
         return $response->getBody()->getContents();
     }
 
@@ -148,20 +147,40 @@ class NiubizService
                     'Authorization' => $sessionKey
                 ],
                 'json' => $requestData,
-                'timeout' => 30
+                'timeout' => 30,
+                'http_errors' => false
             ]);
 
             $result = json_decode($response->getBody()->getContents(), true);
-            
-            // Determinar estado basado en respuesta
-            $actionCode = $result['dataMap']['ACTION_CODE'] ?? null;
-            $isSuccess = $actionCode === '000'; // Codigo de éxito enviado por niubiz.
-            
+            $httpCode = $response->getStatusCode();
+
+            // ✅ Manejar tanto respuestas exitosas como de error
+            if ($httpCode === 400 && isset($result['errorMessage'])) {
+                // Es un error de negocio (fondos insuficientes, etc.)
+                $actionCode = $result['data']['ACTION_CODE'] ?? '999'; // Código de error genérico
+                $isSuccess = false;
+                
+                // Simular estructura de dataMap para consistencia
+                $result['dataMap'] = [
+                    'ERROR_MESSAGE' => $result['errorMessage'],
+                    'ACTION_CODE' => $actionCode,
+                    'ACTION_DESCRIPTION' => $result['data']['ACTION_DESCRIPTION'] ?? null,
+                    'TRANSACTION_ID' => $result['data']['TRANSACTION_ID'] ?? null,
+                    'TRANSACTION_DATE' => $result['data']['TRANSACTION_DATE'] ?? null,
+                    'BRAND' => $result['data']['BRAND'] ?? null,
+                    'CARD' => $result['data']['CARD'] ?? null,
+                ];
+            } else {
+                // Respuesta normal de Niubiz
+                $actionCode = $result['dataMap']['ACTION_CODE'] ?? null;
+                $isSuccess = $actionCode === '000';
+            }
+
             $status = $isSuccess ? 
                 TransactionStatusEnum::SUCCESS : 
                 TransactionStatusEnum::FAILED;
 
-            $httpCode = $response->getStatusCode(); // Se obtiene el código HTTP de la respuesta
+             // Se obtiene el código HTTP de la respuesta
 
             // Actualizar transacción
             $transaction->update([
@@ -171,7 +190,7 @@ class NiubizService
                 'transaction_date' => $result['dataMap']['TRANSACTION_DATE'] ?? null,
                 'niubiz_code_http' => $httpCode,
                 'niubiz_response' => $result,
-                'error_message' => $isSuccess ? null : ($result['dataMap']['ACTION_DESCRIPTION'] ?? 'Error desconocido')
+                'error_message' => $isSuccess ? null : ($result['dataMap']['ERROR_MESSAGE'] ?? 'Error desconocido')
             ]);
 
             // Si es exitoso y hay orden, marcarla como pagada
