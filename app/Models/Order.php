@@ -20,7 +20,7 @@ class Order extends Model
         'subtotal',
         'total',
         'order_date',
-        'status',
+        'status_id',
         'payment_method',
         'payment_status', 
         'paid_at',
@@ -46,6 +46,11 @@ class Order extends Model
     public function items(): HasMany
     {
         return $this->hasMany(OrderItem::class);
+    }
+
+    public function status(): BelongsTo
+    {
+        return $this->belongsTo(OrderStatus::class);
     }
 
     public function customer(): BelongsTo

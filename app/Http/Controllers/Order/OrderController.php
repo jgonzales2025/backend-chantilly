@@ -24,7 +24,7 @@ class OrderController extends Controller
             'date_filter' => $request->query('date_filter'),
         ];
 
-        $orders = Order::with('items.product', 'items.productVariant', 'local')
+        $orders = Order::with('items.product', 'items.productVariant', 'local', 'status')
             ->filterOrders($filters)
             ->orderBy('order_date', 'desc')
             ->get();
@@ -56,6 +56,7 @@ class OrderController extends Controller
                 'subtotal' => $validatedData['subtotal'],
                 'total' => $validatedData['total_amount'],
                 'order_date' => now(),
+                'status_id' => 1,
                 'delivery_date' => $validatedData['delivery_date'] ?? null,
             ]);
             foreach ($validatedData['items'] as $item){
@@ -85,7 +86,7 @@ class OrderController extends Controller
      */
     public function show($id)
     {
-        $order = Order::with('items')->find($id);
+        $order = Order::with('items', 'status')->find($id);
 
         if (!$order) {
             return new JsonResponse(['message' => 'Pedido no encontrado'], 404);

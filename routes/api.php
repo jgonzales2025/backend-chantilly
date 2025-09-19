@@ -15,6 +15,7 @@ use App\Http\Controllers\DocumentType\DocumentTypeController;
 use App\Http\Controllers\Local\LocalController;
 use App\Http\Controllers\MessageCustomerBot\MessageCustomerBotController;
 use App\Http\Controllers\Order\OrderController;
+use App\Http\Controllers\OrderStatus\OrderStatusController;
 use App\Http\Controllers\Page\PageController;
 use App\Http\Controllers\Payment\PaymentController;
 use App\Http\Controllers\Product\ProductController;
@@ -120,6 +121,8 @@ Route::get('/banner', [BannerController::class, 'index']);
 // Ruta para el proceso de pago - niubiz
 Route::post('/niubiz/pay-response', [PaymentController::class, 'payResponse']);
 
+Route::get('/order-statuses', [OrderStatusController::class, 'index']);
+
 // Rutas protegidas para CUSTOMERS
 Route::middleware(['auth:sanctum', 'customer.auth'])->group(function () {
     // Cerrar sesión cliente
@@ -138,6 +141,8 @@ Route::middleware(['auth:sanctum', 'customer.auth'])->group(function () {
     // Rutas para clientes (self-management)
     Route::put('/customers/{id}', [CustomerController::class, 'update']);
     Route::delete('/customers/{id}', [CustomerController::class, 'destroy']);
+
+    
     
     // Ruta para el /me (customer)
     Route::get('/me', function (Request $request) {
@@ -171,6 +176,11 @@ Route::middleware(['auth:sanctum', 'admin.auth'])->group(function () {
     Route::post('/banner-secondary', [BannerSecundaryController::class, 'store']);
     Route::post('/banner-secondary/{id}', [BannerSecundaryController::class, 'update']);
     Route::delete('/banner-secondary/{id}', [BannerSecundaryController::class, 'destroy']);
+
+    // Gestión de estados de pedidos (admin)
+    
+    Route::post('/order-statuses', [OrderStatusController::class, 'store']);
+    Route::put('/order-statuses/{id}', [OrderStatusController::class, 'update']);
     
     // Ruta para el deslogueo del admin
     Route::post('/admin/logout', [AdminAuthController::class, 'logout']);
