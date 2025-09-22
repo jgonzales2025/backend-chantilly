@@ -32,6 +32,7 @@ class BannerController extends Controller
         $banners = Banner::when($title, fn($query) => $query->where('title', 'like', "%{$title}%"))
             ->orderBy('display_order', 'asc')
             ->get();
+        
         return new JsonResponse(BannerResource::collection($banners), 200);
     }
 
