@@ -35,6 +35,7 @@ class DatabaseSeeder extends Seeder
             ProductSeeder::class,
             CustomerSeeder::class,
             ProductVariantSeeder::class,
+            OrderStatusSeeder::class,
             OrderSeeder::class,
             OrderItemSeeder::class,
             TransactionSeeder::class,

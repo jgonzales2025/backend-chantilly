@@ -4,7 +4,7 @@ namespace App\Http\Requests\Login;
 
 use Illuminate\Foundation\Http\FormRequest;
 
-class LoginRequest extends FormRequest
+class LoginAdminRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -22,16 +22,15 @@ class LoginRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'email' => 'required|email',
-            'password' => 'required'
+            'username' => 'required',
+            'password' => 'required',
         ];
     }
 
     public function messages(): array
     {
         return [
-            'email.required' => 'El campo de correo electrónico es obligatorio.',
-            'email.email' => 'El correo electrónico debe ser una dirección válida.',
+            'username.required' => 'El campo de nombre de usuario es obligatorio.',
             'password.required' => 'El campo de contraseña es obligatorio.',
         ];
     }

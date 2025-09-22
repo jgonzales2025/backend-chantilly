@@ -31,6 +31,7 @@ return new class extends Migration
             $table->boolean('status')->default(1);
             $table->string('google_id')->nullable()->unique();
             $table->string('recovery_code')->nullable();
+            $table->integer('points')->default(0);
             $table->timestamp('recovery_code_expires_at')->nullable();
             $table->timestamps();
             $table->rememberToken();

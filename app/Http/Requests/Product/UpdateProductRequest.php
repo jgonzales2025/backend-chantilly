@@ -23,15 +23,8 @@ class UpdateProductRequest extends FormRequest
     {
         $rules = [
             'images' => 'nullable|array|max:3',
-            'images.*' => 'image|mimes:jpg,jpeg,png,webp'
+            'images.*' => 'image|max:2048'
         ];
-        
-        // También validar formatos con índices numéricos
-        foreach ($this->allFiles() as $key => $file) {
-            if (preg_match('/^images\.\d+$/', $key)) {
-                $rules[$key] = 'image|mimes:jpg,jpeg,png,webp';
-            }
-        }
         
         return $rules;
     }
@@ -44,11 +37,9 @@ class UpdateProductRequest extends FormRequest
         return [
             'images.max' => 'No se pueden subir más de 3 imágenes por producto.',
             'images.*.image' => 'El archivo debe ser una imagen válida.',
-            'images.*.mimes' => 'La imagen debe ser de tipo: jpg, jpeg, png, webp o gif.',
-            'images.*.max' => 'La imagen no debe pesar más de 5MB.',
+            'images.*.max' => 'La imagen no debe pesar más de 2MB.',
             '*.image' => 'El archivo debe ser una imagen válida.',
-            '*.mimes' => 'La imagen debe ser de tipo: jpg, jpeg, png, webp o gif.',
-            '*.max' => 'La imagen no debe pesar más de 5MB.'
+            '*.max' => 'La imagen no debe pesar más de 2MB.'
         ];
     }
 

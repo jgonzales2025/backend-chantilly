@@ -20,6 +20,7 @@ return new class extends Migration
             $table->decimal('price', 10, 2);
             $table->integer('hours')->nullable();
             $table->integer('sort')->nullable();
+            $table->boolean('is_redemption')->default(0);
             $table->timestamps();
         });
     }

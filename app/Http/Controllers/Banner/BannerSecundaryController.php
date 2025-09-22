@@ -7,14 +7,20 @@ use App\Http\Requests\BannerSecundary\StoreBannerSecundaryRequest;
 use App\Http\Requests\BannerSecundary\UpdateBannerSecundaryRequest;
 use App\Http\Resources\BannerSecundaryResource;
 use App\Models\BannerSecundary;
+use App\Services\ImageService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
-use Intervention\Image\Drivers\Gd\Driver;
-use Intervention\Image\ImageManager;
 
 class BannerSecundaryController extends Controller
 {
+    protected $imageService;
+
+    public function __construct(ImageService $imageService)
+    {
+        $this->imageService = $imageService;
+    }
+
     /**
      * Listar banner secundario.
      */
@@ -34,14 +40,16 @@ class BannerSecundaryController extends Controller
         $validatedData = $request->validated();
 
         if ($request->hasFile('image')) {
-            $validatedData['image_path'] = $this->processImage(
-                $request->file('image')
+            $validatedData['image_path'] = $this->imageService->uploadImage(
+                $request->file('image'),
+                'banners'
             );
         }
 
         if ($request->hasFile('image_movil')) {
-            $validatedData['image_path_movil'] = $this->processImage(
-                $request->file('image_movil')
+            $validatedData['image_path_movil'] = $this->imageService->uploadImage(
+                $request->file('image_movil'),
+                'banners'
             );
         }
 
@@ -69,8 +77,9 @@ class BannerSecundaryController extends Controller
                 Storage::disk('public')->delete($bannerSecundary->image_path);
             }
 
-            $validatedData['image_path'] = $this->processImage(
+            $validatedData['image_path'] = $this->imageService->uploadImage(
                 $request->file('image'),
+                'banners'
             );
         }
 
@@ -81,8 +90,9 @@ class BannerSecundaryController extends Controller
                 Storage::disk('public')->delete($bannerSecundary->image_path_movil);
             }
 
-            $validatedData['image_path_movil'] = $this->processImage(
-                $request->file('image_movil')
+            $validatedData['image_path_movil'] = $this->imageService->uploadImage(
+                $request->file('image_movil'),
+                'banners'
             );
         }
 
@@ -115,16 +125,5 @@ class BannerSecundaryController extends Controller
         $bannerSecundary->delete();
 
         return new JsonResponse(['message' => 'Banner eliminado con éxito'], 200);
-    }
-
-    private function processImage($image): string
-    {
-        $imageName = $image->getClientOriginalName();
-        $manager = new ImageManager(new Driver());
-        $convertedImage = $manager->read($image->getPathname())->toJpeg(85);
-        
-        Storage::disk('public')->put('banners/' . $imageName, $convertedImage);
-        
-        return 'banners/' . $imageName;
     }
 }

@@ -24,8 +24,21 @@ class StoreBannerSecundaryRequest extends FormRequest
         return [
             'title' => 'required|string',
             'description' => 'nullable|string',
-            'image' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
-            'image_movil' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:2048'
+            'image' => 'nullable|image|max:2048',
+            'image_movil' => 'nullable|image|max:2048'
+        ];
+    }
+
+    public function messages(): array
+    {
+        return [
+            'title.required' => 'El título es obligatorio.',
+            'title.string' => 'El título debe ser una cadena de texto.',
+            'description.string' => 'La descripción debe ser una cadena de texto.',
+            'image.image' => 'El archivo debe ser una imagen válida.',
+            'image_movil.image' => 'El archivo debe ser una imagen válida.',
+            'image.max' => 'La imagen no debe superar los 2MB.',
+            'image_movil.max' => 'La imagen móvil no debe superar los 2MB.'
         ];
     }
 }

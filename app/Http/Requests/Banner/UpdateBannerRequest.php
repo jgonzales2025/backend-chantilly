@@ -22,8 +22,8 @@ class UpdateBannerRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'image' => 'nullable|image|mimes:jpg,jpeg,png,webp',
-            'link_url' => 'nullable|url|max:255',
+            'image' => 'nullable|image|max:2048',
+            'link_url' => 'nullable|url',
             'status' => 'nullable|boolean',
             'display_order' => 'nullable|integer|min:0'
         ];
@@ -33,9 +33,8 @@ class UpdateBannerRequest extends FormRequest
     {
         return [
             'image.image' => 'El archivo debe ser una imagen.',
-            'image.mimes' => 'La imagen debe ser un archivo de tipo: jpg, jpeg, png, webp.',
+            'image.max' => 'La imagen no debe superar los 2MB.',
             'link_url.url' => 'El enlace debe ser una URL válida.',
-            'link_url.max' => 'El enlace no debe exceder los 255 caracteres.',
             'status.boolean' => 'El estado debe ser verdadero o falso.',
             'display_order.integer' => 'El orden de visualización debe ser un número entero.',
             'display_order.min' => 'El orden de visualización no puede ser negativo.'

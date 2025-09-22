@@ -22,6 +22,7 @@ class ProductVariantResource extends JsonResource
             'price' => $this->price,
             'hours' => $this->hours,
             'status' => $this->status,
+            'is_redemption' => $this->is_redemption,
             'images' => $this->whenLoaded('images', function () {
                 return $this->images->map(function ($image) {
                     return [

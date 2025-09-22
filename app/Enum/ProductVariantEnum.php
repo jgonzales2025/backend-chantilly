@@ -194,4 +194,32 @@ enum ProductVariantEnum: string
             self::PRODUCTVARIANT_22 => 'product/torta_vitrina/TEW8.jpg',
         };
     }
+
+    public function is_redemption()
+    {
+        return match($this) {
+            self::PRODUCTVARIANT_01 => true,
+            self::PRODUCTVARIANT_02 => true,
+            self::PRODUCTVARIANT_03 => true,
+            self::PRODUCTVARIANT_04 => true,
+            self::PRODUCTVARIANT_05 => false,
+            self::PRODUCTVARIANT_06 => false,
+            self::PRODUCTVARIANT_07 => true,
+            self::PRODUCTVARIANT_08 => false,
+            self::PRODUCTVARIANT_09 => false,
+            self::PRODUCTVARIANT_10 => false,
+            self::PRODUCTVARIANT_11 => true,
+            self::PRODUCTVARIANT_12 => true,
+            self::PRODUCTVARIANT_13 => true,
+            self::PRODUCTVARIANT_14 => false,
+            self::PRODUCTVARIANT_15 => false,
+            self::PRODUCTVARIANT_16 => false,
+            self::PRODUCTVARIANT_17 => false,
+            self::PRODUCTVARIANT_18 => false,
+            self::PRODUCTVARIANT_19 => true,
+            self::PRODUCTVARIANT_20 => true,
+            self::PRODUCTVARIANT_21 => true,
+            self::PRODUCTVARIANT_22 => true,
+        };
+    }
 }

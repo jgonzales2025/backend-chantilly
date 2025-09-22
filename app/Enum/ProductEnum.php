@@ -579,4 +579,50 @@ enum ProductEnum: string
             self::PRODUCT_40 => config('app.frontend_url').'/detalle/vela-numerada-color-azul-numero-9',
         };
     }
+
+    public function is_redemption()
+    {
+        return match($this) {
+            self::PRODUCT_01 => true,
+            self::PRODUCT_02 => true,
+            self::PRODUCT_03 => true,
+            self::PRODUCT_04 => true,
+            self::PRODUCT_05 => true,
+            self::PRODUCT_06 => false,
+            self::PRODUCT_07 => false,
+            self::PRODUCT_08 => false,
+            self::PRODUCT_09 => false,
+            self::PRODUCT_10 => false,
+            self::PRODUCT_11 => false,
+            self::PRODUCT_12 => false,
+            self::PRODUCT_13 => false,
+            self::PRODUCT_14 => false,
+            self::PRODUCT_15 => false,
+            self::PRODUCT_16 => false,
+            self::PRODUCT_17 => false,
+            self::PRODUCT_18 => false,
+            self::PRODUCT_19 => false,
+            self::PRODUCT_20 => false,
+            self::PRODUCT_21 => false,
+            self::PRODUCT_22 => false,
+            self::PRODUCT_23 => false,
+            self::PRODUCT_24 => false,
+            self::PRODUCT_25 => false,
+            self::PRODUCT_26 => false,
+            self::PRODUCT_27 => false,
+            self::PRODUCT_28 => false,
+            self::PRODUCT_29 => false,
+            self::PRODUCT_30 => false,
+            self::PRODUCT_31 => false,
+            self::PRODUCT_32 => false,
+            self::PRODUCT_33 => false,
+            self::PRODUCT_34 => false,
+            self::PRODUCT_35 => false,
+            self::PRODUCT_36 => false,
+            self::PRODUCT_37 => false,
+            self::PRODUCT_38 => false,
+            self::PRODUCT_39 => false,
+            self::PRODUCT_40 => false,
+        };
+    }
 }

@@ -32,6 +32,9 @@ class StoreOrderRequest extends FormRequest
             'subtotal' => 'required|numeric',
             'total_amount' => 'required|numeric',
             'delivery_date' => 'nullable|date',
+            'status_id' => 'nullable|integer|exists:order_statuses,id',
+            'is_canje' => 'required|boolean',
+            'points_used' => 'nullable|integer|required_if:is_canje,true',
 
             // Para order items
             'items' => 'required|array|min:1',

@@ -24,6 +24,7 @@ return new class extends Migration
             $table->boolean('status')->default(0);
             $table->boolean('best_status')->default(0);
             $table->string('product_link')->nullable();
+            $table->boolean('is_redemption')->default(0);
         });
     }
 

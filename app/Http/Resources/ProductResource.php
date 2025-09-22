@@ -36,7 +36,8 @@ class ProductResource extends JsonResource
             'product_type_id' => $this->whenLoaded('productType'),
             'category_id' => $this->whenLoaded('category'),
             'theme_id' => $this->whenLoaded('theme'),
-            'product_link' => $this->product_link
+            'product_link' => $this->product_link,
+            'is_redemption' => $this->is_redemption,
         ];
     }
 }

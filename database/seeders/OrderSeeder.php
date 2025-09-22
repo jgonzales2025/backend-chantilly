@@ -24,7 +24,7 @@ class OrderSeeder extends Seeder
                 'subtotal' => $order->subtotal(),
                 'total' => $order->total(),
                 'order_date' => $order->order_date(),
-                'status' => $order->status(),
+                'status_id' => $order->status(),
                 'payment_method' => $order->payment_method(),
                 'payment_status' => $order->payment_status(),
                 'delivery_date' => $order->delivery_date()

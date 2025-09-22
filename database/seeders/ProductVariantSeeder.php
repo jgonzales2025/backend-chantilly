@@ -22,6 +22,7 @@ class ProductVariantSeeder extends Seeder
                 'size_portion' => $variant->sizeportion(),
                 'price' => $variant->price(),
                 'hours' => $variant->hours(),
+                'is_redemption' => $variant->is_redemption(),
             ]);
 
             // Agregar imagen a la tabla images usando el trait
