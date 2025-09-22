@@ -24,8 +24,8 @@ class StoreBannerRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'image' => 'nullable|image|mimes:jpg,jpeg,png,webp',
-            'link_url' => 'nullable|url|max:255',
+            'image' => 'nullable|image|max:2048',
+            'link_url' => 'nullable|url',
             'status' => 'nullable|boolean'
         ];
     }
@@ -53,7 +53,8 @@ class StoreBannerRequest extends FormRequest
         return [
             'image.required' => 'La imagen es obligatoria.',
             'image.image' => 'El archivo debe ser una imagen.',
-            'image.mimes' => 'La imagen debe ser de tipo: jpeg, jpg, png, webp.',
+            'image.max' => 'La imagen no debe superar los 2MB.',
+            'link_url.url' => 'El enlace debe ser una URL válida.',
         ];
     }
 }

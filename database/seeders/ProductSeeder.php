@@ -26,7 +26,8 @@ class ProductSeeder extends Seeder
                 'theme_id' => $product->theme_id(),
                 'status' => $product->status(),
                 'best_status' => $product->best_status(),
-                'product_link' => $product->product_link()
+                'product_link' => $product->product_link(),
+                'is_redemption' => $product->is_redemption(),
             ]);
 
             // Agregar imagen a la tabla images usando el trait

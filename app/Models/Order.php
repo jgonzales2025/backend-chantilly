@@ -8,6 +8,7 @@ use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 
 class Order extends Model
 {
@@ -29,7 +30,6 @@ class Order extends Model
 
     protected $casts = [
         'billing_data' => 'array',
-        'payment_status' => PaymentStatusEnum::class,
         'paid_at' => 'datetime',
         'order_date' => 'datetime',
         'created_at' => 'datetime',
@@ -63,29 +63,15 @@ class Order extends Model
         return $this->belongsTo(Local::class);
     }
 
+    public function pointHistories(): HasOne
+    {
+        return $this->hasOne(PointHistory::class);
+    }
+
     // Relación con transacciones Niubiz
     public function niubizTransactions()
     {
         return $this->hasMany(NiubizTransaction::class);
-    }
-
-    // Obtener la última transacción Niubiz
-    public function lastNiubizTransaction()
-    {
-        return $this->hasOne(NiubizTransaction::class)->latest();
-    }
-
-    // Obtener transacción exitosa de Niubiz
-    public function successfulNiubizTransaction()
-    {
-        return $this->hasOne(NiubizTransaction::class)
-                    ->where('status', TransactionStatusEnum::SUCCESS);
-    }
-
-    // Verificar si la orden está pagada usando enum
-    public function isPaid()
-    {
-        return $this->payment_status === PaymentStatusEnum::PAID;
     }
 
     // Marcar como pagada usando enum
@@ -93,7 +79,7 @@ class Order extends Model
     {
         $this->update([
             'payment_method' => $paymentMethod,
-            'payment_status' => PaymentStatusEnum::PAID,
+            'payment_status' => 'Pagado',
             'paid_at' => now()
         ]);
     }
@@ -102,20 +88,8 @@ class Order extends Model
     public function markPaymentAsFailed()
     {
         $this->update([
-            'payment_status' => PaymentStatusEnum::FAILED
+            'payment_status' => 'Fallido'
         ]);
-    }
-
-    // Scope para órdenes pagadas
-    public function scopePaid($query)
-    {
-        return $query->where('payment_status', PaymentStatusEnum::PAID);
-    }
-
-    // Scope para órdenes con pago pendiente
-    public function scopePaymentPending($query)
-    {
-        return $query->where('payment_status', PaymentStatusEnum::PENDING);
     }
 
     // Scope para filtrar órdenes

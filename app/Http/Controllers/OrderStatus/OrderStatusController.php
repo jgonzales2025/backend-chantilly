@@ -7,6 +7,7 @@ use App\Http\Requests\OrderStatus\StoreOrderStatusRequest;
 use App\Http\Requests\OrderStatus\UpdateOrderStatusRequest;
 use App\Models\OrderStatus;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
 
 class OrderStatusController extends Controller
 {
@@ -28,6 +29,7 @@ class OrderStatusController extends Controller
 
         $nextOrder = OrderStatus::max('order') + 1;
         $validatedData['order'] = $nextOrder;
+        $validatedData['order_backup'] = $validatedData['order'];
 
         $status = OrderStatus::create($validatedData);
 
@@ -61,7 +63,27 @@ class OrderStatusController extends Controller
 
         $validatedData = $request->validated();
 
-        $status->update($validatedData);
+        if ($validatedData['status'] === 'Inactivo') {
+            $status->order_backup = $status->order;
+            $validatedData['order'] = null;
+            $status->update($validatedData);
+
+            $activeStatuses = OrderStatus::where('status', 'Activo')->orderBy('order')->get();
+            foreach ($activeStatuses as $index => $activeStatus) {
+                $activeStatus->order = $index + 1;
+                $activeStatus->save();
+            }
+            Log::info($activeStatuses);
+        } else {
+            $status->order = $status->order_backup;
+            $status->update($validatedData);
+            
+            $activeStatuses = OrderStatus::where('status', 'Activo')->orderBy('order')->get();
+            foreach ($activeStatuses as $index => $activeStatus) {
+                $activeStatus->order = $index + 1;
+                $activeStatus->save();
+            }
+        }
 
         return response()->json($status);
     }

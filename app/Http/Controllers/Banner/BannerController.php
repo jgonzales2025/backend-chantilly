@@ -3,18 +3,26 @@
 namespace App\Http\Controllers\Banner;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\Banner\BulkStoreRequest;
 use App\Http\Requests\Banner\StoreBannerRequest;
 use App\Http\Requests\Banner\UpdateBannerRequest;
 use App\Http\Resources\BannerResource;
 use App\Models\Banner;
+use App\Services\ImageService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
-use Intervention\Image\Drivers\Gd\Driver;
-use Intervention\Image\ImageManager;
 
 class BannerController extends Controller
 {
+
+    protected $imageService;
+
+    public function __construct(ImageService $imageService)
+    {
+        $this->imageService = $imageService;
+    }
+
     /**
      * Listar banners.
      */
@@ -38,8 +46,9 @@ class BannerController extends Controller
         $validatedData['display_order'] = $maxDisplayOrder + 1;
 
         if ($request->hasFile('image')) {
-            $validatedData['image_path'] = $this->processImage(
-                $request->file('image')
+            $validatedData['image_path'] = $this->imageService->uploadImage(
+                $request->file('image'),
+                'banners'
             );
         }
 
@@ -51,15 +60,10 @@ class BannerController extends Controller
     /**
      * Almacenar múltiples banners.
      */
-    public function bulkStore(Request $request): JsonResponse
+    public function bulkStore(BulkStoreRequest $request): JsonResponse
     {
 
-        $validatedData = $request->validate([
-            'banners' => 'required|array|max:12',
-            'banners.*.image' => 'nullable|image|mimes:jpg,jpeg,png,webp',
-            'banners.*.link_url' => 'nullable|url|max:255',
-            'banners.*.status' => 'nullable|boolean',
-        ]);
+        $validatedData = $request->validated();
 
         $cantidad = Banner::count();
 
@@ -73,7 +77,7 @@ class BannerController extends Controller
             $data['display_order'] = $maxDisplayOrder + 1;
 
             if (isset($data['image'])) {
-                $data['image_path'] = $this->processImage($data['image']);
+                $data['image_path'] = $this->imageService->uploadImage($data['image'], 'banners');
             }
 
             $banners[] = Banner::create($data);
@@ -109,9 +113,9 @@ class BannerController extends Controller
                 Storage::disk('public')->delete($banner->image_path);
             }
 
-            $validatedData['image_path'] = $this->processImage(
+            $validatedData['image_path'] = $this->imageService->uploadImage(
                 $request->file('image'), 
-                $validatedData['title'] ?? null
+                'banners'
             );
         }
 
@@ -137,19 +141,6 @@ class BannerController extends Controller
         $banner->delete();
 
         return new JsonResponse(['message' => 'Banner eliminado con éxito'], 200);
-    }
-
-    private function processImage($image): string
-    {
-        $originalName = pathinfo($image->getClientOriginalName(), PATHINFO_FILENAME);
-        $imageName = $originalName . '.jpg';
-
-        $manager = new ImageManager(new Driver());
-        $convertedImage = $manager->read($image->getPathname())->toJpeg(85);
-        
-        Storage::disk('public')->put('banners/' . $imageName, $convertedImage);
-        
-        return 'banners/' . $imageName;
     }
 
     /**

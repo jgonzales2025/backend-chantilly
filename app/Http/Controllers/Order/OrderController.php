@@ -7,9 +7,12 @@ use App\Http\Requests\Order\StoreOrderRequest;
 use App\Http\Resources\OrderResource;
 use App\Models\Order;
 use App\Models\OrderItem;
+use App\Models\PointConversion;
+use App\Models\PointHistory;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 
 class OrderController extends Controller
 {
@@ -24,7 +27,7 @@ class OrderController extends Controller
             'date_filter' => $request->query('date_filter'),
         ];
 
-        $orders = Order::with('items.product', 'items.productVariant', 'local', 'status')
+        $orders = Order::with('items.product', 'items.productVariant', 'local', 'status', 'pointHistories')
             ->filterOrders($filters)
             ->orderBy('order_date', 'desc')
             ->get();
@@ -56,8 +59,9 @@ class OrderController extends Controller
                 'subtotal' => $validatedData['subtotal'],
                 'total' => $validatedData['total_amount'],
                 'order_date' => now(),
-                'status_id' => 1,
                 'delivery_date' => $validatedData['delivery_date'] ?? null,
+                'order_number' => $validatedData['purchase_number'] ?? null,
+                'status_id' => $validatedData['status_id'] ?? 1
             ]);
             foreach ($validatedData['items'] as $item){
                 OrderItem::create([
@@ -71,6 +75,30 @@ class OrderController extends Controller
                     'dedication_text' => $item['dedication_text'] ?? null,
                     'delivery_date' => $item['delivery_date'] ?? null,
                 ]);
+            }
+
+            if ($validatedData['is_canje'] === false) {
+                $conversionRate = PointConversion::first();
+                $pointHistory = PointHistory::create([
+                    'order_id' => $order->id,
+                    'order_date' => now(),
+                    'sale_amount' => $order->total,
+                    'conversion_rate' => $conversionRate->soles_to_points,
+                    'points_earned' => floor($order->total / $conversionRate->soles_to_points),
+                    'point_type' => 'Acumulado'
+                ]);
+                $order->customer->increment('points', $pointHistory->points_earned);
+            } else {
+                $conversionRate = PointConversion::first();
+                $pointHistory = PointHistory::create([
+                    'order_id' => $order->id,
+                    'order_date' => now(),
+                    'sale_amount' => $order->total,
+                    'conversion_rate' => $conversionRate->points_to_soles,
+                    'points_earned' => -floor($validatedData['points_used'] / $conversionRate->points_to_soles),
+                    'point_type' => 'Canje'
+                ]);
+                $order->customer->decrement('points', abs($pointHistory->points_earned));
             }
 
             return new JsonResponse([

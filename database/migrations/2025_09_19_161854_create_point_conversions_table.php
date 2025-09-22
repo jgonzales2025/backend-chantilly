@@ -11,12 +11,10 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('order_statuses', function (Blueprint $table) {
+        Schema::create('point_conversions', function (Blueprint $table) {
             $table->id();
-            $table->string('name')->unique();
-            $table->integer('order')->nullable();
-            $table->integer('order_backup')->nullable();
-            $table->enum('status', ['Activo', 'Inactivo'])->default('Activo');
+            $table->integer('soles_to_points');
+            $table->integer('points_to_soles');
             $table->timestamps();
         });
     }
@@ -26,6 +24,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('order_statuses');
+        Schema::dropIfExists('point_conversions');
     }
 };

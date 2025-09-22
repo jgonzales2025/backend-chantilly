@@ -18,11 +18,16 @@ class ProductVariant extends Model
         'size_portion',
         'price',
         'hours',
-        'sort'
+        'sort',
+        'is_redemption'
     ];
 
     public $timestamps = false;
 
+    protected $casts = [
+        'is_redemption' => 'boolean'
+    ];
+    
     protected $hidden = ['created_at', 'updated_at'];
 
     public function product(): BelongsTo

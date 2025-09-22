@@ -18,6 +18,8 @@ use App\Http\Controllers\Order\OrderController;
 use App\Http\Controllers\OrderStatus\OrderStatusController;
 use App\Http\Controllers\Page\PageController;
 use App\Http\Controllers\Payment\PaymentController;
+use App\Http\Controllers\PointConversion\PointConversionController;
+use App\Http\Controllers\PointHistory\PointHistoryController;
 use App\Http\Controllers\Product\ProductController;
 use App\Http\Controllers\ProductType\ProductTypeController;
 use App\Http\Controllers\ProductVariant\ProductVariantController;
@@ -121,7 +123,12 @@ Route::get('/banner', [BannerController::class, 'index']);
 // Ruta para el proceso de pago - niubiz
 Route::post('/niubiz/pay-response', [PaymentController::class, 'payResponse']);
 
+
+// Gestión de estados de pedidos
 Route::get('/order-statuses', [OrderStatusController::class, 'index']);
+Route::post('/order-statuses', [OrderStatusController::class, 'store']);
+Route::put('/order-statuses/{id}', [OrderStatusController::class, 'update']);
+
 
 // Rutas protegidas para CUSTOMERS
 Route::middleware(['auth:sanctum', 'customer.auth'])->group(function () {
@@ -177,10 +184,7 @@ Route::middleware(['auth:sanctum', 'admin.auth'])->group(function () {
     Route::post('/banner-secondary/{id}', [BannerSecundaryController::class, 'update']);
     Route::delete('/banner-secondary/{id}', [BannerSecundaryController::class, 'destroy']);
 
-    // Gestión de estados de pedidos (admin)
     
-    Route::post('/order-statuses', [OrderStatusController::class, 'store']);
-    Route::put('/order-statuses/{id}', [OrderStatusController::class, 'update']);
     
     // Ruta para el deslogueo del admin
     Route::post('/admin/logout', [AdminAuthController::class, 'logout']);
@@ -190,3 +194,14 @@ Route::middleware(['auth:sanctum', 'admin.auth'])->group(function () {
         return response()->json($request->user());
     });
 });
+
+// Rutas para la gestión de conversiones de puntos
+Route::get('/point-conversions', [PointConversionController::class, 'index']);
+Route::post('/point-conversions', [PointConversionController::class, 'store']);
+Route::put('/point-conversions/{id}', [PointConversionController::class, 'update']);
+Route::delete('/point-conversions/{id}', [PointConversionController::class, 'destroy']);
+Route::get('/discounted-amount', [PointConversionController::class, 'discountedAmount']);
+
+
+// Rutas para el historial de puntos
+Route::get('/point-histories', [PointHistoryController::class, 'index']);

@@ -22,14 +22,16 @@ class Product extends Model
         'theme_id',
         'status',
         'best_status',
-        'product_link'
+        'product_link',
+        'is_redemption'
     ];
 
     public $timestamps = false;
 
     protected $casts = [
         'status' => 'boolean',
-        'best_status' => 'boolean'
+        'best_status' => 'boolean',
+        'is_redemption' => 'boolean'
     ];
 
     public function productType(): BelongsTo

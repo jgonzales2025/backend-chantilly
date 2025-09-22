@@ -91,10 +91,10 @@ enum OrderEnum: int
     {
         return match($this) {
             self::ORDER_01 => 1,
-            self::ORDER_02 => 1,
-            self::ORDER_03 => 1,
-            self::ORDER_04 => 1,
-            self::ORDER_05 => 1,
+            self::ORDER_02 => 2,
+            self::ORDER_03 => 3,
+            self::ORDER_04 => 4,
+            self::ORDER_05 => 5,
         };
     }
 

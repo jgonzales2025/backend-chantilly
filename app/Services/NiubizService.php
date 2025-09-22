@@ -43,16 +43,8 @@ class NiubizService
     /**
      * Crear sesión de pago y guardar en BD
      */
-    public function createSession($amount, $customer, $purchaseNumber, $diasRegistrado)
+    public function createSession($amount, $customer, $diasRegistrado, $transaction = null)
     {
-        // Crear registro de transacción
-        $transaction = NiubizTransaction::create([
-            'purchase_number' => $purchaseNumber,
-            'amount' => $amount,
-            'currency' => 'PEN',
-            'status' => TransactionStatusEnum::PENDING
-        ]);
-
         try {
             $url = config("niubiz.urls.session.{$this->env}") . $this->merchantId;
             $sessionKey = $this->getSessionKey(); // Obteniendo token de seguridad de Niubiz
@@ -94,10 +86,12 @@ class NiubizService
         } catch (RequestException $e) {
             // Guardar error en BD
             $transaction->update([
-                'status' => TransactionStatusEnum::FAILED,
+                'status' => 'failed',
                 'error_message' => $e->getMessage(),
                 'niubiz_response' => ['error' => $e->getMessage()]
             ]);
+
+            $transaction->incrementRetry();
 
             throw new \Exception('Error al crear sesión de pago: ' . $e->getMessage());
         }
@@ -170,15 +164,19 @@ class NiubizService
                     'BRAND' => $result['data']['BRAND'] ?? null,
                     'CARD' => $result['data']['CARD'] ?? null,
                 ];
+
+                $transaction->incrementRetry();
+                $transaction->order->markPaymentAsFailed();
             } else {
+                $transaction->incrementRetry();
                 // Respuesta normal de Niubiz
                 $actionCode = $result['dataMap']['ACTION_CODE'] ?? null;
                 $isSuccess = $actionCode === '000';
             }
 
             $status = $isSuccess ? 
-                TransactionStatusEnum::SUCCESS : 
-                TransactionStatusEnum::FAILED;
+                'success' : 
+                'failed';
 
              // Se obtiene el código HTTP de la respuesta
 
@@ -203,12 +201,13 @@ class NiubizService
         } catch (RequestException $e) {
             // Guardar error y incrementar reintentos
             $transaction->update([
-                'status' => TransactionStatusEnum::FAILED,
+                'status' => 'failed',
                 'error_message' => $e->getMessage(),
                 'niubiz_response' => array_merge($transaction->niubiz_response ?? [], ['error' => $e->getMessage()])
             ]);
             
             $transaction->incrementRetry();
+            $transaction->order->markPaymentAsFailed();
 
             Log::error('Error procesando pago Niubiz', [
                 'transaction_id' => $transaction->id,

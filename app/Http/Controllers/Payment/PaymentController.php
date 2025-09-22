@@ -10,6 +10,8 @@ use App\Models\Customer;
 use App\Models\NiubizTransaction;
 use App\Models\Order;
 use App\Models\OrderItem;
+use App\Models\PointConversion;
+use App\Models\PointHistory;
 use App\Notifications\OrderPaid;
 use App\Services\NiubizService;
 use App\Services\SmsService;
@@ -57,11 +59,24 @@ class PaymentController extends Controller
         DB::beginTransaction();
         
         try {
+
+            $transaction = NiubizTransaction::create([
+                'amount' => $validatedOrderData['total_amount'],
+                'currency' => 'PEN', 
+                'status' => 'pending'
+            ]);
+
+            $validatedOrderData['purchaseNumber'] = (string) $transaction->id;
+
             // Generar el purchaseNumber
-            $lastTransaction = NiubizTransaction::orderBy('id', 'desc')->first();
+            /* $lastTransaction = NiubizTransaction::orderBy('id', 'desc')->first();
             $nextNumber = $lastTransaction ? $lastTransaction->id + 1 : 1;
-            $validatedOrderData['purchaseNumber'] = (string) $nextNumber;
+            $validatedOrderData['purchaseNumber'] = (string) $nextNumber; */
            
+            $transaction->update([
+                'purchase_number' => $validatedOrderData['purchaseNumber']
+            ]);
+
             $customer = Customer::find($validatedOrderData['customer_id']);
 
             // Calcular la cantidad de días registrado del cliente hasta el momento de la compra
@@ -72,8 +87,8 @@ class PaymentController extends Controller
             $result = $this->niubiz->createSession(
                 $validatedOrderData['total_amount'],
                 $customer,
-                $validatedOrderData['purchaseNumber'],
-                $diasRegistrado
+                $diasRegistrado,
+                $transaction
             );
 
             DB::commit();
@@ -112,13 +127,13 @@ class PaymentController extends Controller
             $customerEmail = $data['customerEmail'] ?? null;
             $channel = $data['channel'] ?? null;
 
-            $transaction = NiubizTransaction::where('status', 'PENDING')
+            $transaction = NiubizTransaction::where('status', 'pending')
                 ->orderBy('created_at', 'desc')
                 ->first();
 
             $purchaseNumber = $transaction ? $transaction->purchase_number : null;
-            
-            $amount = $transaction ? $transaction->amount : 117.88;
+
+            $amount = $transaction ? $transaction->amount : null;
 
             // Generar un token único temporal
             $tempToken = Str::random(32);
@@ -228,11 +243,11 @@ class PaymentController extends Controller
                 ], 404);
             }
 
-            if ($transaction->status !== TransactionStatusEnum::PENDING) {
+            if ($transaction->status !== 'pending') {
                 return response()->json([
                     'success' => false,
                     'message' => 'La transacción ya fue procesada',
-                    'status' => $transaction->status->value
+                    'status' => 'failed'
                 ], 400);
             }
 
@@ -252,28 +267,18 @@ class PaymentController extends Controller
                 if ($isSuccess) {
                     $this->sendPaymentNotifications($transaction->order, $transaction); // Se envían los datos para el envío de correo y mensaje
                 } else {
-                    $transaction->order->update(['payment_status' => PaymentStatusEnum::FAILED]);
+                    $transaction->order->update(['payment_status' => 'failed']);
                 }
             }
 
             DB::commit();
+            
+            $transaction->refresh();
 
             // Preparar respuesta
             $responseData = [
                 'success' => $isSuccess,
-                'data' => [
-                    'action_description' => $result['dataMap']['ACTION_DESCRIPTION'] ?? null,
-                    'transaction_id' => $result['dataMap']['TRANSACTION_ID'] ?? null,
-                    'action_code' => $actionCode,
-                    'action_description' => $result['dataMap']['ACTION_DESCRIPTION'] ?? null,
-                    'transaction_date' => $result['dataMap']['TRANSACTION_DATE'] ?? null,
-                    'amount' => $result['order']['amount'] ?? null,
-                    'currency' => $result['order']['currency'] ?? 'PEN',
-                    'purchase_number' => $validated['purchaseNumber'],
-                    'brand' => $result['dataMap']['BRAND'],
-                    'card' => $result['dataMap']['CARD'],
-                    'error_message' => $result['dataMap']['ERROR_MESSAGE'] ?? null
-                ],
+                'data' => $transaction->getNiubizResponseFormatted(),
                 'message' => $isSuccess ? 'Pago procesado exitosamente' : 'Pago rechazado'
             ];
 
@@ -355,6 +360,17 @@ class PaymentController extends Controller
      */
     private function createOrder(array $validatedOrderData)
     {
+        $customer = Customer::lockForUpdate()->find($validatedOrderData['customer_id']);
+        if (!$customer) {
+            throw new \Exception('Cliente no encontrado');
+        }
+
+        if ($validatedOrderData['is_canje'] == true) {
+            if ($customer->points < $validatedOrderData['points_used']) {
+                throw new \Exception('Puntos insuficientes para realizar el canje');
+            }
+        }
+
         $order = Order::create([
             'customer_id' => $validatedOrderData['customer_id'],
             'voucher_type' => $validatedOrderData['voucher_type'],
@@ -364,7 +380,8 @@ class PaymentController extends Controller
             'total' => $validatedOrderData['total_amount'],
             'order_date' => now(),
             'delivery_date' => $validatedOrderData['delivery_date'] ?? null,
-            'order_number' => $validatedOrderData['purchaseNumber'] ?? null
+            'order_number' => $validatedOrderData['purchaseNumber'] ?? null,
+            'status_id' => 1
         ]);
 
         foreach ($validatedOrderData['items'] as $item) {
@@ -379,6 +396,30 @@ class PaymentController extends Controller
                 'dedication_text' => $item['dedication_text'] ?? null,
                 'delivery_date' => $item['delivery_date'] ?? null,
             ]);
+        }
+        
+        if ($validatedOrderData['is_canje'] == false) {
+            $conversionRate = PointConversion::first();
+            $pointHistory = PointHistory::create([
+                'order_id' => $order->id,
+                'order_date' => now(),
+                'sale_amount' => $order->total,
+                'conversion_rate' => $conversionRate->soles_to_points,
+                'points_earned' => floor($order->total / $conversionRate->soles_to_points),
+                'point_type' => 'Acumulado'
+            ]);
+            $customer->increment('points', $pointHistory->points_earned);
+        } else {
+            $conversionRate = PointConversion::first();
+            $pointHistory = PointHistory::create([
+                'order_id' => $order->id,
+                'order_date' => now(),
+                'sale_amount' => $order->total,
+                'conversion_rate' => $conversionRate->points_to_soles,
+                'points_earned' => -floor($validatedOrderData['points_used'] / $conversionRate->points_to_soles),
+                'point_type' => 'Canje'
+            ]);
+            $customer->decrement('points', abs($pointHistory->points_earned));
         }
 
         return $order;

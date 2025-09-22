@@ -7,7 +7,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class OrderStatus extends Model
 {
-    protected $fillable = ['name', 'order', 'status'];
+    protected $fillable = ['name', 'order', 'order_backup', 'status'];
 
     protected $hidden = ['created_at', 'updated_at'];
 
