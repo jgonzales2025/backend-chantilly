@@ -309,7 +309,8 @@ class PaymentController extends Controller
             'customer', 
             'items.product', 
             'items.productVariant.product',
-            'local'
+            'local',
+            'pointHistories'
         ]);
 
         $customer = $order->customer;
@@ -338,7 +339,7 @@ class PaymentController extends Controller
                 $deliveryDate = $order->delivery_date;
                 $total = number_format($order->total, 2);
 
-                $smsSent = $this->smsService->sendPaymentConfirmation($phone, $orderNumber, $total, $deliveryDate);
+                $smsSent = $this->smsService->sendPaymentConfirmation($phone, $orderNumber, $total, $deliveryDate, $order->pointHistories, $customer->points);
 
                 if ($smsSent) {
                     Log::info('SMS de confirmación enviado', [
@@ -406,7 +407,7 @@ class PaymentController extends Controller
                 'sale_amount' => $order->total,
                 'conversion_rate' => $conversionRate->soles_to_points,
                 'points_earned' => floor($order->total / $conversionRate->soles_to_points),
-                'point_type' => 'Acumulado'
+                'point_type' => floor($order->total / $conversionRate->soles_to_points) > 0 ? 'Acumulado' : 'No acumula'
             ]);
             $customer->increment('points', $pointHistory->points_earned);
         } else {

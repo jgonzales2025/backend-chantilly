@@ -74,7 +74,7 @@
                                                         <td style="font-family: 'Helvetica Neue',Helvetica,Arial,sans-serif; padding: 2px 0;"><strong>Cantidad:</strong> {{ $item->quantity }}</td>
                                                         <td style="font-family: 'Helvetica Neue',Helvetica,Arial,sans-serif; padding: 2px 0;"><strong>Subtotal:</strong> S/ {{ number_format($item->subtotal, 2) }}</td>
                                                     </tr>
-                                                    @if($item->delivery_date)
+                                                    @if($order->delivery_date)
                                                     <tr>
                                                         <td colspan="2" style="font-family: 'Helvetica Neue',Helvetica,Arial,sans-serif; padding: 2px 0;"><strong>Fecha de entrega:</strong> {{ \Carbon\Carbon::parse($item->delivery_date)->format('d/m/Y') }}</td>
                                                     </tr>
@@ -100,6 +100,28 @@
                                                 </tr>
                                             </table>
                                             @endif
+
+                                            <div style='background: {{ $order->pointHistories->point_type === "Acumulado" ? "#e8f5e8" : "#fff3cd" }}; border-left: 4px solid {{ $order->pointHistories->point_type === "Acumulado" ? "#28a745" : "#ffc107" }}; padding: 15px; margin-bottom: 20px; border-radius: 3px;'>
+                                                @if($order->pointHistories->point_type === 'Acumulado')
+                                                    <p style="font-family: 'Helvetica Neue',Helvetica,Arial,sans-serif; font-size: 14px; font-weight: bold; margin: 0; margin-bottom: 5px; color: #155724;">🎉 ¡Puntos Ganados!</p>
+                                                    <p style="font-family: 'Helvetica Neue',Helvetica,Arial,sans-serif; font-size: 14px; margin: 0; color: #155724;">
+                                                        Has ganado <strong>{{ number_format($order->pointHistories->points_earned) }} puntos</strong> con esta compra.
+                                                    </p>
+                                                @elseif($order->pointHistories->point_type === 'Canje')
+                                                    <p style="font-family: 'Helvetica Neue',Helvetica,Arial,sans-serif; font-size: 14px; font-weight: bold; margin: 0; margin-bottom: 5px; color: #856404;">✨ Puntos Canjeados</p>
+                                                    <p style="font-family: 'Helvetica Neue',Helvetica,Arial,sans-serif; font-size: 14px; margin: 0; color: #856404;">
+                                                        Has canjeado <strong>{{ number_format(abs($order->pointHistories->points_earned)) }} puntos</strong> en esta compra.
+                                                    </p>
+                                                @else
+                                                    <p style="font-family: 'Helvetica Neue',Helvetica,Arial,sans-serif; font-size: 14px; font-weight: bold; margin: 0; margin-bottom: 5px; color: #6c757d;">ℹ️ No Acumula Puntos</p>
+                                                    <p style="font-family: 'Helvetica Neue',Helvetica,Arial,sans-serif; font-size: 14px; margin: 0; color: #6c757d;">
+                                                        Esta compra no acumula puntos según las condiciones del pedido.
+                                                    </p>
+                                                @endif
+                                                <p style="font-family: 'Helvetica Neue',Helvetica,Arial,sans-serif; font-size: 13px; margin: 5px 0 0 0; color: #6c757d;">
+                                                    Saldo actual: <strong>{{ number_format($customer->points ?? 0) }} puntos</strong>
+                                                </p>
+                                            </div>
 
                                             <p style="font-family: 'Helvetica Neue',Helvetica,Arial,sans-serif; font-size: 14px; font-weight: normal; margin: 0; margin-bottom: 15px; margin-top: 30px;">Nos estaremos comunicando contigo para coordinar la entrega de tu pedido.</p>
                                             

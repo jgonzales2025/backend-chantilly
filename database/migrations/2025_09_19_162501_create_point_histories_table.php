@@ -18,7 +18,7 @@ return new class extends Migration
             $table->decimal('sale_amount', 10, 2);
             $table->integer('conversion_rate');
             $table->integer('points_earned');
-            $table->enum('point_type',['Canje', 'Acumulado']);
+            $table->enum('point_type',['Canje', 'Acumulado', 'No acumula']);
             $table->timestamps();
         });
     }

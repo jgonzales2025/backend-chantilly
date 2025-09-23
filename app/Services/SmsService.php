@@ -38,9 +38,22 @@ class SmsService
         return $response->successful();
     }
 
-    public function sendPaymentConfirmation($phone, $orderNumber, $total, $deliveryDate)
+    public function sendPaymentConfirmation($phone, $orderNumber, $total, $deliveryDate, $pointHistory = null, $currentPoints = 0)
     {
-        $message = "¡Pago confirmado! Tu pedido #{$orderNumber} por S/ {$total} ha sido procesado exitosamente. Tu pedido será entregado el {$deliveryDate}. Gracias por tu compra en La Casa del Chantilly.";
+        $message = "¡Pago confirmado! Tu pedido #{$orderNumber} por S/ {$total} ha sido procesado exitosamente.";
+
+        // Agregar información de puntos si existe
+        if ($pointHistory) {
+            if ($pointHistory->point_type === 'Acumulado') {
+                $message .= " ¡Ganaste {$pointHistory->points_earned} puntos!";
+            } elseif ($pointHistory->point_type === 'No acumula') {
+                $message .= " Esta compra no acumula puntos.";
+            } else {
+                $pointsUsed = abs($pointHistory->points_earned);
+                $message .= " Canjeaste {$pointsUsed} puntos.";
+            }
+            $message .= " Tienes {$currentPoints} puntos disponibles.";
+        }
 
         try {
             $response = Http::withHeaders([
