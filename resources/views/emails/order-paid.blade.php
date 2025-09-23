@@ -105,7 +105,7 @@
                                                 @if($order->pointHistories->point_type === 'Acumulado')
                                                     <p style="font-family: 'Helvetica Neue',Helvetica,Arial,sans-serif; font-size: 14px; font-weight: bold; margin: 0; margin-bottom: 5px; color: #155724;">🎉 ¡Puntos Ganados!</p>
                                                     <p style="font-family: 'Helvetica Neue',Helvetica,Arial,sans-serif; font-size: 14px; margin: 0; color: #155724;">
-                                                        Has ganado <strong>{{ number_format($order->pointHistories->points_earned) }} puntos</strong> con esta compra.
+                                                        Has ganado <strong>{{ number_format($order->pointHistories->points_earned) }} {{$order->pointHistories->points_earned == 1 ? 'punto' : 'puntos'}}</strong> con esta compra.
                                                     </p>
                                                 @elseif($order->pointHistories->point_type === 'Canje')
                                                     <p style="font-family: 'Helvetica Neue',Helvetica,Arial,sans-serif; font-size: 14px; font-weight: bold; margin: 0; margin-bottom: 5px; color: #856404;">✨ Puntos Canjeados</p>
