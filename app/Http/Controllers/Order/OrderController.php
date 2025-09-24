@@ -61,7 +61,7 @@ class OrderController extends Controller
                 'order_date' => now(),
                 'delivery_date' => $validatedData['delivery_date'] ?? null,
                 'order_number' => $validatedData['purchase_number'] ?? null,
-                'status_id' => $validatedData['status_id'] ?? 1
+                'status_id' => 1
             ]);
             foreach ($validatedData['items'] as $item){
                 OrderItem::create([
@@ -85,7 +85,7 @@ class OrderController extends Controller
                     'sale_amount' => $order->total,
                     'conversion_rate' => $conversionRate->soles_to_points,
                     'points_earned' => floor($order->total / $conversionRate->soles_to_points),
-                    'point_type' => 'Acumulado'
+                    'point_type' => floor($order->total / $conversionRate->soles_to_points) > 0 ? 'Acumulado' : 'No acumula'
                 ]);
                 $order->customer->increment('points', $pointHistory->points_earned);
             } else {

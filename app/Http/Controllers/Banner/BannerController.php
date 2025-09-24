@@ -72,8 +72,6 @@ class BannerController extends Controller
             return new JsonResponse(['message' => 'Se ha alcanzado el límite máximo de banners'], 429);
         }
 
-        
-
         $banners = [];
         foreach ($validatedData['banners'] as $data) {
             $maxDisplayOrder = Banner::max('display_order') ?? 0;

@@ -24,9 +24,9 @@ class ImageService
         // Obtener nombre sin extensión
         $originalName = pathinfo($file->getClientOriginalName(), PATHINFO_FILENAME);
         // Siempre convertir a AVIF
-        $imageName = $originalName . '.avif';
+        $imageName = $originalName . '.webp';
         $convertedImage = $this->manager->read($file->getPathname())
-            ->toAvif(85);
+            ->toWebp(80);
         
         $path = $folder . '/' . $imageName;
         Storage::disk('public')->put($path, $convertedImage);
