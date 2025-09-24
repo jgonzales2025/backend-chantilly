@@ -66,7 +66,9 @@ class PaymentController extends Controller
                 'status' => 'pending'
             ]);
 
-            $validatedOrderData['purchaseNumber'] = (string) $transaction->id;
+            $lastOrder = Order::orderBy('order_number', 'desc')->first();
+
+            $validatedOrderData['purchaseNumber'] = $lastOrder ? (string)$lastOrder->order_number + 1 : '1';
 
             // Generar el purchaseNumber
             /* $lastTransaction = NiubizTransaction::orderBy('id', 'desc')->first();

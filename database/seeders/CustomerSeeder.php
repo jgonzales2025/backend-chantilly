@@ -27,6 +27,7 @@ class CustomerSeeder extends Seeder
                 'department' => $customer->department(),
                 'province' => $customer->province(),
                 'district' => $customer->district(),
+                'points' => $customer->points(),
             ]);
         }
     }

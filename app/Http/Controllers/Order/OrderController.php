@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Order;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Order\StoreOrderRequest;
 use App\Http\Resources\OrderResource;
+use App\Models\NiubizTransaction;
 use App\Models\Order;
 use App\Models\OrderItem;
 use App\Models\PointConversion;
@@ -51,6 +52,9 @@ class OrderController extends Controller
         $validatedData = $request->validated();
 
         return DB::transaction(function () use ($validatedData){
+            $lastOrder = Order::orderBy('order_number', 'desc')->first();
+            $nextOrderNumber = $lastOrder ? (int)$lastOrder->order_number + 1 : 1;
+
             $order = Order::create([
                 'customer_id' => $validatedData['customer_id'],
                 'voucher_type' => $validatedData['voucher_type'],
@@ -60,7 +64,7 @@ class OrderController extends Controller
                 'total' => $validatedData['total_amount'],
                 'order_date' => now(),
                 'delivery_date' => $validatedData['delivery_date'] ?? null,
-                'order_number' => $validatedData['purchase_number'] ?? null,
+                'order_number' => $nextOrderNumber,
                 'status_id' => 1
             ]);
             foreach ($validatedData['items'] as $item){

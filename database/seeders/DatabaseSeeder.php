@@ -36,9 +36,9 @@ class DatabaseSeeder extends Seeder
             CustomerSeeder::class,
             ProductVariantSeeder::class,
             OrderStatusSeeder::class,
-            OrderSeeder::class,
-            OrderItemSeeder::class,
-            TransactionSeeder::class,
+            //OrderSeeder::class,
+            //OrderItemSeeder::class,
+            //TransactionSeeder::class,
             UserSeeder::class,
             BannerSecundarySeeder::class
         ]);

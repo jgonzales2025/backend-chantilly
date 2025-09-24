@@ -38,8 +38,8 @@ enum CustomerEnum: string
     {
         return match($this){
             self::CUSTOMER_01 => 'walter@gmail.com',
-            self::CUSTOMER_02 => 'erick@gmail.com',
-            self::CUSTOMER_03 => 'joseph@gmail.com',
+            self::CUSTOMER_02 => 'erickcarrillo2603@gmail.com',
+            self::CUSTOMER_03 => 'josephacuario20@gmail.com',
         };
     }
 
@@ -65,8 +65,8 @@ enum CustomerEnum: string
     {
         return match($this){
             self::CUSTOMER_01 => '984385774',
-            self::CUSTOMER_02 => '999988888',
-            self::CUSTOMER_03 => '999988888',
+            self::CUSTOMER_02 => '903147057',
+            self::CUSTOMER_03 => '927678054',
         };
     }
 
@@ -94,6 +94,15 @@ enum CustomerEnum: string
             self::CUSTOMER_01 => 'Miraflores',
             self::CUSTOMER_02 => 'Miraflores',
             self::CUSTOMER_03 => 'Miraflores',
+        };
+    }
+
+    public function points()
+    {
+        return match($this){
+            self::CUSTOMER_01 => 1000000,
+            self::CUSTOMER_02 => 1000000,
+            self::CUSTOMER_03 => 1000000,
         };
     }
 }
